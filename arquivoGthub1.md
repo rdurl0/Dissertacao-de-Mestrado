@@ -21,4 +21,10 @@ Citações:
 > Karl Marx, 1859.
  
 
+<<<<<<< HEAD
 [Clique aqui para ver meu_projeto](https://github.com/rdurl0/meu_projeto "meu_projeto")
+=======
+**Inserindo imagem**
+![rotina no GitHub](http://curso-r.com/blog/2017-07-17-rstudio-e-github/fluxo_github_rstudio.png "Rotina no GitHub")
+
+>>>>>>> 2fcee4f3faa5438f97365ba1bb05a77e0e9602e0
