@@ -21,3 +21,5 @@ Citações:
 > Karl Marx, 1859.
  
 
+![rotina no GitHub](http://curso-r.com/blog/2017-07-17-rstudio-e-github/fluxo_github_rstudio.png)
+
