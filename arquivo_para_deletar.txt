@@ -1,1 +1,3 @@
 Deletar no Rstudio
+
+mas antes, vou modificar
