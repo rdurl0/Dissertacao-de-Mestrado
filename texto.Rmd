@@ -15,22 +15,28 @@ Este trabalho tem como objetivo analisar a criminalidade em uma grande metrópol
 
 Os índices de criminalidade verificada em um bairro de São Paulo se associam aos mesmos índices verificados nos demais bairros? Existe variação sistemática na ocorrência de crimes entre os bairros de São Paulo? O tipo do uso do solo urbano, a composição de emprego, renda e estrutura populacional afetam o crime nos bairros de São Paulo de que forma? Essas são as perguntas que nortearam o trabalho aqui desenvolvido.
 
-O procedimento empírico é realizado desagregando as unidades territoriais do município em distritos policiais e municipais, com uma proposta de compatibilização entre as unidades geográficas intra-municipais que apresentaram diferenças em seus limites de território. Os crimes analisados são homicídios, tentativas de homicídios, roubo e furto de veículos, roubo e furto (exceto veículos) e latrocínio. A discussão aqui levantada busca encontrar regimes espaciais da criminalidade e sua persistência através da estatística	_I de Moran_ para as modalidades supracitadas.
+O procedimento empírico é realizado utilizando as desagregações das unidades territoriais do município em distritos policiais e distritos municipais, com uma proposta de compatibilização entre as unidades geográficas intra-municipais que apresentaram diferenças em seus limites de território. Os crimes analisados são: homicídios, roubo e furto de veículos.
+
+Em primeiro lugar, é feito o teste de não-aleatoriedade espacial das taxas de criminalidade em SP através da estatística	_I de Moran_ para as modalidades supracitadas. Os resultados evidenciam a persistência da autocorrelação positiva das taxas de crime e a análise dos _diagramas de dispersão de Moran_ indicam uma forte influência do chamado "centro velho" na concentração de crimes. De outro lado, bairros de classe média e alta, próximos ou dentro do centro expandido da cidade, se caracterizam como "bolsões de segurança". 
  
-Já para a estimação de determinantes da criminalidade e as interações espaciais inerentes é proposta a modelagem espacial de Regressões Aparentemente não-Relacionadas (SUR-espacial), que representa uma categoria especial de modelos espaço-temporais e prescinde, a priori, de defasagens espaciais  nas variáveis dependentes, explicativas ou nos termos de erro. O efeito espacial específico no SUR se refere à correlação entre os termos de erro que, segundo Anselin (1988) pode ser entendida como uma forma de autocorrelação espacial.
-Na quarta parte dessa dissertação é discorrido sobre os resultados do modelo empírico. De início, é verificado que existe um processo espacial associado às ocorrências de crime em São Paulo por meio do teste de autocorrelação espacial, em que pese a influência dos distritos vizinhos sob as taxas de criminalidade de um distrito. Esse processo se mantém na comparação entre os períodos de 2003 e 2013. Em seguida as taxas de crimes são regredidas contra variáveis socioeconômicas para os dois anos e o processo de estimação é feito pelo método de Mínimos Quadrados Ordinários e pelo Modelo espacial de Regressões Aparentemente não-Correlacionadas (SUR-espacial). Nos modelos de regressão são encontrados coeficientes significativos entre as taxas de crimes e a população jovem masculina, residências de baixo padrão e favelas, razão entre empregos formais e moradores nos distritos e renda.
-De um modo geral, os resultados do quarto capítulo deste trabalho corroboram com o argumento de que as características da cidade são importantes nos padrões espaço-temporais da criminalidade e diferem de acordo com a modalidade de crime analisada, sugerindo haver indícios de mudanças associadas às oscilações no histórico de crimes registrados no município de São Paulo. Pode-se ainda argumentar que o caráter multidimensional explicitado pelos resultados empíricos obtidos reforça a hipótese de que o crime em uma grande cidade é um fenômeno complexo, que requer olhares atentos dos mais diversos campos de estudo sociais.
+Já para a estimação de um modelo espacial dos determinantes da criminalidade é proposta a modelagem de Regressões Aparentemente não-Relacionadas (SUR-espacial), que pode prescindir, em um primeiro momento, da inclusão de matrizes de vizinhança. O efeito espacial específico do SUR-espacial se refere à presença de correlação nos termos de erro das equações do sistema, o que segundo Anselin (1988) pode ser entendida como uma forma de autocorrelação espacial, uma vez que seus parâmetros variam somente em relação ao espaço e não aos períodos analisados. Este trabalho explora tais características do modelo SUR em conjunto com os efeitos de vizinhança (matriz W) no início e no final da década de 2000 (anos 200 e 2010). 
+
+De um modo geral, os resultados do modelo SUR-espacial corroboram com o argumento de que as características da cidade são importantes nos padrões espaço-temporais da criminalidade, que por sua vez diferem de acordo com a modalidade de crime analisada. É possível ainda argumentar que o crime em uma grande cidade é um fenômeno complexo, determinados por características de ambiente social específicas.
+
+## 2. Revisão bibliográfica
+
+
 
 ### Estatísticas descritivas do banci de dados
 
 ```{r echo=FALSE}
-dados <- read.table("dados.txt", h=T)
+dados <- read.table("SUR SUR-lag SUR-error/dados.txt", h=T)
 # data.frames
 dados2013 <- subset(dados, Ano>2003)
 dados2003 <- subset(dados, Ano<2013)
 # summary
-summary(dados2003)
-summary(dados2013)
+head(dados2003)
+head(dados2013)
 ```
 
 ### figura 1: evolução das taxas de homicídios na região central de São paulo
@@ -38,12 +44,13 @@ summary(dados2013)
 You can also embed plots, for example:
 
 ```{r echo=FALSE}
-dados <- read.table("dados.txt", h=T)
+dados <- read.table("SUR SUR-lag SUR-error/dados.txt", h=T)
 # painel
 pdados <- plm::pdata.frame(dados, c("Dpol", "Ano"))
 barra <- ggplot2::ggplot(data = subset(pdados, Seccional == "1 CENTRO"),
             ggplot2::aes(x=Distrito, y=homic, fill=Ano)) +
           ggplot2::geom_bar(stat="identity", position="dodge")
+plot(barra)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
