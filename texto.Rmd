@@ -24,7 +24,6 @@ De um modo geral, os resultados do quarto capítulo deste trabalho corroboram co
 ### Estatísticas descritivas do banci de dados
 
 ```{r echo=FALSE}
-setwd("C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
 dados <- read.table("dados.txt", h=T)
 # data.frames
 dados2013 <- subset(dados, Ano>2003)
@@ -34,12 +33,11 @@ summary(dados2003)
 summary(dados2013)
 ```
 
-### figura 1: evolução dos homicídios na região central de São paulo
+### figura 1: evolução das taxas de homicídios na região central de São paulo
 
 You can also embed plots, for example:
 
 ```{r echo=FALSE}
-setwd("C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
 dados <- read.table("dados.txt", h=T)
 # painel
 pdados <- plm::pdata.frame(dados, c("Dpol", "Ano"))
