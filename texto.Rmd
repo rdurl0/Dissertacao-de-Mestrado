@@ -1,0 +1,51 @@
+---
+title: "Análise espacial da criminalidade em uma grande metrópole: um estudo de caso para o município de São Paulo"
+author: "Raul de Sá Durlo"
+date: "21 de julho de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Introdução
+
+Este trabalho tem como objetivo analisar a criminalidade em uma grande metrópole mundial. Para isso são observadas as características espaciais que afetaram a dinâmica da criminalidade nos anos 2000 na cidade de São Paulo. Mais especificamente, a criminalidade aqui é observada em relação às características que definem o ambiente urbano no território paulistano: suas diferenças locais, demografia, composição de uso do solo, densidade de empregos formais, condições de moradias e renda.
+
+Os índices de criminalidade verificada em um bairro de São Paulo se associam aos mesmos índices verificados nos demais bairros? Existe variação sistemática na ocorrência de crimes entre os bairros de São Paulo? O tipo do uso do solo urbano, a composição de emprego, renda e estrutura populacional afetam o crime nos bairros de São Paulo de que forma? Essas são as perguntas que nortearam o trabalho aqui desenvolvido.
+
+O procedimento empírico é realizado desagregando as unidades territoriais do município em distritos policiais e municipais, com uma proposta de compatibilização entre as unidades geográficas intra-municipais que apresentaram diferenças em seus limites de território. Os crimes analisados são homicídios, tentativas de homicídios, roubo e furto de veículos, roubo e furto (exceto veículos) e latrocínio. A discussão aqui levantada busca encontrar regimes espaciais da criminalidade e sua persistência através da estatística	_I de Moran_ para as modalidades supracitadas.
+ 
+Já para a estimação de determinantes da criminalidade e as interações espaciais inerentes é proposta a modelagem espacial de Regressões Aparentemente não-Relacionadas (SUR-espacial), que representa uma categoria especial de modelos espaço-temporais e prescinde, a priori, de defasagens espaciais  nas variáveis dependentes, explicativas ou nos termos de erro. O efeito espacial específico no SUR se refere à correlação entre os termos de erro que, segundo Anselin (1988) pode ser entendida como uma forma de autocorrelação espacial.
+Na quarta parte dessa dissertação é discorrido sobre os resultados do modelo empírico. De início, é verificado que existe um processo espacial associado às ocorrências de crime em São Paulo por meio do teste de autocorrelação espacial, em que pese a influência dos distritos vizinhos sob as taxas de criminalidade de um distrito. Esse processo se mantém na comparação entre os períodos de 2003 e 2013. Em seguida as taxas de crimes são regredidas contra variáveis socioeconômicas para os dois anos e o processo de estimação é feito pelo método de Mínimos Quadrados Ordinários e pelo Modelo espacial de Regressões Aparentemente não-Correlacionadas (SUR-espacial). Nos modelos de regressão são encontrados coeficientes significativos entre as taxas de crimes e a população jovem masculina, residências de baixo padrão e favelas, razão entre empregos formais e moradores nos distritos e renda.
+De um modo geral, os resultados do quarto capítulo deste trabalho corroboram com o argumento de que as características da cidade são importantes nos padrões espaço-temporais da criminalidade e diferem de acordo com a modalidade de crime analisada, sugerindo haver indícios de mudanças associadas às oscilações no histórico de crimes registrados no município de São Paulo. Pode-se ainda argumentar que o caráter multidimensional explicitado pelos resultados empíricos obtidos reforça a hipótese de que o crime em uma grande cidade é um fenômeno complexo, que requer olhares atentos dos mais diversos campos de estudo sociais.
+
+### Estatísticas descritivas do banci de dados
+
+```{r echo=FALSE}
+setwd("C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
+dados <- read.table("dados.txt", h=T)
+# data.frames
+dados2013 <- subset(dados, Ano>2003)
+dados2003 <- subset(dados, Ano<2013)
+# summary
+summary(dados2003)
+summary(dados2013)
+```
+
+### figura 1: evolução dos homicídios na região central de São paulo
+
+You can also embed plots, for example:
+
+```{r echo=FALSE}
+setwd("C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
+dados <- read.table("dados.txt", h=T)
+# painel
+pdados <- plm::pdata.frame(dados, c("Dpol", "Ano"))
+barra <- ggplot2::ggplot(data = subset(pdados, Seccional == "1 CENTRO"),
+            ggplot2::aes(x=Distrito, y=homic, fill=Ano)) +
+          ggplot2::geom_bar(stat="identity", position="dodge")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
