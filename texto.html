@@ -136,70 +136,48 @@ $(document).ready(function () {
 <h2>2. Revisão bibliográfica</h2>
 <div id="estatisticas-descritivas-do-banci-de-dados" class="section level3">
 <h3>Estatísticas descritivas do banci de dados</h3>
-<pre><code>##       Ano                 Distrito       Dpol                   Seccional 
-##  Min.   :2003   ACLIMAÇÃO     : 1   Min.   :     1.00   3 OESTE      :14  
-##  1st Qu.:2003   ADEMAR_JOANIZA: 1   1st Qu.:    23.75   6 SANTO AMARO:11  
-##  Median :2003   ARTUR_ALVIM   : 1   Median :    52.00   7 ITAQUERA   :11  
-##  Mean   :2003   BELÉM         : 1   Mean   :  7230.64   1 CENTRO     :10  
-##  3rd Qu.:2003   BOM_RETIRO    : 1   3rd Qu.:    89.50   5 LESTE      :10  
-##  Max.   :2003   BRÁS          : 1   Max.   :268395.00   4 OESTE      : 9  
-##                 (Other)       :74                       (Other)      :15  
-##      homic           roubovcl          furtovcl          jov1524       
-##  Min.   :  0.00   Min.   :  45.18   Min.   :  35.35   Min.   :0.06595  
-##  1st Qu.: 19.09   1st Qu.: 224.37   1st Qu.: 231.81   1st Qu.:0.08238  
-##  Median : 34.22   Median : 389.79   Median : 440.62   Median :0.08843  
-##  Mean   : 44.13   Mean   : 471.83   Mean   : 700.71   Mean   :0.08760  
-##  3rd Qu.: 53.31   3rd Qu.: 628.40   3rd Qu.: 976.73   3rd Qu.:0.09637  
-##  Max.   :251.44   Max.   :1583.38   Max.   :2467.47   Max.   :0.10057  
-##                                                                        
-##   baixopadrao        rendamedia      dprendamedia        favela      
-##  Min.   :  93.39   Min.   : 5.124   Min.   : 8.478   Min.   :   0.0  
-##  1st Qu.: 397.86   1st Qu.: 7.665   1st Qu.: 8.711   1st Qu.: 182.2  
-##  Median : 709.03   Median :10.236   Median : 9.147   Median :1300.7  
-##  Mean   : 789.30   Mean   :10.846   Mean   : 9.449   Mean   :2071.9  
-##  3rd Qu.:1193.08   3rd Qu.:13.556   3rd Qu.:10.203   3rd Qu.:3301.7  
-##  Max.   :2149.84   Max.   :20.162   Max.   :11.427   Max.   :8706.7  
-##                                                                      
-##     eformais         mandato       
-##  Min.   :0.0160   Min.   :  14.88  
-##  1st Qu.:0.0595   1st Qu.:  31.89  
-##  Median :0.1530   Median :  41.83  
-##  Mean   :0.4251   Mean   : 111.46  
-##  3rd Qu.:0.6010   3rd Qu.:  81.12  
-##  Max.   :3.9600   Max.   :1105.37  
-## </code></pre>
-<pre><code>##       Ano                 Distrito       Dpol                   Seccional 
-##  Min.   :2013   ACLIMAÇÃO     : 1   Min.   :     1.00   3 OESTE      :14  
-##  1st Qu.:2013   ADEMAR_JOANIZA: 1   1st Qu.:    23.75   6 SANTO AMARO:11  
-##  Median :2013   ARTUR_ALVIM   : 1   Median :    52.00   7 ITAQUERA   :11  
-##  Mean   :2013   BELÉM         : 1   Mean   :  7230.64   1 CENTRO     :10  
-##  3rd Qu.:2013   BOM_RETIRO    : 1   3rd Qu.:    89.50   5 LESTE      :10  
-##  Max.   :2013   BRÁS          : 1   Max.   :268395.00   4 OESTE      : 9  
-##                 (Other)       :74                       (Other)      :15  
-##      homic           roubovcl          furtovcl          jov1524       
-##  Min.   : 0.000   Min.   :  53.63   Min.   :  13.15   Min.   :0.04438  
-##  1st Qu.: 4.854   1st Qu.: 243.76   1st Qu.: 209.84   1st Qu.:0.06356  
-##  Median : 8.291   Median : 390.35   Median : 397.90   Median :0.07413  
-##  Mean   :11.452   Mean   : 488.03   Mean   : 547.03   Mean   :0.07346  
-##  3rd Qu.:14.523   3rd Qu.: 589.88   3rd Qu.: 792.68   3rd Qu.:0.08305  
-##  Max.   :81.123   Max.   :2225.95   Max.   :2097.35   Max.   :0.09575  
-##                                                                        
-##   baixopadrao       rendamedia      dprendamedia        favela       
-##  Min.   : 125.4   Min.   : 3.281   Min.   : 8.501   Min.   :    0.0  
-##  1st Qu.: 442.2   1st Qu.: 4.351   1st Qu.: 9.181   1st Qu.:  340.8  
-##  Median : 772.5   Median : 6.088   Median :10.630   Median : 1744.6  
-##  Mean   : 890.6   Mean   : 6.996   Mean   :10.560   Mean   : 2491.0  
-##  3rd Qu.:1279.0   3rd Qu.: 8.990   3rd Qu.:11.760   3rd Qu.: 3793.3  
-##  Max.   :2372.9   Max.   :16.289   Max.   :12.525   Max.   :14562.2  
-##                                                                      
-##     eformais          mandato       
-##  Min.   :0.02900   Min.   :  2.823  
-##  1st Qu.:0.09175   1st Qu.: 20.622  
-##  Median :0.23600   Median : 43.311  
-##  Mean   :0.59300   Mean   : 75.525  
-##  3rd Qu.:0.95150   3rd Qu.: 87.340  
-##  Max.   :3.94400   Max.   :448.945  
-## </code></pre>
+<pre><code>##     Ano       Distrito Dpol Seccional      homic roubovcl  furtovcl
+## 1  2003             SÉ    1  1 CENTRO 251.435078 384.2687 1148.0621
+## 4  2003     BOM_RETIRO    2  1 CENTRO  20.938023 247.7666  589.7543
+## 6  2003 CAMPOS_ELÍSIOS    3  1 CENTRO  88.941595 148.2360  727.3446
+## 8  2003     CONSOLAÇÃO    4  1 CENTRO   3.310683 120.8399  339.3450
+## 10 2003      ACLIMAÇÃO    5  1 CENTRO  31.099362 166.3816  606.4376
+## 12 2003        CAMBUCI    6  1 CENTRO  41.781835 896.7024 2455.4863
+##       jov1524 baixopadrao rendamedia dprendamedia   favela eformais
+## 1  0.08814460     115.205      9.155        9.114    0.000    3.960
+## 4  0.08870743     223.771     11.321        8.559 1395.868    1.504
+## 6  0.08287380     365.532     11.291        8.564    0.000    1.606
+## 8  0.07992816     344.136     15.672        9.052    0.000    0.972
+## 10 0.08118489     162.269     14.405        8.689    0.000    0.397
+## 12 0.07748923     217.862     12.943        8.489    0.000    0.804
+##       mandato
+## 1  1105.36553
+## 4   174.48353
+## 6   583.06157
+## 8    38.07285
+## 10  262.78961
+## 12  131.77348</code></pre>
+<pre><code>##     Ano       Distrito Dpol Seccional     homic   roubovcl  furtovcl
+## 2  2013             SÉ    1  1 CENTRO 81.122739  304.21027 1022.1465
+## 3  2013     BOM_RETIRO    2  1 CENTRO 11.246380  157.44932  351.4494
+## 5  2013 CAMPOS_ELÍSIOS    3  1 CENTRO 15.310289   61.24115  452.5041
+## 7  2013     CONSOLAÇÃO    4  1 CENTRO  3.120222   60.84433  358.0455
+## 9  2013      ACLIMAÇÃO    5  1 CENTRO  5.681657  126.41686  940.3142
+## 11 2013        CAMBUCI    6  1 CENTRO 13.082841 1132.97399 1724.3184
+##       jov1524 baixopadrao rendamedia dprendamedia   favela eformais
+## 2  0.07321327     134.707      4.786       11.462   0.0000    3.944
+## 3  0.07622234     247.949      6.268       10.522   0.0000    1.713
+## 5  0.05678416     426.834      6.379       10.457   0.0000    2.695
+## 7  0.05530594     373.157     10.882        8.631   0.0000    1.662
+## 9  0.06109201     167.483      9.467        9.004 124.9964    0.601
+## 11 0.06018107     234.640      9.000        9.172   0.0000    1.102
+##      mandato
+## 2  369.10846
+## 3  354.26097
+## 5  105.47088
+## 7   19.50139
+## 9   55.39615
+## 11  68.03077</code></pre>
 </div>
 <div id="figura-1-evolucao-das-taxas-de-homicidios-na-regiao-central-de-sao-paulo" class="section level3">
 <h3>figura 1: evolução das taxas de homicídios na região central de São paulo</h3>
