@@ -146,10 +146,75 @@ ocorr_tipo$ano <- as.integer(ocorr_tipo$ano)
 descricao_tipo <- tibble(Cod = 1:17,
                          XLSX = xlsx,
                          Variável = names(ocorr_tipo),
-                         Descrição = NA)
+                         Descrição = c("Ano de registro das ocorrências",
+                                       "Trimestre de registro das ocorrências",
+                                       "Interior, Grande São Paulo, Capital",
+                                       "Ocorrências de homicídio doloso (exclui por acidente de trânsito",
+                                       "Número de vítimas de homicídio doloso - a partir de 2005",
+                                       "Ocorrências de tentativa de homicídio",
+                                       "Ocorrências de latrocínio",
+                                       "Número de vítimas de latrocínio - a partir de 2005",
+                                       "Ocorrências de estupro",
+                                       "Extorsão mediante sequestro - (5) Dados do Serviço de Informações Criminais da Divisão Anti-sequestro",
+                                       "Ocorrências de tráfico de entorpecentes",
+                                       "Ocorrências de roubo-outros (inclusive roubo de carga e banco)",
+                                       "Ocorrências de roubo de veículos",
+                                       "Ocorrências de roubo de banco - a partir de 2005",
+                                       "Ocorrências de roubo de carga - a partir de 2005",
+                                       "Ocorrências de furto - outros",
+                                       "Ocorrências de furto de veículos"))
 
 
 # Agora salve e faça bom uso no report...
 write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_descricao_ocorrencias_por_tipo.rds")
 write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_ocorrencias_por_tipo.rds")
+
+
+#################################
+#'
+#'@Ocorrências_por_tipo
+#'
+#################################
+
+
+rm(list=ls())
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error")
+
+# leia a planilha e guarde os nomes
+atividade_policial <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan3", na="-")
+xlsx <- names(atividade_policial)
+xlsx <- c(rep(xlsx[1],2), xlsx[2:5]) # é preciso desmembrar o ano do trimestre
+
+atividade_policial <- atividade_policial %>% transmute(ano = `Ocorrência/período`,
+                                                       trimestre = `Ocorrência/período`,
+                                                       local = `ATIVIDADES POLICIAIS`,
+                                                       prisoes = `Prisões efetuadas`,
+                                                       armas_apreend = `Armas de fogo apreendidas`,
+                                                       veículos_recup = `N° de veículos recuperados (ii)`)
+
+# Limpando valores de local, ano e trimestre...
+trim <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
+atividade_policial$trimestre <- c(rep(3,3), rep(4,3), trim, rep(1,3))
+
+atividade_policial$local <- gsub("Gde", "Grande", atividade_policial$local)
+atividade_policial$ano <- gsub("-1T", "", atividade_policial$ano)
+atividade_policial$ano <- gsub("-2T", "", atividade_policial$ano)
+atividade_policial$ano <- gsub("-3T", "", atividade_policial$ano)
+atividade_policial$ano <- gsub("-4T", "", atividade_policial$ano)
+atividade_policial$ano <- gsub("-T4", "", atividade_policial$ano)
+atividade_policial$ano <- as.integer(atividade_policial$ano)
+
+descricao_atividade_policial <- tibble(Cod = 1:6,
+                                       XLSX = xlsx,
+                                       Variável = names(atividade_policial),
+                                       Descrição = c("Ano de registro das ocorrências",
+                                                     "Trimestre de registro das ocorrências",
+                                                     "Interior, Grande São Paulo, Capital",
+                                                     "Número de prisões efetuadas (em flagrante + por mandado)",
+                                                     "Número de armas de fogo apreendidas",
+                                                     "Número de veículos recuperados"))
+
+# Agora salve e faça bom uso no report...
+write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_descricao_atividade_policial.rds")
+write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_atividade_policial.rds")
 
