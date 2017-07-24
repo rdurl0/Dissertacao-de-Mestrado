@@ -5,7 +5,7 @@ library(readxl)
 
 #################################
 #'
-#'@Ocorrências_por_natureza
+#'@Ocorrências_por_natureza #####
 #'
 #################################
 
@@ -101,50 +101,55 @@ write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag 
 #'@Ocorrências_por_tipo
 #'
 #################################
+
 rm(list=ls())
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error")
 dir()
 
+# leia a planilha e guarde os nomes
 ocorr_tipo <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan2", na="-")
-names(ocorr_tipo)
+xlsx <- names(ocorr_tipo)
+xlsx <- c(rep(xlsx[1],2), xlsx[2:16]) # é preciso desmembrar o ano do trimestre
 
-ocorr_tipo$período <- ocorr_tipo$`Ocorrência/período`
-ocorr_tipo$local <-ocorr_tipo$`Ocorrências policiais registradas, por tipo`
-ocorr_tipo$homicidio <-ocorr_tipo$`Homicídio doloso (i)`
-ocorr_tipo$vitima_homicidio <-ocorr_tipo$`Nº de Vítimas em Homicídio Doloso`
-ocorr_tipo$tentativa_homicidio <-ocorr_tipo$`Tentativa de homicídio`
-ocorr_tipo$latrocinio <-ocorr_tipo$Latrocínio
-ocorr_tipo$vimima_latrocinio <-ocorr_tipo$`Nº de Vítimas de Latrocínio`
-ocorr_tipo$`Extorsão mediante seqüestro (5)` 
+# ajustando os nomes, com a função transmute() fica bem mais fácil! :)
+ocorr_tipo <- ocorr_tipo %>% transmute(ano = `Ocorrência/período`,
+                                       trimestre = `Ocorrência/período`,
+                                       local = `Ocorrências policiais registradas, por tipo`,
+                                       homicidio = `Homicídio doloso (i)`,
+                                       vitima_homicidio = `Nº de Vítimas em Homicídio Doloso`,
+                                       tentativa_homicidio = `Tentativa de homicídio`,
+                                       latrocinio = Latrocínio,
+                                       vitima_latrocinio = `Nº de Vítimas de Latrocínio`,
+                                       estupro = Estupro,
+                                       extorsao_med_sequestro = `Extorsão mediante seqüestro (5)`,
+                                       trafico = `Tráfico de entorpecentes`,
+                                       roubo = `Roubo - outros (6) (i)`,
+                                       roubo_veiculo = `Roubo de veículos`,
+                                       roubo_banco = `Roubo a Banco`,
+                                       roubo_carga = `Roubo de Carga`,
+                                       furto = `Furto - outros`,
+                                       furto_veiculo = `Furto de veículos`)
+
+# Limpando valores de local, ano e trimestre...
+trim <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
+ocorr_tipo$trimestre <- c(rep(3,3), rep(4,3), trim, rep(1,3))
+
+ocorr_tipo$local <- gsub("Gde", "Grande", ocorr_tipo$local)
+ocorr_tipo$ano <- gsub("-1T", "", ocorr_tipo$ano)
+ocorr_tipo$ano <- gsub("-2T", "", ocorr_tipo$ano)
+ocorr_tipo$ano <- gsub("-3T", "", ocorr_tipo$ano)
+ocorr_tipo$ano <- gsub("-4T", "", ocorr_tipo$ano)
+ocorr_tipo$ano <- gsub("-T4", "", ocorr_tipo$ano)
+ocorr_tipo$ano <- as.integer(ocorr_tipo$ano)
+
+# criando uma tabela de descrição...
+descricao_tipo <- tibble(Cod = 1:17,
+                         XLSX = xlsx,
+                         Variável = names(ocorr_tipo),
+                         Descrição = NA)
 
 
-ocorr_tipo$`Ocorrência/período` <- NULL
-ocorr_tipo$`Ocorrências policiais registradas, por tipo` <- NULL
-ocorr_tipo$`Homicídio doloso (i)` <- NULL
-ocorr_tipo$`Nº de Vítimas em Homicídio Doloso` <- NULL
-ocorr_tipo$`Tentativa de homicídio` <- NULL
-ocorr_tipo$Latrocínio <- NULL
-ocorr_tipo$`Nº de Vítimas de Latrocínio` <- NULL
-ocorr_tipo$Estupro <- NULL
-
-names(ocorr_tipo)
-
-descricao_tipo <- tibble(Variável = names(ocorr_tipo),
-                         descrição = c("período",
-                                       "interior, Gde Sp, Capital",
-                                       "Ocorrências de crime contra pessoa",
-                                       "Ocorrências de crime contra o patrimònio",
-                                       "Ocorrências de crime contra os costumes (até 2009)/contra a dignidade sexual (2010-atual)",
-                                       "Ocorrências de Tráfico de Entorpecentes",
-                                       "Ocorrências de contravenções (https://goo.gl/QccSm2)",
-                                       "Ocorrências de outros criminais - exceto contravenções",
-                                       "Ocorências de Outros delitos - inclusive contravenções",
-                                       "Total de crimes violentos (Homicidio Doloso, Roubo, Latrocínio, Estupro e EMS)",
-                                       "Total de delitos",
-                                       "Ocorrências policiais registradas, por natureza"))
-
-
-View(ocorr_natureza)
-
-ocorr_tipo <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan2", na="-")
+# Agora salve e faça bom uso no report...
+write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_descricao_ocorrencias_por_tipo.rds")
+write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_ocorrencias_por_tipo.rds")
 
