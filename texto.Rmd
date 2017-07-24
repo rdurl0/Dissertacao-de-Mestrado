@@ -25,18 +25,13 @@ De um modo geral, os resultados do modelo SUR-espacial corroboram com o argument
 
 ## 2. Revisão bibliográfica
 
-
-
-### Estatísticas descritivas do banci de dados
+Abaixo, as ocorrências por tipo:
 
 ```{r echo=FALSE}
-dados <- read.table("SUR SUR-lag SUR-error/dados.txt", h=T)
-# data.frames
-dados2013 <- subset(dados, Ano>2003)
-dados2003 <- subset(dados, Ano<2013)
-# summary
-head(dados2003)
-head(dados2013)
+ocorrencias_por_tipo <- readr::read_rds("SUR SUR-lag SUR-error/serie_trimestral_ocorrencias_por_tipo.rds")
+descricao_ocorrencia_por_tipo <- readr::read_rds("SUR SUR-lag SUR-error/serie_trimestral_descricao_ocorrencias_por_tipo.rds")
+descricao_ocorrencia_por_tipo
+summary(ocorrencias_por_tipo)
 ```
 
 ### figura 1: evolução das taxas de homicídios na região central de São paulo

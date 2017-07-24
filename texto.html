@@ -134,51 +134,68 @@ $(document).ready(function () {
 </div>
 <div id="revisao-bibliografica" class="section level2">
 <h2>2. Revisão bibliográfica</h2>
-<div id="estatisticas-descritivas-do-banci-de-dados" class="section level3">
-<h3>Estatísticas descritivas do banci de dados</h3>
-<pre><code>##     Ano       Distrito Dpol Seccional      homic roubovcl  furtovcl
-## 1  2003             SÉ    1  1 CENTRO 251.435078 384.2687 1148.0621
-## 4  2003     BOM_RETIRO    2  1 CENTRO  20.938023 247.7666  589.7543
-## 6  2003 CAMPOS_ELÍSIOS    3  1 CENTRO  88.941595 148.2360  727.3446
-## 8  2003     CONSOLAÇÃO    4  1 CENTRO   3.310683 120.8399  339.3450
-## 10 2003      ACLIMAÇÃO    5  1 CENTRO  31.099362 166.3816  606.4376
-## 12 2003        CAMBUCI    6  1 CENTRO  41.781835 896.7024 2455.4863
-##       jov1524 baixopadrao rendamedia dprendamedia   favela eformais
-## 1  0.08814460     115.205      9.155        9.114    0.000    3.960
-## 4  0.08870743     223.771     11.321        8.559 1395.868    1.504
-## 6  0.08287380     365.532     11.291        8.564    0.000    1.606
-## 8  0.07992816     344.136     15.672        9.052    0.000    0.972
-## 10 0.08118489     162.269     14.405        8.689    0.000    0.397
-## 12 0.07748923     217.862     12.943        8.489    0.000    0.804
-##       mandato
-## 1  1105.36553
-## 4   174.48353
-## 6   583.06157
-## 8    38.07285
-## 10  262.78961
-## 12  131.77348</code></pre>
-<pre><code>##     Ano       Distrito Dpol Seccional     homic   roubovcl  furtovcl
-## 2  2013             SÉ    1  1 CENTRO 81.122739  304.21027 1022.1465
-## 3  2013     BOM_RETIRO    2  1 CENTRO 11.246380  157.44932  351.4494
-## 5  2013 CAMPOS_ELÍSIOS    3  1 CENTRO 15.310289   61.24115  452.5041
-## 7  2013     CONSOLAÇÃO    4  1 CENTRO  3.120222   60.84433  358.0455
-## 9  2013      ACLIMAÇÃO    5  1 CENTRO  5.681657  126.41686  940.3142
-## 11 2013        CAMBUCI    6  1 CENTRO 13.082841 1132.97399 1724.3184
-##       jov1524 baixopadrao rendamedia dprendamedia   favela eformais
-## 2  0.07321327     134.707      4.786       11.462   0.0000    3.944
-## 3  0.07622234     247.949      6.268       10.522   0.0000    1.713
-## 5  0.05678416     426.834      6.379       10.457   0.0000    2.695
-## 7  0.05530594     373.157     10.882        8.631   0.0000    1.662
-## 9  0.06109201     167.483      9.467        9.004 124.9964    0.601
-## 11 0.06018107     234.640      9.000        9.172   0.0000    1.102
-##      mandato
-## 2  369.10846
-## 3  354.26097
-## 5  105.47088
-## 7   19.50139
-## 9   55.39615
-## 11  68.03077</code></pre>
-</div>
+<p>Abaixo, as ocorrências por tipo:</p>
+<pre><code>## # A tibble: 17 x 4
+##      Cod                                        XLSX
+##    &lt;int&gt;                                       &lt;chr&gt;
+##  1     1                          Ocorrência/período
+##  2     2                          Ocorrência/período
+##  3     3 Ocorrências policiais registradas, por tipo
+##  4     4                        Homicídio doloso (i)
+##  5     5           Nº de Vítimas em Homicídio Doloso
+##  6     6                      Tentativa de homicídio
+##  7     7                                  Latrocínio
+##  8     8                 Nº de Vítimas de Latrocínio
+##  9     9                                     Estupro
+## 10    10             Extorsão mediante seqüestro (5)
+## 11    11                    Tráfico de entorpecentes
+## 12    12                      Roubo - outros (6) (i)
+## 13    13                           Roubo de veículos
+## 14    14                               Roubo a Banco
+## 15    15                              Roubo de Carga
+## 16    16                              Furto - outros
+## 17    17                           Furto de veículos
+## # ... with 2 more variables: Variável &lt;chr&gt;, Descrição &lt;chr&gt;</code></pre>
+<pre><code>##       ano         trimestre        local             homicidio     
+##  Min.   :1995   Min.   :1.000   Length:249         Min.   : 185.0  
+##  1st Qu.:2000   1st Qu.:1.000   Class :character   1st Qu.: 339.0  
+##  Median :2005   Median :3.000   Mode  :character   Median : 562.0  
+##  Mean   :2005   Mean   :2.506                      Mean   : 645.8  
+##  3rd Qu.:2011   3rd Qu.:4.000                      3rd Qu.: 881.0  
+##  Max.   :2016   Max.   :4.000                      Max.   :1398.0  
+##                                                                    
+##  vitima_homicidio tentativa_homicidio   latrocinio    vitima_latrocinio
+##  Min.   :190.0    Min.   : 191        Min.   : 6.00   Min.   : 6.00    
+##  1st Qu.:296.5    1st Qu.: 345        1st Qu.:21.00   1st Qu.:18.00    
+##  Median :400.0    Median : 561        Median :32.00   Median :26.00    
+##  Mean   :422.9    Mean   : 620        Mean   :33.47   Mean   :27.58    
+##  3rd Qu.:536.5    3rd Qu.: 750        3rd Qu.:42.00   3rd Qu.:37.00    
+##  Max.   :820.0    Max.   :1483        Max.   :88.00   Max.   :59.00    
+##  NA's   :114                          NA's   :3       NA's   :114      
+##     estupro       extorsao_med_sequestro    trafico         roubo      
+##  Min.   :  38.0   Min.   : 0.000         Min.   : 155   Min.   : 4689  
+##  1st Qu.: 259.0   1st Qu.: 2.000         1st Qu.: 590   1st Qu.:11700  
+##  Median : 383.0   Median : 4.000         Median :1230   Median :17132  
+##  Mean   : 498.8   Mean   : 7.292         Mean   :1834   Mean   :18691  
+##  3rd Qu.: 554.0   3rd Qu.: 8.000         3rd Qu.:1958   3rd Qu.:26283  
+##  Max.   :1848.0   Max.   :76.000         Max.   :8297   Max.   :41810  
+##                   NA's   :2                                            
+##  roubo_veiculo    roubo_banco     roubo_carga         furto      
+##  Min.   : 1293   Min.   : 2.00   Min.   : 194.0   Min.   : 7057  
+##  1st Qu.: 4175   1st Qu.:11.00   1st Qu.: 345.5   1st Qu.:17146  
+##  Median : 5545   Median :16.00   Median : 432.0   Median :39820  
+##  Mean   : 6595   Mean   :21.41   Mean   : 604.3   Mean   :39488  
+##  3rd Qu.: 8712   3rd Qu.:27.50   3rd Qu.: 955.0   3rd Qu.:60323  
+##  Max.   :15826   Max.   :90.00   Max.   :1478.0   Max.   :83406  
+##                  NA's   :114     NA's   :114                     
+##  furto_veiculo  
+##  Min.   : 2588  
+##  1st Qu.: 5532  
+##  Median : 9376  
+##  Mean   : 8911  
+##  3rd Qu.:11562  
+##  Max.   :15858  
+## </code></pre>
 <div id="figura-1-evolucao-das-taxas-de-homicidios-na-regiao-central-de-sao-paulo" class="section level3">
 <h3>figura 1: evolução das taxas de homicídios na região central de São paulo</h3>
 <p>You can also embed plots, for example:</p>
