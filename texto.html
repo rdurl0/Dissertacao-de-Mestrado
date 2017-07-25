@@ -135,67 +135,12 @@ $(document).ready(function () {
 <div id="revisao-bibliografica" class="section level2">
 <h2>2. Revisão bibliográfica</h2>
 <p>Abaixo, as ocorrências por tipo:</p>
-<pre><code>## # A tibble: 17 x 4
-##      Cod                                        XLSX
-##    &lt;int&gt;                                       &lt;chr&gt;
-##  1     1                          Ocorrência/período
-##  2     2                          Ocorrência/período
-##  3     3 Ocorrências policiais registradas, por tipo
-##  4     4                        Homicídio doloso (i)
-##  5     5           Nº de Vítimas em Homicídio Doloso
-##  6     6                      Tentativa de homicídio
-##  7     7                                  Latrocínio
-##  8     8                 Nº de Vítimas de Latrocínio
-##  9     9                                     Estupro
-## 10    10             Extorsão mediante seqüestro (5)
-## 11    11                    Tráfico de entorpecentes
-## 12    12                      Roubo - outros (6) (i)
-## 13    13                           Roubo de veículos
-## 14    14                               Roubo a Banco
-## 15    15                              Roubo de Carga
-## 16    16                              Furto - outros
-## 17    17                           Furto de veículos
-## # ... with 2 more variables: Variável &lt;chr&gt;, Descrição &lt;chr&gt;</code></pre>
-<pre><code>##       ano         trimestre        local             homicidio     
-##  Min.   :1995   Min.   :1.000   Length:249         Min.   : 185.0  
-##  1st Qu.:2000   1st Qu.:1.000   Class :character   1st Qu.: 339.0  
-##  Median :2005   Median :3.000   Mode  :character   Median : 562.0  
-##  Mean   :2005   Mean   :2.506                      Mean   : 645.8  
-##  3rd Qu.:2011   3rd Qu.:4.000                      3rd Qu.: 881.0  
-##  Max.   :2016   Max.   :4.000                      Max.   :1398.0  
-##                                                                    
-##  vitima_homicidio tentativa_homicidio   latrocinio    vitima_latrocinio
-##  Min.   :190.0    Min.   : 191        Min.   : 6.00   Min.   : 6.00    
-##  1st Qu.:296.5    1st Qu.: 345        1st Qu.:21.00   1st Qu.:18.00    
-##  Median :400.0    Median : 561        Median :32.00   Median :26.00    
-##  Mean   :422.9    Mean   : 620        Mean   :33.47   Mean   :27.58    
-##  3rd Qu.:536.5    3rd Qu.: 750        3rd Qu.:42.00   3rd Qu.:37.00    
-##  Max.   :820.0    Max.   :1483        Max.   :88.00   Max.   :59.00    
-##  NA's   :114                          NA's   :3       NA's   :114      
-##     estupro       extorsao_med_sequestro    trafico         roubo      
-##  Min.   :  38.0   Min.   : 0.000         Min.   : 155   Min.   : 4689  
-##  1st Qu.: 259.0   1st Qu.: 2.000         1st Qu.: 590   1st Qu.:11700  
-##  Median : 383.0   Median : 4.000         Median :1230   Median :17132  
-##  Mean   : 498.8   Mean   : 7.292         Mean   :1834   Mean   :18691  
-##  3rd Qu.: 554.0   3rd Qu.: 8.000         3rd Qu.:1958   3rd Qu.:26283  
-##  Max.   :1848.0   Max.   :76.000         Max.   :8297   Max.   :41810  
-##                   NA's   :2                                            
-##  roubo_veiculo    roubo_banco     roubo_carga         furto      
-##  Min.   : 1293   Min.   : 2.00   Min.   : 194.0   Min.   : 7057  
-##  1st Qu.: 4175   1st Qu.:11.00   1st Qu.: 345.5   1st Qu.:17146  
-##  Median : 5545   Median :16.00   Median : 432.0   Median :39820  
-##  Mean   : 6595   Mean   :21.41   Mean   : 604.3   Mean   :39488  
-##  3rd Qu.: 8712   3rd Qu.:27.50   3rd Qu.: 955.0   3rd Qu.:60323  
-##  Max.   :15826   Max.   :90.00   Max.   :1478.0   Max.   :83406  
-##                  NA's   :114     NA's   :114                     
-##  furto_veiculo  
-##  Min.   : 2588  
-##  1st Qu.: 5532  
-##  Median : 9376  
-##  Mean   : 8911  
-##  3rd Qu.:11562  
-##  Max.   :15858  
-## </code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   185.0   339.0   562.0   645.8   881.0  1398.0 
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    2588    5532    9376    8911   11562   15858 
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1293    4175    5545    6595    8712   15826</code></pre>
 <div id="figura-1-evolucao-das-taxas-de-homicidios-na-regiao-central-de-sao-paulo" class="section level3">
 <h3>figura 1: evolução das taxas de homicídios na região central de São paulo</h3>
 <p>You can also embed plots, for example:</p>

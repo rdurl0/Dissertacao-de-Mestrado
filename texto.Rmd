@@ -30,7 +30,15 @@ Abaixo, as ocorrências por tipo:
 ```{r echo=FALSE}
 ocorrencias_por_tipo <- readr::read_rds("dados e scripts/serie_trimestral_ocorrencias_por_tipo.rds")
 descricao_ocorrencia_por_tipo <- readr::read_rds("dados e scripts/serie_trimestral_descricao_ocorrencias_por_tipo.rds")
-summary(ocorrencias_por_tipo$homicidio)
+eda_homic <- summary(ocorrencias_por_tipo$homicidio)
+eda_roubo_vcl <- summary(ocorrencias_por_tipo$roubo_veiculo)
+eda_furto_vcl <- summary(ocorrencias_por_tipo$furto_veiculo)
+eda <- list(eda_homic, eda_furto_vcl, eda_roubo_vcl)
+
+for(i in eda) {
+  print(i)
+}
+
 ```
 
 ### figura 1: evolução das taxas de homicídios na região central de São paulo
