@@ -2,6 +2,7 @@ rm(list=ls())
 
 library(tidyverse)
 library(readxl)
+library(stringr)
 
 #################################
 #'
@@ -225,8 +226,60 @@ write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e 
 #'@População
 #'
 #################################
+
+rm(list=ls())
+
+# o banco de dados contém:
 descricao_pop <- tibble(descrição = c("População estimada por Município e Ano
 - Estimativa para TCU"), período = c("1992-1995, 1997-2016"), Fonte = c("IBGE/DATASUS"))
 
-pop <- read_csv2("dados e scripts/população_SP_1992_2016_mess.csv", na="-")
-pop <- pop[1:646,] %>% mutate(municipio = 1:646)
+# ler csv
+pop <- read_delim("dados e scripts/população_SP_1992_2016_mess.csv", na="-", delim=";")
+
+# austando encoding...
+names(pop) <- iconv(names(pop), to="latin1")
+pop$Município <- iconv(pop$Município, to="latin1//TRANSLIT")
+
+# recortando células inúteis...
+pop <- pop[1:646,] %>%
+  mutate(municipio = 1:646,
+         nome_municipio = iconv(Município, to="ASCII//TRANSLIT"),
+         Cod_IBGE = iconv(Município, to="ASCII//TRANSLIT"))
+
+# separando codigo e nome do município. ex:[1] "350010 Adamantina"
+
+
+letr <- c(letters, LETTERS, "'", "-")# vetores auxiliares
+num <- c("1", "2", "3", "4", "5 ", "6", "7", "8", "9", "0 ")
+
+pop$Cod_IBGE <- gsub(" ", "", pop$Cod_IBGE) # só o código 
+for (i in letr[1:54]) { 
+  pop$Cod_IBGE <- gsub(i, "", pop$Cod_IBGE)
+  }
+pop <- pop[1:645,]
+pop$Cod_IBGE <- as.integer(pop$Cod_IBGE)
+
+for(i in num[1:10]) { # só o nome
+pop$nome_municipio <- gsub(i, "", pop$nome_municipio)
+}
+pop$nome_municipio <- gsub("5", "", pop$nome_municipio)
+pop$nome_municipio <- gsub("0", "", pop$nome_municipio)
+print(pop$nome_municipio)
+
+# agora que desmembrou, dispensar a coluna suja...
+pop$Município <- NULL
+
+# tem um ano que não tem...
+pop$`1996` <- rep(NA, 645)
+
+# reordena
+pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
+            "1992","1993","1994","1995", "1996", "1997","1998",
+            "1999","2000","2001","2002","2003","2004",
+            "2005","2006","2007","2008","2009","2010",
+            "2011","2012","2013","2014","2015","2016")
+
+# dplyr::gather() para converter variáveis em observações
+pop <- pop %>% gather(names(pop)[4:27], key="ano", value="população")
+
+write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\populacao_SP.rds")
