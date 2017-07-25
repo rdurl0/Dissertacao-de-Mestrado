@@ -28,10 +28,9 @@ De um modo geral, os resultados do modelo SUR-espacial corroboram com o argument
 Abaixo, as ocorrências por tipo:
 
 ```{r echo=FALSE}
-ocorrencias_por_tipo <- readr::read_rds("SUR SUR-lag SUR-error/serie_trimestral_ocorrencias_por_tipo.rds")
-descricao_ocorrencia_por_tipo <- readr::read_rds("SUR SUR-lag SUR-error/serie_trimestral_descricao_ocorrencias_por_tipo.rds")
-descricao_ocorrencia_por_tipo
-summary(ocorrencias_por_tipo)
+ocorrencias_por_tipo <- readr::read_rds("dados e scripts/serie_trimestral_ocorrencias_por_tipo.rds")
+descricao_ocorrencia_por_tipo <- readr::read_rds("dados e scripts/serie_trimestral_descricao_ocorrencias_por_tipo.rds")
+summary(ocorrencias_por_tipo$homicidio)
 ```
 
 ### figura 1: evolução das taxas de homicídios na região central de São paulo
@@ -39,7 +38,7 @@ summary(ocorrencias_por_tipo)
 You can also embed plots, for example:
 
 ```{r echo=FALSE}
-dados <- read.table("SUR SUR-lag SUR-error/dados.txt", h=T)
+dados <- read.table("dados e scripts/dados.txt", h=T)
 # painel
 pdados <- plm::pdata.frame(dados, c("Dpol", "Ano"))
 barra <- ggplot2::ggplot(data = subset(pdados, Seccional == "1 CENTRO"),
