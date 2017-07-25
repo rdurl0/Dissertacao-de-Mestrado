@@ -5,7 +5,7 @@ library(readxl)
 
 #################################
 #'
-#'@Ocorrências_por_natureza #####
+#'@Ocorrências_por_natureza
 #'
 #################################
 
@@ -177,6 +177,7 @@ write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\
 #################################
 
 
+
 rm(list=ls())
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 
@@ -218,3 +219,14 @@ descricao_atividade_policial <- tibble(Cod = 1:6,
 write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_atividade_policial.rds")
 write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_atividade_policial.rds")
 
+
+#################################
+#'
+#'@População
+#'
+#################################
+descricao_pop <- tibble(descrição = c("População estimada por Município e Ano
+- Estimativa para TCU"), período = c("1992-1995, 1997-2016"), Fonte = c("IBGE/DATASUS"))
+
+pop <- read_csv2("dados e scripts/população_SP_1992_2016_mess.csv", na="-")
+pop <- pop[1:646,] %>% mutate(municipio = 1:646)
