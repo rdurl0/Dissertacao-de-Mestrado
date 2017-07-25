@@ -10,7 +10,7 @@ library(readxl)
 #################################
 
 # Diretório
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error")
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # leitura do arquivi
@@ -92,8 +92,8 @@ descricao_natureza$Cod <- seq(1:12)
 View(descricao_natureza)
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_descricao_ocorrencias_por_natureza.rds")
-write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_ocorrencias_por_natureza.rds")
+write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_ocorrencias_por_natureza.rds")
+write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_ocorrencias_por_natureza.rds")
 
 
 #################################
@@ -103,7 +103,7 @@ write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag 
 #################################
 
 rm(list=ls())
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error")
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # leia a planilha e guarde os nomes
@@ -166,8 +166,8 @@ descricao_tipo <- tibble(Cod = 1:17,
 
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_descricao_ocorrencias_por_tipo.rds")
-write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_ocorrencias_por_tipo.rds")
+write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_ocorrencias_por_tipo.rds")
+write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_ocorrencias_por_tipo.rds")
 
 
 #################################
@@ -178,7 +178,7 @@ write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-
 
 
 rm(list=ls())
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error")
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 
 # leia a planilha e guarde os nomes
 atividade_policial <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan3", na="-")
@@ -215,6 +215,6 @@ descricao_atividade_policial <- tibble(Cod = 1:6,
                                                      "Número de veículos recuperados"))
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_descricao_atividade_policial.rds")
-write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\SUR SUR-lag SUR-error\\serie_trimestral_atividade_policial.rds")
+write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_atividade_policial.rds")
+write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_atividade_policial.rds")
 
