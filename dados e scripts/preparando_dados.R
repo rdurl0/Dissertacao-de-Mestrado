@@ -3,16 +3,19 @@ rm(list=ls())
 library(tidyverse)
 library(readxl)
 library(stringr)
+library(xml2)
+library(rvest)
 
-#################################
-#'
-#'@Ocorrências_por_natureza
-#'
-#################################
 
 # Diretório
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
+
+##########################################
+#'@Series_trimestrais_3T1995/3T2016      =
+##########################################
+#-----------
+# Ocorrências por natureza ###############
 
 # leitura do arquivi
 ocorr_natureza <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan1", na="-")
@@ -97,11 +100,8 @@ write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e 
 write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_ocorrencias_por_natureza.rds")
 
 
-#################################
-#'
-#'@Ocorrências_por_tipo
-#'
-#################################
+#-----------
+# Ocorrencia por tipo ####################
 
 rm(list=ls())
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
@@ -171,11 +171,8 @@ write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scri
 write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_ocorrencias_por_tipo.rds")
 
 
-#################################
-#'
-#'@Ocorrências_por_tipo
-#'
-#################################
+#-----------
+# Atividade policial #####################
 
 
 
@@ -221,12 +218,12 @@ write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto
 write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_atividade_policial.rds")
 
 
-#################################
-#'
-#'@População
-#'
-#################################
-
+#-----------
+##########################################
+#'@População_1992/2016                   =
+##########################################
+#-----------
+# População residente por município ######
 rm(list=ls())
 
 # o banco de dados contém:
@@ -283,3 +280,40 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
 pop <- pop %>% gather(names(pop)[4:27], key="ano", value="população")
 
 write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\populacao_SP.rds")
+
+#-----------
+##########################################
+#'@Manipulando_dados                     =
+##########################################
+#-----------
+# Taxas de homicídio por 100000 hab. #####
+
+oc_tipo <- read_rds("serie_trimestral_ocorrencias_por_tipo.rds")
+pop <- read_rds("populacao_SP.rds")
+
+# subset dos crimes de 2000 até 2010
+names(oc_tipo)
+homicidio <- select(oc_tipo, local, ano, homicidio) %>%
+  group_by(local, ano) %>%
+  summarise(homicidio=sum(homicidio)) %>%
+  filter(homicidio, ano<=2010, ano>=2000)
+
+roubo_vcl <- select(oc_tipo, local, ano, roubo_veiculo) %>%
+  group_by(local, ano) %>%
+  summarise(roubo_veiculo=sum(roubo_veiculo)) %>%
+  filter(roubo_veiculo, ano<=2010, ano>=2000)
+
+furto_vcl <- select(oc_tipo, local, ano, furto_veiculo) %>%
+  group_by(local, ano) %>%
+  summarise(furto_veiculo=sum(furto_veiculo)) %>%
+  filter(furto_veiculo, ano<=2010, ano>=2000)
+
+# subset para região metropolitana de SP (39 municípios)
+names(pop)
+
+rmsp <- "https://www.emplasa.sp.gov.br/RMSP"
+RMSP <- read_html(rmsp) %>% 
+  rvest::html_node("table") %>%
+  rvest::html_table(dec = '.') %>%
+  select(Municípios, `Área (km²)¹`)
+
