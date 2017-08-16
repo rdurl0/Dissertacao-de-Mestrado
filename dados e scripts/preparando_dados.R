@@ -22,7 +22,7 @@ ocorr_natureza <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan1", na="-")
 
 # guarda os nomes para tabela de descrição
 xlsx <- tibble(Cod = seq(1:11),
-               XLSX = names(ocorr_natureza[,1:11]))
+               nome_original = names(ocorr_natureza[,1:11]))
 xlsx
 
 # variáveis com novos nomes
@@ -36,7 +36,7 @@ ocorr_natureza$violentos <- ocorr_natureza$`Total de Crimes Violentos ( Hom.Dolo
 ocorr_natureza$total_delitos <- ocorr_natureza$`Total de delitos`
 ocorr_natureza$costumes <- ocorr_natureza$`Contra os constumes (*)`
 ocorr_natureza$entorpecentes <- ocorr_natureza$Entorpecentes
-  # exclui as variáveis com nome tidy
+  # exclui as variáveis com nome antigo
 ocorr_natureza$`Ocorrência/período` <- NULL
 ocorr_natureza$`Contra a pessoa` <- NULL
 ocorr_natureza$`Contra o patrimônio`  <- NULL
@@ -55,10 +55,10 @@ ocorr_natureza <- ocorr_natureza %>% select("ano", "local", "pessoa", "patrimôn
                                             "outros_delitos", "violentos", "total_delitos")
 
 # cria tabela de descrição
-descricao_natureza <- tibble(Cod = xlsx$Cod,
-                             XLSX = xlsx$XLSX,
-                             Variável = names(ocorr_natureza),
-                             Descrição = c("Ano de registro das ocorrências",
+descricao_natureza <- tibble(Cod_var = xlsx$Cod,
+                             Nome_original = xlsx$nome_original,
+                             Novo_nome = names(ocorr_natureza),
+                             Descrição_da_variável = c("Ano de registro das ocorrências",
                                            "Interior, Grande São Paulo, Capital",
                                            "Ocorrências de crime contra pessoa",
                                            "Ocorrências de crime contra o patrimònio",
@@ -92,7 +92,7 @@ ocorr_natureza$ano <- as.integer(ocorr_natureza$ano)
 descricao_natureza <- rbind(descricao_natureza[1,],
                       c("", "Ocorrência/período", "trimestre", "Trimestre de registro das ocorrências"),
                       descricao_natureza[2:11,])
-descricao_natureza$Cod <- seq(1:12)
+descricao_natureza$Cod_var <- seq(1:12)
 View(descricao_natureza)
 
 # Agora salve e faça bom uso no report...
