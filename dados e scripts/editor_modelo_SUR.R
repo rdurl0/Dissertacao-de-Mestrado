@@ -1,14 +1,14 @@
 rm(list=ls())
 library(systemfit)
 
-## Busca no diretório
-setwd("C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
+## Busca no diret?rio
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 txt <- read.table("nFINAL.txt", h=T)
 is.data.frame(txt) # TRUE
 
-# rodar o arquivo "1_ÍNDICE.R
-#                            >normalizando variáveis"
+# rodar o arquivo "1_?NDICE.R
+#                            >normalizando vari?veis"
 # Y
 txt$homic
 txt$roubovlc
@@ -30,7 +30,7 @@ txt$DENS
 
 bye()
 
-# subset do período (Q1) desejado
+# subset do per?odo (Q1) desejado
 txt2013 <- subset(txt, Q1>2003)
 txt2003 <- subset(txt, Q1<2013)
 
