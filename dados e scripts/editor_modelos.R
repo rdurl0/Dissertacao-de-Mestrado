@@ -5,7 +5,7 @@ setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # tabela
-dados <- read.table("tab_dados.txt", h=T)
+dados <- read.table("txt_dados.txt", h=T)
 is.data.frame(dados) # TRUE
 #
 #install.packages("readr")
@@ -47,7 +47,7 @@ system2 <- list(tp1 = e1, tp2 = e2)
 # summary
 stargazer(dados2003, dados2013,
           title="Estat?sticas descritivas",
-          out="C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error\\result.htm",
+          out="C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\output.htm",
           type="html")
 
 # [barras] crime x dpol
@@ -77,7 +77,7 @@ ggbox <- ggplot(data=pdados,
 
 # diret?rio
 dir()
-queen_txt<-read.table("queen.txt", h=T)
+queen_txt<-read.table("txt_queen.txt", h=T)
 dim(queen_txt) # 80x80
 
 # matriz esparsa
