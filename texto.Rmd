@@ -30,8 +30,8 @@ De um modo geral, os resultados do modelo SUR-espacial corroboram com o argument
 Abaixo, as ocorrências por tipo:
 
 ```{r echo=FALSE}
-ocorrencias_por_tipo <- readr::read_rds("dados e scripts/serie_trimestral_ocorrencias_por_tipo.rds")
-descricao_ocorrencia_por_tipo <- readr::read_rds("dados e scripts/serie_trimestral_descricao_ocorrencias_por_tipo.rds")
+ocorrencias_por_tipo <- readr::read_rds("dados e scripts/tab_serie_trim_ocorrencias_por_tipo.rds")
+descricao_ocorrencia_por_tipo <- readr::read_rds("dados e scripts/tab_serie_trim_descricao_ocorrencias_por_tipo.rds")
 eda_homic <- summary(ocorrencias_por_tipo$homicidio)
 eda_roubo_vcl <- summary(ocorrencias_por_tipo$roubo_veiculo)
 eda_furto_vcl <- summary(ocorrencias_por_tipo$furto_veiculo)
@@ -48,7 +48,7 @@ for(i in eda) {
 You can also embed plots, for example:
 
 ```{r echo=FALSE}
-dados <- read.table("dados e scripts/dados.txt", h=T)
+dados <- read.table("dados e scripts/tab_dados.txt", h=T)
 # painel
 pdados <- plm::pdata.frame(dados, c("Dpol", "Ano"))
 barra <- ggplot2::ggplot(data = subset(pdados, Seccional == "1 CENTRO"),
