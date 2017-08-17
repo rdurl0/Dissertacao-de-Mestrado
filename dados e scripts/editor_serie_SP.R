@@ -21,77 +21,79 @@ dir()
 ocorr_natureza <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan1", na="-")
 
 # guarda os nomes para tabela de descrição
-xlsx <- tibble(Cod = seq(1:11),
+xlsx <- tibble(Cod           = seq(1:11),
                nome_original = names(ocorr_natureza[,1:11]))
-xlsx
 
 # variáveis com novos nomes
-ocorr_natureza$ano <- ocorr_natureza$`Ocorrência/período`
-ocorr_natureza$pessoa <- ocorr_natureza$`Contra a pessoa`
-ocorr_natureza$patrimônio <- ocorr_natureza$`Contra o patrimônio`
+ocorr_natureza$ano              <- ocorr_natureza$`Ocorrência/período`
+ocorr_natureza$pessoa           <- ocorr_natureza$`Contra a pessoa`
+ocorr_natureza$patrimônio       <- ocorr_natureza$`Contra o patrimônio`
 ocorr_natureza$contravencionais <- ocorr_natureza$`Contravencio-is`
 ocorr_natureza$outros_criminais <- ocorr_natureza$`Outros crimi-is (não inclui contravenções)`
-ocorr_natureza$outros_delitos <- ocorr_natureza$`Outros delitos (Inclui contravenções)`
-ocorr_natureza$violentos <- ocorr_natureza$`Total de Crimes Violentos ( Hom.Doloso, Roubo, Latrocínio, Estupro e EMS)`
-ocorr_natureza$total_delitos <- ocorr_natureza$`Total de delitos`
-ocorr_natureza$costumes <- ocorr_natureza$`Contra os constumes (*)`
-ocorr_natureza$entorpecentes <- ocorr_natureza$Entorpecentes
+ocorr_natureza$outros_delitos   <- ocorr_natureza$`Outros delitos (Inclui contravenções)`
+ocorr_natureza$violentos        <- ocorr_natureza$`Total de Crimes Violentos ( Hom.Doloso, Roubo, Latrocínio, Estupro e EMS)`
+ocorr_natureza$total_delitos    <- ocorr_natureza$`Total de delitos`
+ocorr_natureza$costumes         <- ocorr_natureza$`Contra os constumes (*)`
+ocorr_natureza$entorpecentes    <- ocorr_natureza$Entorpecentes
   # exclui as variáveis com nome antigo
-ocorr_natureza$`Ocorrência/período` <- NULL
-ocorr_natureza$`Contra a pessoa` <- NULL
+ocorr_natureza$`Ocorrência/período`   <- NULL
+ocorr_natureza$`Contra a pessoa`      <- NULL
 ocorr_natureza$`Contra o patrimônio`  <- NULL
-ocorr_natureza$`Contravencio-is`  <- NULL
+ocorr_natureza$`Contravencio-is`      <- NULL
 ocorr_natureza$`Outros crimi-is (não inclui contravenções)` <- NULL
-ocorr_natureza$`Outros delitos (Inclui contravenções)` <- NULL
+ocorr_natureza$`Outros delitos (Inclui contravenções)`      <- NULL
 ocorr_natureza$`Total de Crimes Violentos ( Hom.Doloso, Roubo, Latrocínio, Estupro e EMS)` <- NULL
-ocorr_natureza$`Total de delitos` <- NULL
+ocorr_natureza$`Total de delitos`        <- NULL
 ocorr_natureza$`Contra os constumes (*)` <- NULL
-ocorr_natureza$grupo <- NULL
+ocorr_natureza$grupo         <- NULL
 ocorr_natureza$Entorpecentes <- NULL
 
 # reordena para mesclar com a tabela de descrição
 ocorr_natureza <- ocorr_natureza %>% select("ano", "local", "pessoa", "patrimônio",
-                                            "costumes", "entorpecentes", "contravencionais", "outros_criminais",
-                                            "outros_delitos", "violentos", "total_delitos")
+                                            "costumes", "entorpecentes", "contravencionais",
+                                            "outros_criminais", "outros_delitos", "violentos",
+                                            "total_delitos")
 
 # cria tabela de descrição
-descricao_natureza <- tibble(Cod_var = xlsx$Cod,
-                             Nome_original = xlsx$nome_original,
-                             Novo_nome = names(ocorr_natureza),
+descricao_natureza <- tibble(Cod_va                = xlsx$Cod,
+                             Nome_original         = xlsx$nome_original,
+                             Novo_nome             = names(ocorr_natureza),
                              Descrição_da_variável = c("Ano de registro das ocorrências",
-                                           "Interior, Grande São Paulo, Capital",
-                                           "Ocorrências de crime contra pessoa",
-                                           "Ocorrências de crime contra o patrimònio",
-                                           "Ocorrências de crime contra os costumes (até 2009)/contra a dignidade sexual (2010-atual)",
-                                           "Ocorrências de tráfico de Entorpecentes",
-                                           "Ocorrências de contravenções (https://goo.gl/QccSm2)",
-                                           "Ocorrências de outros criminais - exceto contravenções",
-                                           "Ocorências de outros delitos - inclusive contravenções",
-                                           "Total de crimes violentos (Homicidio Doloso, Roubo, Latrocínio, Estupro e EMS)",
-                                           "Total de delitos"))
+                                                       "Interior, Grande São Paulo, Capital",
+                                                        "Ocorrências de crime contra pessoa",
+                                                        "Ocorrências de crime contra o patrimònio",
+                                                        "Ocorrências de crime contra os costumes (até 2009)/contra a dignidade sexual (2010-atual)",
+                                                        "Ocorrências de tráfico de Entorpecentes",
+                                                        "Ocorrências de contravenções (https://goo.gl/QccSm2)",
+                                                        "Ocorrências de outros criminais - exceto contravenções",
+                                                        "Ocorências de outros delitos - inclusive contravenções",
+                                                        "Total de crimes violentos (Homicidio Doloso, Roubo, Latrocínio, Estupro e EMS)",
+                                                        "Total de delitos"))
 
 # separa ano de trimestre
-trim <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
+trim                     <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
 ocorr_natureza$trimestre <- c(rep(3,3), rep(4,3), trim, rep(1,3))
 
 # precisou reordenar de novo :(
-ocorr_natureza <- ocorr_natureza %>% select("ano", "trimestre", "local", "pessoa", "patrimônio",
-                                            "costumes", "entorpecentes", "contravencionais", "outros_criminais",
-                                            "outros_delitos", "violentos", "total_delitos")
+ocorr_natureza <- ocorr_natureza %>%
+                    select("ano", "trimestre", "local", "pessoa", "patrimônio",
+                           "costumes", "entorpecentes", "contravencionais", "outros_criminais",
+                           "outros_delitos", "violentos", "total_delitos")
 
 # e tira os caracteres indesejados
 ocorr_natureza$local <- gsub("Gde", "Grande", ocorr_natureza$local)
-ocorr_natureza$ano <- gsub("-1T", "", ocorr_natureza$ano)
-ocorr_natureza$ano <- gsub("-2T", "", ocorr_natureza$ano)
-ocorr_natureza$ano <- gsub("-3T", "", ocorr_natureza$ano)
-ocorr_natureza$ano <- gsub("-4T", "", ocorr_natureza$ano)
-ocorr_natureza$ano <- gsub("-T4", "", ocorr_natureza$ano)
-ocorr_natureza$ano <- as.integer(ocorr_natureza$ano)
+ocorr_natureza$ano   <- gsub("-1T", "", ocorr_natureza$ano)
+ocorr_natureza$ano   <- gsub("-2T", "", ocorr_natureza$ano)
+ocorr_natureza$ano   <- gsub("-3T", "", ocorr_natureza$ano)
+ocorr_natureza$ano   <- gsub("-4T", "", ocorr_natureza$ano)
+ocorr_natureza$ano   <- gsub("-T4", "", ocorr_natureza$ano)
+ocorr_natureza$ano   <- as.integer(ocorr_natureza$ano)
 
 # Mais uma vez atualiza a tabela de descrição
-descricao_natureza <- rbind(descricao_natureza[1,],
-                      c("", "Ocorrência/período", "trimestre", "Trimestre de registro das ocorrências"),
-                      descricao_natureza[2:11,])
+descricao_natureza         <- rbind(descricao_natureza[1,],
+                                    c("", "Ocorrência/período", "trimestre",
+                                    "Trimestre de registro das ocorrências"),
+                                    descricao_natureza[2:11,])
 descricao_natureza$Cod_var <- seq(1:12)
 View(descricao_natureza)
 
@@ -108,46 +110,47 @@ setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # leia a planilha e guarde os nomes
-ocorr_tipo <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan2", na="-")
-xlsx <- names(ocorr_tipo)
-xlsx <- c(rep(xlsx[1],2), xlsx[2:16]) # é preciso desmembrar o ano do trimestre
+ocorr_tipo    <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan2", na="-")
+nome_original <- names(ocorr_tipo)
+nome_original <- c(rep(nome_original[1],2), nome_original[2:16]) # é preciso desmembrar o ano do trimestre
 
 # ajustando os nomes, com a função transmute() fica bem mais fácil! :)
-ocorr_tipo <- ocorr_tipo %>% transmute(ano = `Ocorrência/período`,
-                                       trimestre = `Ocorrência/período`,
-                                       local = `Ocorrências policiais registradas, por tipo`,
-                                       homicidio = `Homicídio doloso (i)`,
-                                       vitima_homicidio = `Nº de Vítimas em Homicídio Doloso`,
-                                       tentativa_homicidio = `Tentativa de homicídio`,
-                                       latrocinio = Latrocínio,
-                                       vitima_latrocinio = `Nº de Vítimas de Latrocínio`,
-                                       estupro = Estupro,
-                                       extorsao_med_sequestro = `Extorsão mediante seqüestro (5)`,
-                                       trafico = `Tráfico de entorpecentes`,
-                                       roubo = `Roubo - outros (6) (i)`,
-                                       roubo_veiculo = `Roubo de veículos`,
-                                       roubo_banco = `Roubo a Banco`,
-                                       roubo_carga = `Roubo de Carga`,
-                                       furto = `Furto - outros`,
-                                       furto_veiculo = `Furto de veículos`)
+ocorr_tipo <- ocorr_tipo %>%
+                transmute(ano                 = `Ocorrência/período`,
+                          trimestre           = `Ocorrência/período`,
+                          local               = `Ocorrências policiais registradas, por tipo`,
+                          homicidio           = `Homicídio doloso (i)`,
+                          vitima_homicidio    = `Nº de Vítimas em Homicídio Doloso`,
+                          tentativa_homicidio = `Tentativa de homicídio`,
+                          latrocinio          = Latrocínio,
+                          vitima_latrocinio   = `Nº de Vítimas de Latrocínio`,
+                          estupro             = Estupro,
+                          extorsao_med_sequestro = `Extorsão mediante seqüestro (5)`,
+                          trafico       = `Tráfico de entorpecentes`,
+                          roubo         = `Roubo - outros (6) (i)`,
+                          roubo_veiculo = `Roubo de veículos`,
+                          roubo_banco   = `Roubo a Banco`,
+                          roubo_carga   = `Roubo de Carga`,
+                          furto         = `Furto - outros`,
+                          furto_veiculo = `Furto de veículos`)
 
 # Limpando valores de local, ano e trimestre...
-trim <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
+trim                 <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
 ocorr_tipo$trimestre <- c(rep(3,3), rep(4,3), trim, rep(1,3))
 
 ocorr_tipo$local <- gsub("Gde", "Grande", ocorr_tipo$local)
-ocorr_tipo$ano <- gsub("-1T", "", ocorr_tipo$ano)
-ocorr_tipo$ano <- gsub("-2T", "", ocorr_tipo$ano)
-ocorr_tipo$ano <- gsub("-3T", "", ocorr_tipo$ano)
-ocorr_tipo$ano <- gsub("-4T", "", ocorr_tipo$ano)
-ocorr_tipo$ano <- gsub("-T4", "", ocorr_tipo$ano)
-ocorr_tipo$ano <- as.integer(ocorr_tipo$ano)
+ocorr_tipo$ano   <- gsub("-1T", "", ocorr_tipo$ano)
+ocorr_tipo$ano   <- gsub("-2T", "", ocorr_tipo$ano)
+ocorr_tipo$ano   <- gsub("-3T", "", ocorr_tipo$ano)
+ocorr_tipo$ano   <- gsub("-4T", "", ocorr_tipo$ano)
+ocorr_tipo$ano   <- gsub("-T4", "", ocorr_tipo$ano)
+ocorr_tipo$ano   <- as.integer(ocorr_tipo$ano)
 
 # criando uma tabela de descrição...
 descricao_tipo <- tibble(Cod = 1:17,
-                         XLSX = xlsx,
-                         Variável = names(ocorr_tipo),
-                         Descrição = c("Ano de registro das ocorrências",
+                         Nome_original = nome_original,
+                         Novo_nome     = names(ocorr_tipo),
+                         Descrição     = c("Ano de registro das ocorrências",
                                        "Trimestre de registro das ocorrências",
                                        "Interior, Grande São Paulo, Capital",
                                        "Ocorrências de homicídio doloso (exclui por acidente de trânsito",
@@ -181,30 +184,31 @@ setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 
 # leia a planilha e guarde os nomes
 atividade_policial <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan3", na="-")
-xlsx <- names(atividade_policial)
-xlsx <- c(rep(xlsx[1],2), xlsx[2:5]) # é preciso desmembrar o ano do trimestre
+nome_original      <- names(atividade_policial)
+nome_original      <- c(rep(nome_original[1],2), nome_original[2:5]) # é preciso desmembrar o ano do trimestre
 
-atividade_policial <- atividade_policial %>% transmute(ano = `Ocorrência/período`,
-                                                       trimestre = `Ocorrência/período`,
-                                                       local = `ATIVIDADES POLICIAIS`,
-                                                       prisoes = `Prisões efetuadas`,
-                                                       armas_apreend = `Armas de fogo apreendidas`,
-                                                       veículos_recup = `N° de veículos recuperados (ii)`)
+atividade_policial <- atividade_policial %>%
+                        transmute(ano            = `Ocorrência/período`,
+                                  trimestre      = `Ocorrência/período`,
+                                  local          = `ATIVIDADES POLICIAIS`,
+                                  prisoes        = `Prisões efetuadas`,
+                                  armas_apreend  = `Armas de fogo apreendidas`,
+                                  veículos_recup = `N° de veículos recuperados (ii)`)
 
 # Limpando valores de local, ano e trimestre...
-trim <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
+trim                         <- rep(c(rep(1, 3), rep(2, 3), rep(3, 3), rep(4, 3)), 20)
 atividade_policial$trimestre <- c(rep(3,3), rep(4,3), trim, rep(1,3))
 
 atividade_policial$local <- gsub("Gde", "Grande", atividade_policial$local)
-atividade_policial$ano <- gsub("-1T", "", atividade_policial$ano)
-atividade_policial$ano <- gsub("-2T", "", atividade_policial$ano)
-atividade_policial$ano <- gsub("-3T", "", atividade_policial$ano)
-atividade_policial$ano <- gsub("-4T", "", atividade_policial$ano)
-atividade_policial$ano <- gsub("-T4", "", atividade_policial$ano)
-atividade_policial$ano <- as.integer(atividade_policial$ano)
+atividade_policial$ano   <- gsub("-1T", "", atividade_policial$ano)
+atividade_policial$ano   <- gsub("-2T", "", atividade_policial$ano)
+atividade_policial$ano   <- gsub("-3T", "", atividade_policial$ano)
+atividade_policial$ano   <- gsub("-4T", "", atividade_policial$ano)
+atividade_policial$ano   <- gsub("-T4", "", atividade_policial$ano)
+atividade_policial$ano   <- as.integer(atividade_policial$ano)
 
 descricao_atividade_policial <- tibble(Cod = 1:6,
-                                       XLSX = xlsx,
+                                       Nome_original = nome_original,
                                        Variável = names(atividade_policial),
                                        Descrição = c("Ano de registro das ocorrências",
                                                      "Trimestre de registro das ocorrências",
@@ -227,14 +231,15 @@ write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e 
 rm(list=ls())
 
 # o banco de dados contém:
-descricao_pop <- tibble(descrição = c("População estimada por Município e Ano
-- Estimativa para TCU"), período = c("1992-1995, 1997-2016"), Fonte = c("IBGE/DATASUS"))
+descricao_pop <- tibble(descrição = c("População estimada por Município e Ano - Estimativa para TCU"),
+                        período   = c("1992-1995, 1997-2016"),
+                        Fonte     = c("IBGE/DATASUS"))
 
 # ler csv
-pop <- read_delim("dados e scripts/população_SP_1992_2016_mess.csv", na="-", delim=";")
+pop <- read_delim("plan_populacao.csv", na="-", delim=";")
 
 # austando encoding...
-names(pop) <- iconv(names(pop), to="latin1")
+names(pop)    <- iconv(names(pop), to="latin1")
 pop$Município <- iconv(pop$Município, to="latin1//TRANSLIT")
 
 # recortando células inúteis...
@@ -245,29 +250,29 @@ pop <- pop[1:646,] %>%
 
 # separando codigo e nome do município. ex:[1] "350010 Adamantina"
 
-
 letr <- c(letters, LETTERS, "'", "-")# vetores auxiliares
-num <- c("1", "2", "3", "4", "5 ", "6", "7", "8", "9", "0 ")
+num  <- c("1", "2", "3", "4", "5 ", "6", "7", "8", "9", "0 ")
 
-pop$Cod_IBGE <- gsub(" ", "", pop$Cod_IBGE) # só o código 
-for (i in letr[1:54]) { 
-  pop$Cod_IBGE <- gsub(i, "", pop$Cod_IBGE)
-  }
-pop <- pop[1:645,]
-pop$Cod_IBGE <- as.integer(pop$Cod_IBGE)
-
-for(i in num[1:10]) { # só o nome
-pop$nome_municipio <- gsub(i, "", pop$nome_municipio)
-}
-pop$nome_municipio <- gsub("5", "", pop$nome_municipio)
-pop$nome_municipio <- gsub("0", "", pop$nome_municipio)
+    pop$Cod_IBGE      <- gsub(" ", "", pop$Cod_IBGE)# só o código 
+    for (i in letr[1:54]) {  
+        pop$Cod_IBGE  <- gsub(i, "", pop$Cod_IBGE)
+        }
+         pop          <- pop[1:645,]
+         pop$Cod_IBGE <- as.integer(pop$Cod_IBGE)
+  
+    for(i in num[1:10]) { # só o nome
+        pop$nome_municipio <- gsub(i, "", pop$nome_municipio)
+        }
+         pop$nome_municipio <- gsub("5", "", pop$nome_municipio)
+         pop$nome_municipio <- gsub("0", "", pop$nome_municipio)
+        
 print(pop$nome_municipio)
 
 # agora que desmembrou, dispensar a coluna suja...
 pop$Município <- NULL
 
 # tem um ano que não tem...
-pop$`1996` <- rep(NA, 645)
+pop$`1996` <- c(rep(NA, 645))
 
 # reordena
 pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
@@ -277,7 +282,7 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
             "2011","2012","2013","2014","2015","2016")
 
 # dplyr::gather() para converter variáveis em observações
-pop <- pop %>% gather(names(pop)[4:27], key="ano", value="população")
+pop <- pop %>% gather(names(pop)[4:28], key="ano", value="população")
 
 write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_populacao_SP.rds")
 
