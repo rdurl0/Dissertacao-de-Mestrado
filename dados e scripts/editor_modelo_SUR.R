@@ -4,7 +4,7 @@ library(systemfit)
 ## Busca no diret?rio
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
-txt <- read.table("nFINAL.txt", h=T)
+txt <- read.table("tab_FINAL.txt", h=T)
 is.data.frame(txt) # TRUE
 
 # rodar o arquivo "1_?NDICE.R

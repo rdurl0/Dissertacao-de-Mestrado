@@ -1,17 +1,15 @@
 rm(list=ls())
 
-# diretório
-#setwd("C:\\Users\\User\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
-setwd("C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error")
+# diretÃ³rio
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # tabela
-dados <- read.table("dados.txt", h=T)
-dados <- read_deliim("dados.txt", col_names=F, delim=",")
+dados <- read.table("tab_dados.txt", h=T)
 is.data.frame(dados) # TRUE
 #
 #install.packages("readr")
-# Pacotes necessários--------------------
+# Pacotes necess?rios--------------------
 
 libs <- c("readr",
   "spdep", "systemfit", "plyr", 
@@ -44,11 +42,11 @@ e1 <- homic ~ jov1524 + baixopadrao + rendamedia + dprendamedia + favela + eform
 e2 <- homic ~ jov1524 + baixopadrao + rendamedia + dprendamedia + favela + eformais + mandato
 system2 <- list(tp1 = e1, tp2 = e2)
 
-# Estatísticas descritivas -----------
-# preparando tabela com estatísticas descritivas
+# Estat?sticas descritivas -----------
+# preparando tabela com estat?sticas descritivas
 # summary
 stargazer(dados2003, dados2013,
-          title="Estatísticas descritivas",
+          title="Estat?sticas descritivas",
           out="C:\\Users\\Raul\\Google Drive\\Pesquisa\\SUR SUR-lag SUR-error\\result.htm",
           type="html")
 
@@ -77,7 +75,7 @@ ggbox <- ggplot(data=pdados,
 
 # Matriz W --------------------------------
 
-# diretório
+# diret?rio
 dir()
 queen_txt<-read.table("queen.txt", h=T)
 dim(queen_txt) # 80x80
@@ -90,7 +88,7 @@ is.matrix(queen)
 DPol<-c("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","21","22","23","24","25","27","28","29","31","33","34","36","37","38","40","41","42","44","46","47","48","50","51","53","54","55","56","58","59","62","63","65","66","67","68","70","74","75","77","78","81","87","89","91","92","93","96","98","99","100","102","103","1857","2073","3052","3264","3597","4380","4572","4969","85101","193990","268395")
 colnames(queen)<-DPol
 rownames(queen)<-DPol
-isSymmetric(queen) # pergunta se queen é simetrica
+isSymmetric(queen) # pergunta se queen ? simetrica
 dim(queen)
 
 # objeto 'listw', style="W" (padronizada na linha)
@@ -103,7 +101,7 @@ summary(eqsim) # exibe resultados
 
 # Modelo: SUR a-espacial-----------------------
 
-# Os parâmetros são diferentes entre as localidades, mas constantes nos períodos.
+# Os par?metros s?o diferentes entre as localidades, mas constantes nos per?odos.
 
 sur <- systemfit(system, method = "SUR", data = dados, pooled = TRUE)
 summary(sur) # exibe resultados

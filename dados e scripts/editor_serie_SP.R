@@ -18,7 +18,7 @@ dir()
 # Ocorrências por natureza ###############
 
 # leitura do arquivi
-ocorr_natureza <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan1", na="-")
+ocorr_natureza <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan1", na="-")
 
 # guarda os nomes para tabela de descrição
 xlsx <- tibble(Cod = seq(1:11),
@@ -96,8 +96,8 @@ descricao_natureza$Cod_var <- seq(1:12)
 View(descricao_natureza)
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_ocorrencias_por_natureza.rds")
-write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_ocorrencias_por_natureza.rds")
+write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_descricao_ocorrencias_por_natureza.rds")
+write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_ocorrencias_por_natureza.rds")
 
 
 #-----------
@@ -108,7 +108,7 @@ setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # leia a planilha e guarde os nomes
-ocorr_tipo <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan2", na="-")
+ocorr_tipo <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan2", na="-")
 xlsx <- names(ocorr_tipo)
 xlsx <- c(rep(xlsx[1],2), xlsx[2:16]) # é preciso desmembrar o ano do trimestre
 
@@ -167,8 +167,8 @@ descricao_tipo <- tibble(Cod = 1:17,
 
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_ocorrencias_por_tipo.rds")
-write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_ocorrencias_por_tipo.rds")
+write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_descricao_ocorrencias_por_tipo.rds")
+write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_ocorrencias_por_tipo.rds")
 
 
 #-----------
@@ -180,7 +180,7 @@ rm(list=ls())
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 
 # leia a planilha e guarde os nomes
-atividade_policial <- read_excel("tidy_agredados_ssp.xlsx", sheet="Plan3", na="-")
+atividade_policial <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan3", na="-")
 xlsx <- names(atividade_policial)
 xlsx <- c(rep(xlsx[1],2), xlsx[2:5]) # é preciso desmembrar o ano do trimestre
 
@@ -214,8 +214,8 @@ descricao_atividade_policial <- tibble(Cod = 1:6,
                                                      "Número de veículos recuperados"))
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_descricao_atividade_policial.rds")
-write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\serie_trimestral_atividade_policial.rds")
+write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_descricao_atividade_policial.rds")
+write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_atividade_policial.rds")
 
 
 #-----------
@@ -279,7 +279,7 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
 # dplyr::gather() para converter variáveis em observações
 pop <- pop %>% gather(names(pop)[4:27], key="ano", value="população")
 
-write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\populacao_SP.rds")
+write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_populacao_SP.rds")
 
 #-----------
 ##########################################
