@@ -5,7 +5,7 @@ setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # tabela
-dados <- read.table("txt_dados.txt", h=T)
+dados <- read.table("plan_dados.txt", h=T)
 is.data.frame(dados) # TRUE
 #
 #install.packages("readr")
@@ -77,7 +77,7 @@ ggbox <- ggplot(data=pdados,
 
 # diret?rio
 dir()
-queen_txt<-read.table("txt_queen.txt", h=T)
+queen_txt<-read.table("plan_queen.txt", h=T)
 dim(queen_txt) # 80x80
 
 # matriz esparsa
