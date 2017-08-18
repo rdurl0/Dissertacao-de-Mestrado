@@ -1,3 +1,13 @@
+##################################################################
+#'@editor_MSPvsEstado                                            =
+##################################################### objetivo ######
+# Comparar as taxas de ocorrência de crime e de  
+# atividade policial por 100000 habitantes de MSP com GSP e
+# Interior entre os anos 2000 e 2010
+#----
+#----
+# bibliotecas utilizadas #########################################
+
 rm(list=ls())
 
 library(tidyverse)
@@ -8,18 +18,22 @@ library(rvest)
 
 
 # Diretório ######################################################
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
+rm(list=ls())
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\planilhas_input")
 dir()
 
+#----
+#----
 ##################################################################
 #'@Series_trimestrais_3T1995/3T2016                              =
-##################################################################
+######################################################## fonte #####
+# http://www.ssp.sp.gov.br/Estatistica/Trimestrais.aspx
 #----
 #----
 # Ocorrências por natureza ###############
 
-# leitura do arquivi
-ocorr_natureza <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan1", na="-")
+# leitura do arquivo
+ocorr_natureza <- read_excel("plan_estadoSP_ssp.xlsx", sheet="Plan1", na="-")
 
 # guarda os nomes para tabela de descrição
 xlsx <- tibble(Cod           = seq(1:11),
@@ -99,19 +113,17 @@ descricao_natureza$Cod_var <- seq(1:12)
 View(descricao_natureza)
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_descricao_ocorrencias_por_natureza.rds")
-write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_ocorrencias_por_natureza.rds")
+write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_trim_ocorrencias_por_natureza_descricao.rds")
+write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_trim_ocorrencias_por_natureza.rds")
 
 
 #----
 # Ocorrencias por tipo ####################
 
-rm(list=ls())
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
 # leia a planilha e guarde os nomes
-ocorr_tipo    <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan2", na="-")
+ocorr_tipo    <- read_excel("plan_estadoSP_ssp.xlsx", sheet="Plan2", na="-")
 nome_original <- names(ocorr_tipo)
 nome_original <- c(rep(nome_original[1],2), nome_original[2:16]) # é preciso desmembrar o ano do trimestre
 
@@ -171,20 +183,18 @@ descricao_tipo <- tibble(Cod = 1:17,
 
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_descricao_ocorrencias_por_tipo.rds")
-write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_ocorrencias_por_tipo.rds")
+write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_trim_ocorrencias_por_tipo_descricao.rds")
+write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_trim_ocorrencias_por_tipo.rds")
 
 
 #----
 # Atividade policial #####################
 
 
-
 rm(list=ls())
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 
 # leia a planilha e guarde os nomes
-atividade_policial <- read_excel("plan_agredados_ssp.xlsx", sheet="Plan3", na="-")
+atividade_policial <- read_excel("plan_estadoSP_ssp.xlsx", sheet="Plan3", na="-")
 nome_original      <- names(atividade_policial)
 nome_original      <- c(rep(nome_original[1],2), nome_original[2:5]) # é preciso desmembrar o ano do trimestre
 
@@ -219,15 +229,18 @@ descricao_atividade_policial <- tibble(Cod = 1:6,
                                                      "Número de veículos recuperados"))
 
 # Agora salve e faça bom uso no report...
-write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_descricao_atividade_policial.rds")
-write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_atividade_policial.rds")
+write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_trim_atividade_policial_descricao.rds")
+write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_trim_atividade_policial.rds")
 
 
 #----
 #----
 ##################################################################
 #'@População_1992/2016                                           =
-##################################################################
+######################################################## fonte ####
+# População Residente - Estimativas para o TCU - São Paulo
+# http://www2.datasus.gov.br/DATASUS/index.php?area=02
+#
 #----
 #----
 # População residente por município ######
@@ -239,6 +252,7 @@ descricao_pop <- tibble(descrição = c("População estimada por Município e A
                         Fonte     = c("IBGE/DATASUS"))
 
 # ler csv
+dir()
 pop <- read_delim("plan_populacao.csv", na="-", delim=";")
 
 # austando encoding...
@@ -254,7 +268,7 @@ pop <- pop[1:646,] %>%
 # separando codigo e nome do município. ex:[1] "350010 Adamantina"
 
 letr <- c(letters, LETTERS, "'", "-")# vetores auxiliares
-num  <- c("1", "2", "3", "4", "5 ", "6", "7", "8", "9", "0 ")
+num  <- c("1", "2", "3", "4", "5  ", "6", "7", "8", "9", "0  ")
 
     pop$Cod_IBGE      <- gsub(" ", "", pop$Cod_IBGE)# só o código 
     for (i in letr[1:54]) {  
@@ -266,8 +280,11 @@ num  <- c("1", "2", "3", "4", "5 ", "6", "7", "8", "9", "0 ")
     for(i in num[1:10]) { # só o nome
         pop$nome_municipio <- gsub(i, "", pop$nome_municipio)
         }
+         pop$nome_municipio <- gsub("5 ", "", pop$nome_municipio)
+         pop$nome_municipio <- gsub("0 ", "", pop$nome_municipio)
          pop$nome_municipio <- gsub("5", "", pop$nome_municipio)
          pop$nome_municipio <- gsub("0", "", pop$nome_municipio)
+         pop$nome_municipio <- gsub("-", " ", pop$nome_municipio)
         
 print(pop$nome_municipio)
 
@@ -287,43 +304,76 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
 # dplyr::gather() para converter variáveis em observações
 pop <- pop %>% gather(names(pop)[4:28], key="ano", value="população")
 
-write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_populacao_SP.rds")
+write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_populacao_SP.rds")
 
 #----
 #----
 ##################################################################
-#'@Manipulando_dados                                             =
+#'@Obtendo_taxas                                                 =
 ##################################################################
+#----
+#----
+# Diretório ######################################################
+rm(list=ls())
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output")
+dir()
 #----
 #----
 # Taxas de homicídio por 100000 hab. #####
-
-oc_tipo <- read_rds("tab_serie_trimestral_ocorrencias_por_tipo.rds")
-pop <- read_rds("populacao_SP.rds")
+oc_tipo <- read_rds("tab_trim_ocorrencias_por_tipo.rds")
+pop     <- read_rds("tab_populacao_SP.rds")
 
 # subset dos crimes de 2000 até 2010
 names(oc_tipo)
 homicidio <- select(oc_tipo, local, ano, homicidio) %>%
-  group_by(local, ano) %>%
-  summarise(homicidio=sum(homicidio)) %>%
-  filter(homicidio, ano<=2010, ano>=2000)
+              group_by(local, ano) %>%
+              summarise(homicidio=sum(homicidio)) %>%
+              filter(homicidio, ano<=2010, ano>=2000)
 
 roubo_vcl <- select(oc_tipo, local, ano, roubo_veiculo) %>%
-  group_by(local, ano) %>%
-  summarise(roubo_veiculo=sum(roubo_veiculo)) %>%
-  filter(roubo_veiculo, ano<=2010, ano>=2000)
+              group_by(local, ano) %>%
+              summarise(roubo_veiculo=sum(roubo_veiculo)) %>%
+              filter(roubo_veiculo, ano<=2010, ano>=2000)
 
 furto_vcl <- select(oc_tipo, local, ano, furto_veiculo) %>%
-  group_by(local, ano) %>%
-  summarise(furto_veiculo=sum(furto_veiculo)) %>%
-  filter(furto_veiculo, ano<=2010, ano>=2000)
+              group_by(local, ano) %>%
+              summarise(furto_veiculo=sum(furto_veiculo)) %>%
+              filter(furto_veiculo, ano<=2010, ano>=2000)
 
 # subset para região metropolitana de SP (39 municípios)
 names(pop)
 
-rmsp <- "https://www.emplasa.sp.gov.br/RMSP"
-RMSP <- read_html(rmsp) %>% 
-  rvest::html_node("table") %>%
-  rvest::html_table(dec = '.') %>%
-  select(Municípios, `Área (km²)¹`)
+url <- "https://www.emplasa.sp.gov.br/RMSP"
+rmsp <- read_html(url) %>% 
+         rvest::html_node("table") %>%
+         rvest::html_table(dec = '.') %>%
+         as_tibble() %>%
+         select(Municípios, `Área (km²)¹`) %>%
+         transmute(nome_municipio = iconv(Municípios,  from="UTF-8", to="ASCII//TRANSLIT"),
+                   area_km2   = as.numeric(gsub(",", ".", `Área (km²)¹`)))
 
+RMSP_leste   <- slice(rmsp, 4:14)
+RMSP_norte   <- slice(rmsp, 17:21)
+RMSP_oeste   <- slice(rmsp, 24:30)
+RMSP_sudeste <- slice(rmsp, 33:39) # aka ABCD
+RMSP_sudoeste<- slice(rmsp, 42:49)
+
+RMSP <- bind_rows(RMSP_leste, RMSP_norte, RMSP_oeste,
+                  RMSP_sudeste, RMSP_sudoeste) %>% # se quiser incluir MSP, selecione: rmsp[2,]
+                  arrange(nome_municipio) %>%
+                  select(nome_municipio)
+
+RMSP$nome_municipio <- gsub("-", " ", RMSP$nome_municipio)
+RMSP$nome_municipio[9] <- "Embu das Artes"
+
+RMSP_msp <- bind_rows(RMSP_leste, RMSP_norte, RMSP_oeste,
+                  RMSP_sudeste, RMSP_sudoeste, rmsp[2,]) %>% # se quiser incluir MSP, selecione: rmsp[2,]
+                  arrange(nome_municipio) %>%
+                  select(nome_municipio)
+
+# RMSP está pronta. basta criar Interior e MSP.
+RMSP_msp$nome_municipio
+
+pop_RMSP <- inner_join(RMSP, pop, by="nome_municipio")
+pop_Interior <- anti_join(pop, RMSP_msp, by="nome_municipio") # está errado...
+pop_MSP <- filter(pop, nome_municipio=="Sao Paulo")
