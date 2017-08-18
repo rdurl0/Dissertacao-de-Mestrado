@@ -7,14 +7,15 @@ library(xml2)
 library(rvest)
 
 
-# Diretório
+# Diretório ######################################################
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
 dir()
 
-##########################################
-#'@Series_trimestrais_3T1995/3T2016      =
-##########################################
-#-----------
+##################################################################
+#'@Series_trimestrais_3T1995/3T2016                              =
+##################################################################
+#----
+#----
 # Ocorrências por natureza ###############
 
 # leitura do arquivi
@@ -102,8 +103,8 @@ write_rds(descricao_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e 
 write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_ocorrencias_por_natureza.rds")
 
 
-#-----------
-# Ocorrencia por tipo ####################
+#----
+# Ocorrencias por tipo ####################
 
 rm(list=ls())
 setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
@@ -174,7 +175,7 @@ write_rds(descricao_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scri
 write_rds(ocorr_tipo, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_ocorrencias_por_tipo.rds")
 
 
-#-----------
+#----
 # Atividade policial #####################
 
 
@@ -222,11 +223,13 @@ write_rds(descricao_atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto
 write_rds(atividade_policial, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_trim_atividade_policial.rds")
 
 
-#-----------
-##########################################
-#'@População_1992/2016                   =
-##########################################
-#-----------
+#----
+#----
+##################################################################
+#'@População_1992/2016                                           =
+##################################################################
+#----
+#----
 # População residente por município ######
 rm(list=ls())
 
@@ -286,14 +289,16 @@ pop <- pop %>% gather(names(pop)[4:28], key="ano", value="população")
 
 write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tab_populacao_SP.rds")
 
-#-----------
-##########################################
-#'@Manipulando_dados                     =
-##########################################
-#-----------
+#----
+#----
+##################################################################
+#'@Manipulando_dados                                             =
+##################################################################
+#----
+#----
 # Taxas de homicídio por 100000 hab. #####
 
-oc_tipo <- read_rds("serie_trimestral_ocorrencias_por_tipo.rds")
+oc_tipo <- read_rds("tab_serie_trimestral_ocorrencias_por_tipo.rds")
 pop <- read_rds("populacao_SP.rds")
 
 # subset dos crimes de 2000 até 2010
