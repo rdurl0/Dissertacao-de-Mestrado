@@ -376,4 +376,14 @@ pop_interior <- anti_join(pop, rmsp, by="nome_municipio") %>%
                   group_by(ano, local) %>%
                   summarise(populacao = sum(populacao))
 
-pop_msp      <- filter(pop, nome_municipio=="Sao Paulo")
+pop_msp      <- filter(pop, nome_municipio=="Sao Paulo") %>%
+                  mutate(local=rep("Capital", 11)) %>%
+                  select(ano, local, populacao)
+
+taxa_cimes_SP <- bind_rows(pop_msp, pop_interior, pop_rmsp) %>%
+                 left_join(. ,homicidio, by=c("local", "ano")) %>%
+                 left_joim(. ,furto_vcl, by=c("local", "ano")) %>%
+                 left_join(. ,roubo_vcl, by=c("local", "ano"))
+
+# O próximo passo é criar taxas de crime pra cada local
+
