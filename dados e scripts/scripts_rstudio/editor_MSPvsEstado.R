@@ -348,32 +348,23 @@ rmsp <- read_html(url) %>%
          rvest::html_node("table") %>%
          rvest::html_table(dec = '.') %>%
          as_tibble() %>%
-         select(Municípios, `Área (km²)¹`) %>%
-         transmute(nome_municipio = iconv(Municípios,  from="UTF-8", to="ASCII//TRANSLIT"),
-                   area_km2   = as.numeric(gsub(",", ".", `Área (km²)¹`)))
+         select(Municípios) %>%
+         transmute(nome_municipio = str_replace(iconv(Municípios, from="UTF-8", to="ASCII//TRANSLIT")
+                                                , "-", " ")) %>%
+         slice(c( 2,         # capital
+                  4:14,      # sub-região leste
+                 17:21,      # sub-região norte
+                 24:30,      # sub-região oeste
+                 33:39,      # sub-região sudeste (aka ABCD)
+                 42:49)) %>% # sub-região sudoeste
+         arrange(nome_municipio) %>%
+         select(nome_municipio) %>%
+         as_tibble(str_replace(rmsp$nome_municipio[9], "Embu das Artes"))
 
-RMSP_leste   <- slice(rmsp, 4:14)
-RMSP_norte   <- slice(rmsp, 17:21)
-RMSP_oeste   <- slice(rmsp, 24:30)
-RMSP_sudeste <- slice(rmsp, 33:39) # aka ABCD
-RMSP_sudoeste<- slice(rmsp, 42:49)
-
-RMSP <- bind_rows(RMSP_leste, RMSP_norte, RMSP_oeste,
-                  RMSP_sudeste, RMSP_sudoeste) %>% # se quiser incluir MSP, selecione: rmsp[2,]
-                  arrange(nome_municipio) %>%
-                  select(nome_municipio)
-
-RMSP$nome_municipio <- gsub("-", " ", RMSP$nome_municipio)
-RMSP$nome_municipio[9] <- "Embu das Artes"
-
-RMSP_msp <- bind_rows(RMSP_leste, RMSP_norte, RMSP_oeste,
-                  RMSP_sudeste, RMSP_sudoeste, rmsp[2,]) %>% # se quiser incluir MSP, selecione: rmsp[2,]
-                  arrange(nome_municipio) %>%
-                  select(nome_municipio)
 
 # RMSP está pronta. basta criar Interior e MSP.
 RMSP_msp$nome_municipio
 
-pop_RMSP <- inner_join(RMSP, pop, by="nome_municipio")
+pop_RMSP     <- inner_join(RMSP, pop, by="nome_municipio")
 pop_Interior <- anti_join(pop, RMSP_msp, by="nome_municipio") # está errado...
-pop_MSP <- filter(pop, nome_municipio=="Sao Paulo")
+pop_MSP      <- filter(pop, nome_municipio=="Sao Paulo")
