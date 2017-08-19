@@ -302,7 +302,7 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
             "2011","2012","2013","2014","2015","2016")
 
 # dplyr::gather() para converter variáveis em observações
-pop <- pop %>% gather(names(pop)[4:28], key="ano", value="população")
+pop <- pop %>% gather(names(pop)[4:28], key="ano", value="populacao")
 
 write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_populacao_SP.rds")
 
@@ -323,8 +323,8 @@ dir()
 oc_tipo <- read_rds("tab_trim_ocorrencias_por_tipo.rds")
 pop     <- read_rds("tab_populacao_SP.rds")
 
-# subset dos crimes de 2000 até 2010
-names(oc_tipo)
+# subset dos crimes e da população de 2000 até 2010
+
 homicidio <- select(oc_tipo, local, ano, homicidio) %>%
               group_by(local, ano) %>%
               summarise(homicidio=sum(homicidio)) %>%
@@ -340,6 +340,9 @@ furto_vcl <- select(oc_tipo, local, ano, furto_veiculo) %>%
               summarise(furto_veiculo=sum(furto_veiculo)) %>%
               filter(furto_veiculo, ano<=2010, ano>=2000)
 
+pop       <- select(pop, nome_municipio, ano, populacao) %>%
+              filter(populacao, ano<=2010, ano>=2000)
+
 # subset para região metropolitana de SP (39 municípios)
 names(pop)
 
@@ -351,20 +354,26 @@ rmsp <- read_html(url) %>%
          select(Municípios) %>%
          transmute(nome_municipio = str_replace(iconv(Municípios, from="UTF-8", to="ASCII//TRANSLIT")
                                                 , "-", " ")) %>%
-         slice(c( 2,         # capital
+         slice(c(    2,      # capital
                   4:14,      # sub-região leste
                  17:21,      # sub-região norte
                  24:30,      # sub-região oeste
                  33:39,      # sub-região sudeste (aka ABCD)
                  42:49)) %>% # sub-região sudoeste
-         arrange(nome_municipio) %>%
-         select(nome_municipio) %>%
-         as_tibble(str_replace(rmsp$nome_municipio[9], "Embu das Artes"))
-
+         arrange(nome_municipio)
 
 # RMSP está pronta. basta criar Interior e MSP.
-RMSP_msp$nome_municipio
 
-pop_RMSP     <- inner_join(RMSP, pop, by="nome_municipio")
-pop_Interior <- anti_join(pop, RMSP_msp, by="nome_municipio") # está errado...
-pop_MSP      <- filter(pop, nome_municipio=="Sao Paulo")
+rmsp[9,] <- "Embu das Artes"
+
+pop_rmsp     <- inner_join(rmsp[-36,], pop, by="nome_municipio") %>%
+                  mutate(local=rep("Grande SP", 418)) %>%
+                  group_by(ano, local) %>%
+                  summarise(populacao = sum(populacao))
+
+pop_interior <- anti_join(pop, rmsp, by="nome_municipio") %>%
+                  mutate(local=rep("Interior", 6666)) %>%
+                  group_by(ano, local) %>%
+                  summarise(populacao = sum(populacao))
+
+pop_msp      <- filter(pop, nome_municipio=="Sao Paulo")
