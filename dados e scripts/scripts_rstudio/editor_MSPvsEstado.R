@@ -303,6 +303,7 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
 
 # dplyr::gather() para converter variáveis em observações
 pop <- pop %>% gather(names(pop)[4:28], key="ano", value="populacao")
+pop <- as.integer(pop$ano)
 
 write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_populacao_SP.rds")
 
@@ -346,7 +347,7 @@ pop       <- select(pop, nome_municipio, ano, populacao) %>%
 # subset para região metropolitana de SP (39 municípios)
 names(pop)
 
-url <- "https://www.emplasa.sp.gov.br/RMSP"
+url  <- "https://www.emplasa.sp.gov.br/RMSP"
 rmsp <- read_html(url) %>% 
          rvest::html_node("table") %>%
          rvest::html_table(dec = '.') %>%
@@ -387,4 +388,3 @@ taxa_cimes_SP <- bind_rows(pop_msp, pop_interior, pop_rmsp) %>%
                  left_join(. ,roubo_vcl, by=c("local", "ano"))
 
 # O próximo passo é criar taxas de crime pra cada local
-
