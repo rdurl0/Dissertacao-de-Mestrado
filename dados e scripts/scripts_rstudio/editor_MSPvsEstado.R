@@ -320,7 +320,7 @@ setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output"
 dir()
 #----
 #----
-# Taxas de homicídio por 100000 hab. #####
+# Tabela para taxas de homicídio por 100000 hab. #####
 oc_tipo <- read_rds("tab_trim_ocorrencias_por_tipo.rds")
 pop     <- read_rds("tab_populacao_SP.rds")
 
@@ -386,15 +386,25 @@ taxa_crimes_SP <- bind_rows(pop_msp, pop_interior, pop_rmsp) %>%
                  left_join(. ,furto_vcl, by=c("local", "ano")) %>%
                  left_join(. ,roubo_vcl, by=c("local", "ano"))
 
+write_rds(taxa_crimes_SP, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+
 # O próximo passo é plotar as taxas de crimes por 100000 habitantes:
 
-ggplot(data=taxa_crimes_SP, mapping=aes(x=ano,
-                                        y=((homicidio/populacao)*100000),
-                                        color=local)) + 
+#----
+# Gráficos #########
+rm(list=ls())
+setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output")
+
+estado_sp <- read_rds("tab_compara_txcrime_estadoSP.rds")
+
+ggplot(data=estado_sp, mapping=aes(x=factor(ano),
+                                   y=((homicidio/populacao)*100000),
+                                   color=local)) + 
           geom_line() +
+          geom_point() +
           theme_classic() +
-          labs(title="Taxa de homicídios por 100000 habitantes",
-               subtitle="Estado de São Paulo: Capital, Grande SP e Interior",
+          labs(title="Taxa de homicídios por 100000 habitantes - Estado de São Paulo: Capital, Grande SP e Interior",
+               subtitle="Fonte: Estatísticas Trimestrais da Secretaria de Segurança Pública do Estado de São paulo",
                y="Taxa de homicídio",
                x="Ano") +
-          theme(legend.position = "bottom")
+          theme(legend.position = c(.8, .8))
