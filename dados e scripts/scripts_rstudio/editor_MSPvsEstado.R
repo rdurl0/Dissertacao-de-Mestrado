@@ -302,8 +302,8 @@ pop <- select(pop, municipio, nome_municipio, Cod_IBGE,
             "2011","2012","2013","2014","2015","2016")
 
 # dplyr::gather() para converter variáveis em observações
-pop <- pop %>% gather(names(pop)[4:28], key="ano", value="populacao")
-pop <- as.integer(pop$ano)
+pop     <- pop %>% gather(names(pop)[4:28], key="ano", value="populacao")
+pop$ano <- as.integer(pop$ano)
 
 write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_populacao_SP.rds")
 
@@ -366,7 +366,6 @@ rmsp <- read_html(url) %>%
 # RMSP está pronta. basta criar Interior e MSP.
 
 rmsp[9,] <- "Embu das Artes"
-pop$ano  <- as.integer(pop$ano)
 
 pop_rmsp     <- inner_join(rmsp[-36,], pop, by="nome_municipio") %>%
                   mutate(local=rep("Grande SP", 418)) %>%
@@ -382,9 +381,20 @@ pop_msp      <- filter(pop, nome_municipio=="Sao Paulo") %>%
                   mutate(local=rep("Capital", 11)) %>%
                   select(ano, local, populacao)
 
-taxa_cimes_SP <- bind_rows(pop_msp, pop_interior, pop_rmsp) %>%
+taxa_crimes_SP <- bind_rows(pop_msp, pop_interior, pop_rmsp) %>%
                  left_join(. ,homicidio, by=c("local", "ano")) %>%
                  left_join(. ,furto_vcl, by=c("local", "ano")) %>%
                  left_join(. ,roubo_vcl, by=c("local", "ano"))
 
-# O próximo passo é criar taxas de crime pra cada local
+# O próximo passo é plotar as taxas de crimes por 100000 habitantes:
+
+ggplot(data=taxa_crimes_SP, mapping=aes(x=ano,
+                                        y=((homicidio/populacao)*100000),
+                                        color=local)) + 
+          geom_line() +
+          theme_classic() +
+          labs(title="Taxa de homicídios por 100000 habitantes",
+               subtitle="Estado de São Paulo: Capital, Grande SP e Interior",
+               y="Taxa de homicídio",
+               x="Ano") +
+          theme(legend.position = "bottom")
