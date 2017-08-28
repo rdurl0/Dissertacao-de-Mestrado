@@ -1,10 +1,16 @@
 ---
-title: "title"
-author: "Raul de Sá Durlo"
-date: "21 de julho de 2017"
-output:
-  pdf_document: default
+title:  'Análise espacial da criminalidade em uma grande metrópole'
+subtitle: '_Um estudo de caso para o município de São Paulo_'
+author:
+- Raul de Sá Durlo^[Mestre em Economia - Unesp/FCLAr]
+- Alexandre Sartoris Netto^[Departamento de Economia - Unesp/FCLAr]
+date: "`r format(Sys.time(), '%d %B %Y')`"
+tags: [Spatial sur, crime, econometria]
+abstract: |
+  Os índices de criminalidade verificada em um bairro de São Paulo se associam aos mesmos índices verificados nos demais bairros? Existe variação sistemática na ocorrência de crimes entre os bairros de São Paulo? O tipo do uso do solo urbano, a composição de emprego, renda domiciliar e estrutura populacional afetam o crime nos bairros de São Paulo de que forma? Essas são as perguntas que nortearam o trabalho aqui desenvolvido.
+output: pdf_document
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -12,9 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1. Introdução
 
-Os índices de criminalidade verificada em um bairro de São Paulo se associam aos mesmos índices verificados nos demais bairros? Existe variação sistemática na ocorrência de crimes entre os bairros de São Paulo? O tipo do uso do solo urbano, a composição de emprego, renda domiciliar e estrutura populacional afetam o crime nos bairros de São Paulo de que forma? Essas são as perguntas que nortearam o trabalho aqui desenvolvido.
-
-Portanto, este trabalho tem como objetivo analisar a criminalidade em uma grande metrópole mundial. O município analisado é o de São Paulo, no Brasil, em dois períodos diferentes (anos 2000 e 2010), de onde foram extraídas informações de ocorrências de crime e de características socioeconômicas disponíveis para nível de distritos (bairros). A utilização do município de São Paulo se deve ao fato de esta ser a maior metrópole da América Latina.
+Este trabalho tem como objetivo analisar a criminalidade em uma grande metrópole mundial. O município analisado é o de São Paulo, no Brasil, em dois períodos diferentes (anos 2000 e 2010), de onde foram extraídas informações de ocorrências de crime e de características socioeconômicas disponíveis para nível de distritos (bairros). A utilização do município de São Paulo se deve ao fato de esta ser a maior metrópole da América Latina.
 
 A criminalidade aqui foi observada adotando como referência estudos similares na área de criminalidade urbana (AUTOR 1, AUTOR 2, ..., AUTOR n), em que pese a relação entre a ocorrência de crimes com diversas características que definem o ambiente social em uma grande cidade: suas diferenças locais e demograficas, de composição de uso do solo, densidade de empregos formais, condições de moradias e rendomento domiciliar.
 
@@ -49,18 +53,17 @@ ggplot2::ggplot(data=estado_sp, mapping=ggplot2::aes(x=lubridate::make_date(ano)
 
 Em relação a roubos e furto de veículos, os valores 
 
-```{r echo=FALSE}
+```{r fig.width = 7, fig.height = 7, fig.align='center', echo=FALSE}
 estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+estado_sp$tx_roubo <- (estado_sp$roubo_veiculo/estado_sp$populacao)*100000
+estado_sp$tx_furto <- (estado_sp$furto_veiculo/estado_sp$populacao)*100000
 
-ggplot2::ggplot(data=estado_sp, mapping=ggplot2::aes(x=lubridate::make_date(ano),
-                                                     y=(roubo_veiculo/populacao)*100000,
-                                                     color=local)) + 
-          ggplot2::geom_line() +
-          ggplot2::geom_point() +
-          ggplot2::theme_classic() +
-          ggplot2::labs(title="Taxa de roubo e furto de veículos (100000 hab) - Estado de São Paulo (2000 até 2010)",
-               subtitle="Fonte: Estatísticas Trimestrais da Secretaria de Segurança Pública do Estado de São Paulo (SSP/SP)",
-               y="Taxa de roubo de veículos (100000 hab.)",
-               x="Ano") +
-          ggplot2::theme(legend.position = c(.8, .8))
+
+ggplot2::ggplot(data=estado_sp,
+                ggplot2::aes(lubridate::make_date(ano), local)) + 
+
+           ggplot2::geom_line(tx_roubo) +
+           ggplot2::facet_grid(tx_furto~.) +
+             ggplot2::theme_classic()
+         
 ```
