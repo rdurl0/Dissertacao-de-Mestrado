@@ -55,9 +55,13 @@ Em relação a roubos e furto de veículos, os valores
 
 ```{r fig.align='center', echo=FALSE}
 estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+
+
 estado_sp$tx_roubo     <- (estado_sp$roubo_veiculo/estado_sp$populacao)*100000
 estado_sp$tx_furto     <- (estado_sp$furto_veiculo/estado_sp$populacao)*100000
 estado_sp$tx_homicidio <- (estado_sp$homicidio/estado_sp$populacao)*100000
+
+
 
 plot_homicidio <- ggplot2::ggplot(data=estado_sp,
                                   mapping=ggplot2::aes(x     = lubridate::make_date(ano),
@@ -66,7 +70,8 @@ plot_homicidio <- ggplot2::ggplot(data=estado_sp,
                     ggplot2::geom_line() +
                     ggplot2::geom_point() +
                     ggplot2::theme_classic() +
-                    ggplot2::theme(legend.position = c(.8, .8))
+                    ggplot2::theme(legend.position = c(.8, .8)) +
+                    ggplot2::xlab(NULL)
 
 
 plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
@@ -75,8 +80,10 @@ plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
                                                         group = local,
                                                         color = local)) +
                     ggplot2::geom_line() +
+                    ggplot2::geom_point() +
                     ggplot2::theme_classic() +
-                    ggplot2::theme(legend.position = c(.8, .8))
+                    ggplot2::theme(legend.position = c(.8, .8)) +
+                    ggplot2::xlab(NULL)
 
 plot_furto    <- ggplot2::ggplot(data    = estado_sp,
                                  mapping = ggplot2::aes(x     = lubridate::make_date(ano),
@@ -85,10 +92,13 @@ plot_furto    <- ggplot2::ggplot(data    = estado_sp,
                                                         color = local)) +
                     ggplot2::geom_line() +
                     ggplot2::theme_classic() +
+                    ggplot2::geom_point() +
                     ggplot2::theme(legend.position = c(.8, .8))
 
-
 grid::grid.newpage()
-grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_roubo), ggplot2::ggplotGrob(plot_furto), ggplot2::ggplotGrob(plot_homicidio), size = "last"))
+grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_homicidio),
+                      ggplot2::ggplotGrob(plot_roubo),
+                      ggplot2::ggplotGrob(plot_furto),
+                      size = "last"))
 
 ```
