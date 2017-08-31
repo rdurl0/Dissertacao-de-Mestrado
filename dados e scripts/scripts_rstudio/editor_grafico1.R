@@ -14,16 +14,19 @@ estado_sp              <- plm::pdata.frame(estado_sp, index=c("ano", "local"))
 plot_homicidio <- ggplot2::ggplot(data=estado_sp,
                                   mapping=ggplot2::aes(x     = ano,
                                                        y     = tx_homicidio,
-                                                       color = local)) + 
+                                                       color = local,
+                                                       group = local)) + 
                        ggplot2::geom_line() +
                        ggplot2::geom_point() +
                        ggplot2::theme_classic() +
                        ggplot2::xlab(NULL) +
-                       ggplot2::theme(legend.position = c(.8, .8)) +
+                       ggplot2::theme(legend.position = c(.9, 1)) +
                        ggplot2::labs(title    = "Taxa de homicídios (100000 hab)",
                                      subtitle = "Estado de São Paulo (2000 até 2010)",
                                      y        = "Taxa de homicídio",
-                                     x        = "Ano")
+                                     x        = "Ano",
+                                     color    = "Região",
+                                     caption  = "Fonte: Elaboração própria a partir de dados da SSP/SP")
 
 # Gráfico com tx de roubo de veiculo #####
 plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
@@ -34,7 +37,7 @@ plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
                        ggplot2::geom_line() +
                        ggplot2::geom_point() +
                        ggplot2::theme_classic() +
-                       ggplot2::theme(legend.position = c(.8, .8)) +
+                       ggplot2::theme(legend.position = "none") +
                        ggplot2::xlab(NULL) +
                        ggplot2::labs(title    = "Taxa de roubo e furto de veículo (100000 hab)",
                                      subtitle = "Estado de São Paulo (2000 até 2010)",
@@ -49,11 +52,12 @@ plot_furto    <- ggplot2::ggplot(data    = estado_sp,
                        ggplot2::geom_line() +
                        ggplot2::theme_classic() +
                        ggplot2::geom_point() +
-                       ggplot2::theme(legend.position = c(.8, .8)) +
+                       ggplot2::theme(legend.position = "none") +
                        ggplot2::labs(title    = "",
                                      subtitle = "",
                                      y        = "Taxa de roubo de veículo",
-                                     x        = "Ano")
+                                     x        = "Ano",
+                                     caption  = "Fonte: Elaboração própria a partir de dados da SSP/SP")
 
 # colocando num grid
 grid::grid.newpage()
