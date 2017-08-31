@@ -33,24 +33,6 @@ De um modo geral, os resultados do modelo SUR-espacial corroboram com o argument
 ## 2. Revisão bibliográfica
 
 A década de 2000 é abordada com frequência no debate sobre segurança pública em São Paulo em razão da queda persistente das taxas de crime no em todo território estadual(Manso, Mello, Cerqueira). No gráfico 1, é possível observar que no início da década as taxas de homicídio eram particularmente altas na capital paulista, seguido de um padrão semelhante em seu entorno (Região Metropolitana de São paulo). Ao final da década de 2000, todavia, a cidade de São Paulo apresenta taxa de homicídio menores que sua Região Metropolitana e muito próximo do valor verificado para os demais municípios da região (cerca de 10 homicídios por 100000 habitantes).
-
-```{r echo=FALSE}
-estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
-
-ggplot2::ggplot(data=estado_sp, mapping=ggplot2::aes(x=lubridate::make_date(ano),
-                                   y=((homicidio/populacao)*100000),
-                                   color=local)) + 
-          ggplot2::geom_line() +
-          ggplot2::geom_point() +
-          ggplot2::theme_classic() +
-          ggplot2::labs(title="Taxa de homicídios por 100000 habitantes - Estado de São Paulo (2000 até 2010)",
-               subtitle="Fonte: Estatísticas Trimestrais da Secretaria de Segurança Pública do Estado de São Paulo (SSP/SP)",
-               y="Taxa de homicídio",
-               x="Ano") +
-          ggplot2::theme(legend.position = c(.8, .8))
-
-```
-
 Em relação a roubos e furto de veículos, os valores 
 
 ```{r fig.align='center', echo=FALSE}
@@ -71,8 +53,11 @@ plot_homicidio <- ggplot2::ggplot(data=estado_sp,
                     ggplot2::geom_point() +
                     ggplot2::theme_classic() +
                     ggplot2::theme(legend.position = c(.8, .8)) +
-                    ggplot2::xlab(NULL)
-
+                    ggplot2::xlab(NULL) +
+                    ggplot2::labs(title    = "Taxa de homicídios (100000 hab)",
+                                  subtitle = "Estado de São Paulo (2000 até 2010)",
+                                  y        = "Taxa de homicídio",
+                                  x        = "Ano")
 
 plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
                                  mapping = ggplot2::aes(x     = lubridate::make_date(ano),
