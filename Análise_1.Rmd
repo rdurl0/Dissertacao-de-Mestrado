@@ -1,0 +1,115 @@
+---
+title:    "Análise 1"
+subtitle: "Homicídios por 100mil habitantes - Estado de São paulo (2000 - 2010)"
+author:   "Raul de Sá Durlo"
+date:     "`r format(Sys.time(), '%d %B %Y')`"
+output:   html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Objetivo
+
+Esta seção tem como objetivo comparar a evolução da criminalidade no município de São Paulo com as demais regiões do Estado de São Paulo. Para isso, os municípios do estado de São Paulo são divididos em três grandes grupos: Interior, Região Metropolitana de São Paulo e Capital. Os crimes analisados são homocídios, roubo de veículo e furto de veículo.
+
+## Metodologia
+
+Os dados referem-se ao número de ocorrências registradas entre os anos de 2000 e 2010 para cada um dos crimes citados. Como sua interpretação é sensível à mudanças demográficas, os dados foram normalizados em relação à população residente, sendo calculado, portanto, uma taxa de homicídios por 100.000 habitantes:
+
+$$tx_crime = (crime/população)*100000$$
+
+Os dados de ocorrências criminais são provenientes das Estatísticas Trimestrais^[[http://www.ssp.sp.gov.br/estatistica/trimestrais.aspx](http://www.ssp.sp.gov.br/estatistica/trimestrais.aspx)] da Secretaria Estadual de Segurança Pública do Estado de São Paulo. Já os dados da população residente foram extraídos das Estimativas utilizadas pelo Tribunal de Contas da União para determinação das cotas do Fundo de Participação dos Municípios^[http://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge/cnv/poptsp.def](http://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge/cnv/poptsp.def).
+
+```{r echo=FALSE, results='asis', message=FALSE, warning=FALSE, comment="Estatísticas descritivas"}
+
+library(dplyr)
+
+estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+
+estado_sp$tx_roubo     <- (estado_sp$roubo_veiculo/estado_sp$populacao)*100000
+estado_sp$tx_furto     <- (estado_sp$furto_veiculo/estado_sp$populacao)*100000
+estado_sp$tx_homicidio <- (estado_sp$homicidio/estado_sp$populacao)*100000
+estado_sp$ano          <- lubridate::year(lubridate::make_date(estado_sp$ano))
+estado_sp              <- plm::pdata.frame(estado_sp, index=c("ano", "local"))
+
+Interior    <- estado_sp %>% dplyr::select(., ano, local, tx_homicidio, tx_furto, tx_roubo) %>% dplyr::filter(., local=="Interior")
+`Grande SP` <- estado_sp %>% dplyr::select(., ano, local, tx_homicidio, tx_furto, tx_roubo) %>% dplyr::filter(., local=="Grande SP")
+Capital     <- estado_sp %>% dplyr::select(., ano, local, tx_homicidio, tx_furto, tx_roubo) %>% dplyr::filter(., local=="Capital")
+
+
+
+stargazer::stargazer(list(Interior, `Grande SP`, Capital), digits = 2, type="html")
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r fig.align='center', fig.height=8, fig.width=6, echo=FALSE}
+
+estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+
+estado_sp$tx_roubo     <- (estado_sp$roubo_veiculo/estado_sp$populacao)*100000
+estado_sp$tx_furto     <- (estado_sp$furto_veiculo/estado_sp$populacao)*100000
+estado_sp$tx_homicidio <- (estado_sp$homicidio/estado_sp$populacao)*100000
+estado_sp$ano          <- lubridate::year(lubridate::make_date(estado_sp$ano))
+estado_sp              <- plm::pdata.frame(estado_sp, index=c("ano", "local"))
+
+
+plot_homicidio <- ggplot2::ggplot(data=estado_sp,
+                                  mapping=ggplot2::aes(x     = ano,
+                                                       y     = tx_homicidio,
+                                                       color = local,
+                                                       group = local)) + 
+                       ggplot2::geom_line() +
+                       ggplot2::geom_point() +
+                       ggplot2::theme_classic() +
+                       ggplot2::xlab(NULL) +
+                       ggplot2::theme(legend.position = c(.9, 1)) +
+                       ggplot2::labs(title    = "Taxa de homicídios (100000 hab)",
+                                     subtitle = "Estado de São Paulo (2000 até 2010)",
+                                     y        = "Taxa de homicídio",
+                                     x        = "Ano",
+                                     color    = "Região")
+
+plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
+                                 mapping = ggplot2::aes(x     = ano,
+                                                        y     = tx_roubo,
+                                                        group = local,
+                                                        color = local)) +
+                       ggplot2::geom_line() +
+                       ggplot2::geom_point() +
+                       ggplot2::theme_classic() +
+                       ggplot2::theme(legend.position = "none") +
+                       ggplot2::xlab(NULL) +
+                       ggplot2::labs(title    = "Taxa de roubo de veículo (100000 hab)",
+                                     subtitle = "Estado de São Paulo (2000 até 2010)",
+                                     y        = "Taxa de roubo de veículo",
+                                     x        = "Ano")
+
+plot_furto    <- ggplot2::ggplot(data    = estado_sp,
+                                 mapping = ggplot2::aes(x     = ano,
+                                                        y     = tx_furto,
+                                                        group = local,
+                                                        color = local)) +
+                       ggplot2::geom_line() +
+                       ggplot2::theme_classic() +
+                       ggplot2::geom_point() +
+                       ggplot2::theme(legend.position = "none") +
+                       ggplot2::labs(title    = "Taxa de furto de veículo (100000 hab)",
+                                     subtitle = "Estado de São Paulo (2000 até 2010)",
+                                     y        = "Taxa de roubo de veículo",
+                                     x        = "Ano",
+                                     caption  = "Fonte: Secretaria de Segurança Pública - SP")
+
+
+grid::grid.newpage()
+grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_homicidio),
+                      ggplot2::ggplotGrob(plot_roubo),
+                      ggplot2::ggplotGrob(plot_furto),
+                      size = "last"))
+
+ 
+```

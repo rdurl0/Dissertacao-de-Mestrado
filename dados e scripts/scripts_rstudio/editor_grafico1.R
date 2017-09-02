@@ -28,6 +28,10 @@ plot_homicidio <- ggplot2::ggplot(data=estado_sp,
                                      color    = "Região",
                                      caption  = "Fonte: Elaboração própria a partir de dados da SSP/SP")
 
+# interatividade
+#plot_homicidio <- plotly::ggplotly(plot_homicidio)
+
+
 # Gráfico com tx de roubo de veiculo #####
 plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
                                  mapping = ggplot2::aes(x     = ano,
@@ -42,6 +46,9 @@ plot_roubo    <- ggplot2::ggplot(data    = estado_sp,
                        ggplot2::labs(title    = "Taxa de roubo e furto de veículo (100000 hab)",
                                      subtitle = "Estado de São Paulo (2000 até 2010)",
                                      y        = "Taxa de roubo de veículo")
+
+# interatividade
+#plot_roubo <- plotly::ggplotly(plot_roubo)
 
 # Gráfico com tx de furto de veiculo ####
 plot_furto    <- ggplot2::ggplot(data    = estado_sp,
@@ -59,7 +66,10 @@ plot_furto    <- ggplot2::ggplot(data    = estado_sp,
                                      x        = "Ano",
                                      caption  = "Fonte: Elaboração própria a partir de dados da SSP/SP")
 
-# colocando num grid
+# interatividade
+#plot_furto <- plotly::ggplotly(plot_furto)
+
+# colocando num grid #####
 grid::grid.newpage()
 grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_homicidio),
                       ggplot2::ggplotGrob(plot_roubo),
