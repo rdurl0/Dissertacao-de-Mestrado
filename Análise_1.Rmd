@@ -1,9 +1,11 @@
 ---
-title:    "Análise 1"
-subtitle: "Homicídios por 100mil habitantes - Estado de São paulo (2000 - 2010)"
-author:   "Raul de Sá Durlo"
-date:     "`r format(Sys.time(), '%d %B %Y')`"
-output:   html_document
+title: "AnÃ¡lise 1"
+author: "Raul de SÃ¡ Durlo"
+date: '`r format(Sys.time(), ''%d %B %Y'')`'
+output:
+  pdf_document: default
+  html_document: default
+subtitle: subtitle
 ---
 
 ```{r setup, include=FALSE}
