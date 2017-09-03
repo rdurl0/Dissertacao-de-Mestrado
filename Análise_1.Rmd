@@ -1,29 +1,36 @@
 ---
-title: "AnÃ¡lise 1"
-author: "Raul de SÃ¡ Durlo"
-date: '`r format(Sys.time(), ''%d %B %Y'')`'
+title:  'Análise 1'
+subtitle: '_Homicídios por 100mil habitantes - Estado de São paulo (2000 - 2010)_'
+author:
+- Raul de Sá Durlo^[Mestre em Economia - Unesp/FCLAr]
+date: "`r format(Sys.time(), '%d %B %Y')`"
+tags: [time serie, homicide, car theft, car robbery]
+abstract: |
+ Esta seção tem como objetivo comparar a evolução da criminalidade no município de São Paulo com as demais regiões do Estado de São Paulo. Para isso, os municípios do estado de São Paulo são divididos em três grandes grupos (Interior, Região Metropolitana de São Paulo e Capital). Os crimes analisados são homocídios, roubo de veículo e furto de veículo.
 output:
-  pdf_document: default
-  html_document: default
-subtitle: subtitle
+  pdf_document:
+    latex_engine: xelatex
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-## Objetivo
 
-Esta seção tem como objetivo comparar a evolução da criminalidade no município de São Paulo com as demais regiões do Estado de São Paulo. Para isso, os municípios do estado de São Paulo são divididos em três grandes grupos: Interior, Região Metropolitana de São Paulo e Capital. Os crimes analisados são homocídios, roubo de veículo e furto de veículo.
+## Introdução
+Neste ~~breve~~ artigo, foi explorado a evolução das taxas de homicídio, de roubo de veículos e furtos de veículos no Estado de São Paulo, que por sua vez foi dividido em três grandes grupos: Capital, Interior, e Grande São Paulo.
+
 
 ## Metodologia
 
-Os dados referem-se ao número de ocorrências registradas entre os anos de 2000 e 2010 para cada um dos crimes citados. Como sua interpretação é sensível à mudanças demográficas, os dados foram normalizados em relação à população residente, sendo calculado, portanto, uma taxa de homicídios por 100.000 habitantes:
-
-$$tx_crime = (crime/população)*100000$$
+Os dados referem-se ao número de ocorrências registradas entre os anos de 2000 e 2010 para cada um dos crimes citados. Como sua interpretação é sensível à mudanças demográficas, os dados foram normalizados em relação à população residente, sendo calculado, portanto, uma taxa de homicídios por 100.000 habitantes:  
+ 
+ $$\left(\frac{crime_i}{população_i}\right)100000$$
 
 Os dados de ocorrências criminais são provenientes das Estatísticas Trimestrais^[[http://www.ssp.sp.gov.br/estatistica/trimestrais.aspx](http://www.ssp.sp.gov.br/estatistica/trimestrais.aspx)] da Secretaria Estadual de Segurança Pública do Estado de São Paulo. Já os dados da população residente foram extraídos das Estimativas utilizadas pelo Tribunal de Contas da União para determinação das cotas do Fundo de Participação dos Municípios^[http://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge/cnv/poptsp.def](http://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge/cnv/poptsp.def).
 
-```{r echo=FALSE, results='asis', message=FALSE, warning=FALSE, comment="Estatísticas descritivas"}
+## Resultados
+
+```{r echo=FALSE, results='asis', message=FALSE, warning=FALSE, label="Estatísticas descritivas"}
 
 library(dplyr)
 
@@ -41,15 +48,13 @@ Capital     <- estado_sp %>% dplyr::select(., ano, local, tx_homicidio, tx_furto
 
 
 
-stargazer::stargazer(list(Interior, `Grande SP`, Capital), digits = 2, type="html")
+stargazer::stargazer(list(Interior, `Grande SP`, Capital), digits = 2, type="latex")
 
 ```
 
-## Including Plots
+Abaixo o gráfico com a evolução tas taxas de crime
 
-You can also embed plots, for example:
-
-```{r fig.align='center', fig.height=8, fig.width=6, echo=FALSE}
+```{r echo=FALSE}
 
 estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
 
@@ -106,12 +111,9 @@ plot_furto    <- ggplot2::ggplot(data    = estado_sp,
                                      x        = "Ano",
                                      caption  = "Fonte: Secretaria de Segurança Pública - SP")
 
-
 grid::grid.newpage()
 grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_homicidio),
                       ggplot2::ggplotGrob(plot_roubo),
                       ggplot2::ggplotGrob(plot_furto),
                       size = "last"))
-
- 
 ```
