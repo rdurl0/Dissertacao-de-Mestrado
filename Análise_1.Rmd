@@ -24,7 +24,7 @@ Neste ~~breve~~ artigo, foi explorado a evolução das taxas de homicídio, de r
 
 Os dados referem-se ao número de ocorrências registradas entre os anos de 2000 e 2010 para cada um dos crimes citados. Como sua interpretação é sensível à mudanças demográficas, os dados foram normalizados em relação à população residente, sendo calculado, portanto, uma taxa de homicídios por 100.000 habitantes:  
  
- $$\left(\frac{crime_i}{população_i}\right)100000$$
+ $$\left(\frac{crime_i}{população_i}\right)`r format(100000)`$$
 
 Os dados de ocorrências criminais são provenientes das Estatísticas Trimestrais^[[http://www.ssp.sp.gov.br/estatistica/trimestrais.aspx](http://www.ssp.sp.gov.br/estatistica/trimestrais.aspx)] da Secretaria Estadual de Segurança Pública do Estado de São Paulo. Já os dados da população residente foram extraídos das Estimativas utilizadas pelo Tribunal de Contas da União para determinação das cotas do Fundo de Participação dos Municípios^[http://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge/cnv/poptsp.def](http://tabnet.datasus.gov.br/cgi/deftohtm.exe?ibge/cnv/poptsp.def).
 
