@@ -48,9 +48,14 @@ Interior    <- estado_sp %>% dplyr::select(., ano, local, tx_homicidio, tx_furto
 Capital     <- estado_sp %>% dplyr::select(., ano, local, tx_homicidio, tx_furto, tx_roubo) %>% dplyr::filter(., local=="Capital")
 
 
+stargazer::stargazer(Capital, digits = 2, type="latex", header=FALSE, 
+                     title="Estatísticas descritivas - Capital")
 
-stargazer::stargazer(Interior, `Grande SP`, Capital, digits = 2, type="latex", header=FALSE, 
-                     title="Tabela 1: Estatísticas descritivas")
+stargazer::stargazer(`Grande SP`, digits = 2, type="latex", header=FALSE, 
+                     title="Estatísticas descritivas - Grande SP")
+
+stargazer::stargazer(Interior, digits = 2, type="latex", header=FALSE, 
+                     title="Estatísticas descritivas - Interior")
 
 ```
 
