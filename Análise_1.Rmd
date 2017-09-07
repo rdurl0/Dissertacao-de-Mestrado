@@ -7,7 +7,6 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 tags: [time serie, homicide, car theft, car robbery]
 abstract: |
  Esta seção tem como objetivo comparar a evolução da criminalidade no município de São Paulo com as demais regiões do Estado de São Paulo. Para isso, os municípios do estado de São Paulo são divididos em três grandes grupos (Interior, Região Metropolitana de São Paulo e Capital). Os crimes analisados são homocídios, roubo de veículo e furto de veículo.
-bibliography: bibliography.bib
 output:
   pdf_document:
     latex_engine: xelatex
