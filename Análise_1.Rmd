@@ -14,7 +14,7 @@ output:
     fig_width: 7
     fig_height: 9
     fig_caption: true
-    keep_tex: true
+    keep_tex: false
 bibliography: minha_biblioteca.bib
     
 ---
