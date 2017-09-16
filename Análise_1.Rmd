@@ -14,7 +14,7 @@ output:
     fig_width: 7
     fig_height: 9
     fig_caption: true
-    keep_tex: false
+    keep_tex: true
 bibliography: minha_biblioteca.bib
     
 ---
@@ -34,7 +34,7 @@ library(grid)
 library(readr)
 
 #leitura de dados
-estado_sp <- readr::read_rds("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+estado_sp <- readr::read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
 
 #taxas
 estado_sp$tx_roubo     <- (estado_sp$roubo_veiculo/estado_sp$populacao)*100000
@@ -131,7 +131,7 @@ stargazer::stargazer(Interior, digits = 2, type="latex", header=FALSE, title="In
 Abaixo o gráfico com a evolução tas taxas de crime. É notória a queda nos himicídios, da magnitude de `r ((Interior$tx_homicidio[11]/Interior$tx_homicidio[1])^(1/10)-1)*100`% no interior do estado, `r ((GrandeSP$tx_homicidio[11]/GrandeSP$tx_homicidio[1])^(1/10)-1)*100`% na região metropolitana e `r ((Capital$tx_homicidio[11]/Capital$tx_homicidio[1])^(1/10)-1)*100`% na capital paulista. 
 
 \newpage
-```{r label="Gráficos",echo=FALSE}
+```{r label="Gráficos",echo=FALSE, warning=FALSE}
 grid::grid.newpage()
 grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_homicidio),
                       ggplot2::ggplotGrob(plot_roubo),
@@ -143,7 +143,7 @@ grid::grid.draw(rbind(ggplot2::ggplotGrob(plot_homicidio),
 \newpage
 # Discussão
 
-A diferença entre as taxas de crimes entre as cidades do interior do estado e a capital São Paulo se contrasta com as discussões que tratam sobre a influência das características locais (ou intra-urbanas) sobre o crime em uma determinada localidade. @glaeser1999there, por exemplo, chama a atenção para a correlação entre o tamanho das cidades e as altas taxas de criminalidade e, aparentemente, isso pode estar relacionado à questões de ambiente e interações sociais que ocorrem nos ambientes urbano. @de2005criminalidade faz argumentação semelhante para o caso das cidades brasileiras no ano de 2010. @eck2015crime argumenta qu, cada vez mais, a composição do ambiente ou as características locais _(crime places)_ tem chamado a atenção de criminologistas e estudiosos do tema.  
+A diferença entre as taxas de crimes entre as cidades do interior do estado e a capital São Paulo se contrasta com as discussões que tratam sobre a influência das características locais (ou intra-urbanas) sobre o crime em uma determinada localidade. @glaeser1999there, por exemplo, chama a atenção para a correlação entre o tamanho das cidades e as altas taxas de criminalidade e, aparentemente, isso pode estar relacionado à questões de ambiente e interações sociais que ocorrem nos ambientes urbano. @de2005criminalidade faz argumentação semelhante para o caso das cidades brasileiras no ano de 2010. @eck2015crime argumenta que, cada vez mais, a composição do ambiente ou as características locais _(crime places)_ tem chamado a atenção de criminologistas e estudiosos do tema.  
 
 Apesar de haverem estudos sobre as taxas de crimes no município de São Paulo, pouco se tem discutido sobre a influencia das características urbanas na determinação do padrão de criminalidade na cidade.
 
