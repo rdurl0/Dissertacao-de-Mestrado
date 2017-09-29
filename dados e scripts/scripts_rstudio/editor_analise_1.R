@@ -1,5 +1,5 @@
 ##################################################################
-#'@editor_MSPvsEstado                                            =
+#'@editor_analise_1                                              =
 ##################################################### objetivo ######
 # Comparar as taxas de ocorrência de crime e de  
 # atividade policial por 100000 habitantes de MSP com GSP e

@@ -34,7 +34,7 @@ library(grid)
 library(readr)
 
 #leitura de dados
-estado_sp <- readr::read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_compara_txcrime_estadoSP.rds")
+estado_sp <- readr::read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_análise_1\\tab_compara_txcrime_estadoSP.rds")
 
 #taxas
 estado_sp$tx_roubo     <- (estado_sp$roubo_veiculo/estado_sp$populacao)*100000
