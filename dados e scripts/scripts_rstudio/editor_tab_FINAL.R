@@ -9,6 +9,7 @@
 # bibliotecas utilizadas #########################################
 rm(list=ls())
 library(tidyverse)
+library(readr)
 #----
 #----
 # Diretório ######################################################
@@ -17,10 +18,15 @@ dir()
 #----
 #----
 # tibble #########################################################
+# leitura
 txt           <- read.table("plan_FINAL.txt", h=T, stringsAsFactors = F)
+# Encoding
 txt$Q13       <- iconv(txt$Q13,from="UTF-8", to="latin2//TRANSLIT")
 txt$Seccional <- iconv(txt$Seccional,from="UTF-8", to="latin2//TRANSLIT")
+# tibble
 txt           <- as_tibble(txt)
+# output
+write_rds(txt, "C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
 #----
 #----
 ##################################################################
@@ -158,7 +164,7 @@ colnames(sc) <- c("Q12", "Seccional")
 ##################################################################
 #----
 #----
-# indexes
+# indexes ########################################################
 Ano      <- txt$Q1
 Distrito <- txt$Q13
 Dpol     <- txt$Q12
