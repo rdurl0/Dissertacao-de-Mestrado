@@ -1,0 +1,154 @@
+---
+title:  'Análise 2'
+subtitle: '_Homicídios, roubos e furtos de veículos por 100mil habitantes - análise exploratória no município de São paulo (2000 - 2010)_'
+author:
+- Raul de Sá Durlo^[Mestre em Economia - Unesp/FCLAr]
+date: "`r format(Sys.time(), '%d %B %Y')`"
+tags: [time serie, homicide, car theft, car robbery]
+abstract: |
+ Nesta sessão, a criminalidade foi analisada para dentro do município de São Paulo. Dados de homicídios, roubos de veículos e furtos de veículo foram coletados para o município de São Paulo nos anos de 2000 e de 2010. Para compatibilização de unidades geográficas, foi utilizado uma metodologia de agregação que tornou possível a comparação de estatísticas de criminalidade com demais dados socioeconômicos e de características ambientais do município de São Paulo. Os resultados demonstram que ............ Completar
+output:
+  pdf_document:
+    latex_engine: xelatex
+    number_sections: true
+    fig_width: 7
+    fig_height: 9
+    fig_caption: true
+    keep_tex: false
+bibliography: minha_biblioteca.bib
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Libraries, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(readr)
+library(plm)
+```
+
+
+
+```{r Leitor de dados, message=FALSE, warning=FALSE, include=FALSE}
+setwd("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
+
+txt <- read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+
+dados <- tibble(ano          = as.integer(txt$Q1),
+                distrito     = as.factor(txt$Q13),
+                dpol         = as.integer(txt$Q12),
+                seccional    = as.factor(txt$Seccional),
+                homic        = as.numeric((txt$Q22/txt$P)*100000),
+                roubovcl     = as.numeric((txt$Q40/txt$P)*100000),
+                furtovcl     = as.numeric((txt$Q43/txt$P)*100000),
+                jov1524      = as.numeric(txt$PMJ_ONU/txt$P),
+                baixopadrao  = as.numeric(txt$AC_ResBP/1000),
+                rendamedia   = as.numeric(txt$RM_DOM),
+                dprendamedia = as.numeric(txt$S_RM_DOM),
+                favela       = as.numeric((txt$fvl/txt$P)*100000),
+                eformais     = as.numeric(txt$EF_P),
+                mandato      = as.numeric((txt$Q76/txt$P)*100000),
+                flagrante    = as.numeric((txt$Q74/txt$P)*100000),
+                densidade    = as.numeric(txt$P/txt$Km2)
+                )
+
+pdados <- pdata.frame(dados, c("dpol", "ano"))
+
+```
+
+
+```{r Editor de gráficos de barra, message=FALSE, warning=FALSE, include=FALSE}
+
+# [barras] crime x dpol
+
+barra_1centro <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
+                  aes(x=distrito, y=homic, fill=ano)) +
+                geom_bar(stat="identity", position="dodge") +
+                theme_classic()
+
+barra_2sul <- ggplot(data = filter(pdados, seccional == "2 SUL"),
+                  aes(x=distrito, y=homic, fill=ano)) +
+             geom_bar(stat="identity", position="dodge") +
+             theme_classic()
+
+barra_3oeste <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
+                  aes(x=distrito, y=homic, fill=ano)) +
+                geom_bar(stat="identity", position="dodge") +
+                theme_classic()
+
+barra_4oeste <- ggplot(data = filter(pdados, seccional == "4 OESTE"),
+                  aes(x=distrito, y=homic, fill=ano)) +
+                geom_bar(stat="identity", position="dodge") +
+                theme_classic()
+
+barra_5leste <- ggplot(data = filter(pdados, seccional == "5 LESTE"),
+                  aes(x=distrito, y=homic, fill=ano)) +
+               geom_bar(stat="identity", position="dodge") +
+               theme_classic()
+
+barra_6santoamaro <- ggplot(data = filter(pdados, seccional == "6 SANTO AMARO"),
+                      aes(x=distrito, y=homic, fill=ano)) +
+                    geom_bar(stat="identity", position="dodge") +
+                    theme_classic()
+
+barra_7itaquera <- ggplot(data = filter(pdados, seccional == "7 ITAQUERA"),
+                    aes(x=distrito, y=homic, fill=ano)) +
+                  geom_bar(stat="identity", position="dodge") +
+                  theme_classic()
+
+barra_8saomateus <- ggplot(data = filter(pdados, seccional == "8 SAO MATEUS"),
+                     aes(x=distrito, y=homic, fill=ano)) +
+                   geom_bar(stat="identity", position="dodge") +
+                   theme_classic()
+
+```
+
+
+
+
+
+# Introdução
+
+Aqui eu vou escrever a introdução
+
+# Metodologia
+
+Aqui eu vou falar da metodologia, com fórmulas
+
+# Resultados
+
+Aqui tem que apresentar os resultados, com gráficos e tabelas
+
+```{r output: graf_barra, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+
+barra_1centro
+
+barra_2sul
+
+barra_3oeste
+
+barra_4oeste
+
+barra_5leste
+
+barra_6santoamaro
+
+barra_7itaquera
+
+barra_8saomateus
+
+```
+
+
+
+# Discussão
+
+Aqui tem que discutir o resultado com outros trabalhos semelhantes
+
+# Conclusão
+
+É só para fechar o assunto
+
+# Referencias bibliográficas
