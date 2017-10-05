@@ -29,8 +29,6 @@ library(readr)
 library(plm)
 ```
 
-
-
 ```{r Leitor de dados, message=FALSE, warning=FALSE, include=FALSE}
 setwd("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
 
@@ -65,13 +63,13 @@ pdados <- pdata.frame(dados, c("dpol", "ano"))
 
 barra_1centro <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
                   aes(x=distrito, y=homic, fill=ano)) +
-                geom_bar(stat="identity", position="dodge") +
-                theme_classic()
+                 geom_bar(stat="identity", position="dodge") +
+                 theme_classic()
 
 barra_2sul <- ggplot(data = filter(pdados, seccional == "2 SUL"),
                   aes(x=distrito, y=homic, fill=ano)) +
-             geom_bar(stat="identity", position="dodge") +
-             theme_classic()
+              geom_bar(stat="identity", position="dodge") +
+              theme_classic()
 
 barra_3oeste <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
                   aes(x=distrito, y=homic, fill=ano)) +
@@ -85,13 +83,13 @@ barra_4oeste <- ggplot(data = filter(pdados, seccional == "4 OESTE"),
 
 barra_5leste <- ggplot(data = filter(pdados, seccional == "5 LESTE"),
                   aes(x=distrito, y=homic, fill=ano)) +
-               geom_bar(stat="identity", position="dodge") +
-               theme_classic()
+                geom_bar(stat="identity", position="dodge") +
+                theme_classic()
 
 barra_6santoamaro <- ggplot(data = filter(pdados, seccional == "6 SANTO AMARO"),
                       aes(x=distrito, y=homic, fill=ano)) +
-                    geom_bar(stat="identity", position="dodge") +
-                    theme_classic()
+                     geom_bar(stat="identity", position="dodge") +
+                     theme_classic()
 
 barra_7itaquera <- ggplot(data = filter(pdados, seccional == "7 ITAQUERA"),
                     aes(x=distrito, y=homic, fill=ano)) +
@@ -120,6 +118,9 @@ Aqui eu vou falar da metodologia, com fórmulas
 # Resultados
 
 Aqui tem que apresentar os resultados, com gráficos e tabelas
+
+precisa fazer: editar eixos, colocar legenda dentro de área de plot, reduzir a altura, inserir títulos, theme_classic, ordenar barras.
+
 
 ```{r output: graf_barra, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
 
