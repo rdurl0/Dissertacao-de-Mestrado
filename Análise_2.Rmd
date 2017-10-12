@@ -60,11 +60,13 @@ pdados <- pdata.frame(dados, c("dpol", "ano"))
 ```{r Editor de gráficos de barra, message=FALSE, warning=FALSE, include=FALSE}
 
 # [barras] crime x dpol
-
+# http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
 barra_1centro <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
                   aes(x=distrito, y=homic, fill=ano)) +
                  geom_bar(stat="identity", position="dodge") +
-                 theme_classic()
+                 theme(axis.text.x = element_text(angle=45),
+                       axis.text.y = element_text(),
+                       axis.line = element_line(linetype = "solid"))
 
 barra_2sul <- ggplot(data = filter(pdados, seccional == "2 SUL"),
                   aes(x=distrito, y=homic, fill=ano)) +
