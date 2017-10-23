@@ -159,6 +159,24 @@ colnames(sc) <- c("Q12", "Seccional")
 
 #----
 #----
+# Adicionando vetor "distrito" (nome do distr com minúscula) #####
+
+# na seção @EXEMPLOS_DE_COMO_TRABALHAR_COM_AS_VARIÁVEIS, criei um df 
+# para trabalhar aqui
+
+limits <- dados %>% filter(ano == 2003) %>%
+  select(distrito, homic) %>% arrange(desc(homic)) %>% select(distrito)
+
+# depois disso eu editei um arquivo .txt para usar nomes  de distritos 
+# com minúsculas
+txt <- read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+limits <- read.table("C:\\Users\\User\\Desktop\\limits.txt", h=T, stringsAsFactors = F)
+limits$Q13 <- limits$distrito2
+limits$distrito2 <- NULL
+txt <- merge(txt, limits, by = intersect("Q13", "Q13"))
+write_rds(txt, "C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+#----
+#----
 ##################################################################
 #'@EXEMPLOS_DE_COMO_TRABALHAR_COM_AS_VARIÁVEIS                   =
 ##################################################################

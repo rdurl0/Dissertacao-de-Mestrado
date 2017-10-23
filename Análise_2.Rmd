@@ -7,6 +7,10 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 tags: [time serie, homicide, car theft, car robbery]
 abstract: |
  Nesta sessão, a criminalidade foi analisada para dentro do município de São Paulo. Dados de homicídios, roubos de veículos e furtos de veículo foram coletados para o município de São Paulo nos anos de 2000 e de 2010. Para compatibilização de unidades geográficas, foi utilizado uma metodologia de agregação que tornou possível a comparação de estatísticas de criminalidade com demais dados socioeconômicos e de características ambientais do município de São Paulo. Os resultados demonstram que ............ Completar
+header-includes:
+- \usepackage{pdflscape}
+- \newcommand{\blandscape}{\begin{landscape}}
+- \newcommand{\elandscape}{\end{landscape}}
 output:
   pdf_document:
     latex_engine: xelatex
@@ -35,9 +39,10 @@ setwd("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_outp
 txt <- read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
 
 dados <- tibble(ano          = as.integer(txt$Q1),
-                distrito     = as.factor(txt$Q13),
+                distrito     = as.character(gsub(
+                               txt$distrito, pattern="_", replacement=" ")),
                 dpol         = as.integer(txt$Q12),
-                seccional    = as.factor(txt$Seccional),
+                seccional    = as.character(txt$Seccional),
                 homic        = as.numeric((txt$Q22/txt$P)*100000),
                 roubovcl     = as.numeric((txt$Q40/txt$P)*100000),
                 furtovcl     = as.numeric((txt$Q43/txt$P)*100000),
@@ -51,8 +56,10 @@ dados <- tibble(ano          = as.integer(txt$Q1),
                 flagrante    = as.numeric((txt$Q74/txt$P)*100000),
                 densidade    = as.numeric(txt$P/txt$Km2)
                 )
-
 pdados <- pdata.frame(dados, c("dpol", "ano"))
+
+limits <- dados %>% filter(ano == 2003) %>%
+  select(distrito, homic) %>% arrange(desc(homic)) %>% select(distrito)
 
 ```
 
@@ -65,8 +72,15 @@ barra_1centro <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
                         aes(x = distrito, y = homic, fill = ano)) +
                  geom_bar(stat     = "identity",
                           position = "dodge") +
-                 theme(axis.text.x     = element_text(size=8, angle=35),
-                       legend.position = c(0.85, 0.85)) +
+                 theme(plot.title            = element_text(hjust=.5),
+                       plot.subtitle         = element_text(hjust=.5),
+                       axis.text             = element_text(colour="black"),
+                       axis.text.x           = element_text(size=9,angle=90,hjust=1),
+                       axis.ticks            = element_line(),
+                       axis.line             = element_line(size=1,colour="black"),
+                       legend.position       = c(0.95, 0.85),
+                       legend.title.align    = .5,
+                       panel.background      = element_rect(fill="white")) +
                  scale_x_discrete(name   = "Distritos da Seccional 1 (CENTRO)",
                                   limits = c("SÉ",
                                              "PARI",
@@ -86,10 +100,11 @@ barra_1centro <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
                                              "BOM_RETIRO"     = "Bom Retiro",
                                              "CONSOLAÇÃO"     = "Conslolação",
                                              "JARDINS"        = "Jardins")) +
-                 labs(title    = "Taxa de homicídios (100000 hab)",
-                      subtitle = "Distritos MSP - Seccional 1 (Centro) (2003 e 2013)",
+                 labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
+                      subtitle = "Distritos MSP - Seccional 1 (Centro)",
                       y        = "Taxa de homicídio",
-                      color    = "Ano")
+                      color    = "ano") + 
+                 scale_fill_manual("Ano",values=c("black", "darkgrey"))
 
 
 
@@ -97,8 +112,15 @@ barra_2sul <- ggplot(data = filter(pdados, seccional == "2 SUL"),
                      aes(x=distrito, y=homic, fill=ano)) +
                  geom_bar(stat     = "identity",
                           position = "dodge") +
-                 theme(axis.text.x     = element_text(size=8, angle=35),
-                       legend.position = c(0.85, 0.85)) +
+                 theme(plot.title            = element_text(hjust=.5),
+                       plot.subtitle         = element_text(hjust=.5),
+                       axis.text             = element_text(colour="black"),
+                       axis.text.x           = element_text(size=9,angle=90,hjust=1),
+                       axis.ticks            = element_line(),
+                       axis.line             = element_line(size=1,colour="black"),
+                       legend.position       = c(0.95, 0.85),
+                       legend.title.align    = .5,
+                       panel.background      = element_rect(fill="white")) +
                  scale_x_discrete(name   = "Distritos da Seccional 2 (SUL)",
                                   limits = c("JABAQUARA_AEROPORTO",
                                              "CURSINO_SACOMÃ",
@@ -117,77 +139,87 @@ barra_2sul <- ggplot(data = filter(pdados, seccional == "2 SUL"),
                  labs(title    = "Taxa de homicídios (100000 hab)",
                       subtitle = "Distritos MSP - Seccional 2 (SUL) (2003 e 2013)",
                       y        = "Taxa de homicídio",
-                      color    = "Ano")
+                      color    = "ano")
+
+
+barra_tudo <- ggplot(data = pdados,
+      aes(x = distrito, y = homic, fill = ano)) +
+  geom_bar(stat     = "identity",
+           position = "dodge") +
+  theme(plot.title            = element_text(hjust=.5),
+        plot.subtitle         = element_text(hjust=.5),
+        axis.text             = element_text(colour="black"),
+        axis.text.x           = element_text(size=10,angle=90,hjust=1,vjust=.3),
+        axis.ticks            = element_line(),
+        axis.line             = element_line(size=1,colour="black"),
+        legend.position       = c(0.95, 0.85),
+        legend.title.align    = .5,
+        panel.background      = element_rect(fill="white")) +
+  scale_x_discrete(name   = "Distritos", limits=as_vector(limits)) +
+  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
+       subtitle = "Distritos MSP - Seccional 1 (Centro)",
+       y        = "Taxa de homicídio",
+       color    = "ano") + 
+  scale_fill_manual("Ano",values=c("black", "blue"))
 
 
 
 
-barra_3oeste <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
-                         aes(x=distrito, y=homic, fill=ano)) +
-                 geom_bar(stat     = "identity",
-                          position = "dodge") +
-                   theme(axis.text.x     = element_text(size=8, angle=35),
-                       legend.position = c(0.85, 0.85)) +
-                 scale_x_discrete(name   = "Distritos da Seccional 3 (OESTE)",
-                                  limits = c("CEAGESP",
-                                             "PERUS",
-                                             "CAMPO_LIMPO",
-                                             "JARDIM_ARPOADOR",
-                                             "PORTAL_DO_MORUMBI",
-                                             "BUTANTÃ",
-                                             "LAPA",
-                                             "VILA_SONIA",
-                                             "VILA_PEREIRA_BARRETO",
-                                             "PIRITUBA",
-                                             "JAGUARÉ",
-                                             "PINHEIROS",
-                                             "PERDIZES",
-                                             "ITAIM_BIBI"),
-                                  labels = c("CEAGESP" = "Ceagesp",
-                                             "PERUS" = "Perus",
-                                             "CAMPO_LIMPO"= "Campo Limpo",
-                                             "JARDIM_ARPOADOR" = "Jd Arpoador",
-                                             "PORTAL_DO_MORUMBI" = "Morumbi",
-                                             "BUTANTÃ" = "Butantã",
-                                             "LAPA" = "Lapa",
-                                             "VILA_SONIA" = "Vl Sônia",
-                                             "VILA_PEREIRA_BARRETO" = "Vl P. Barreto",
-                                             "PIRITUBA" = "Pirituba",
-                                             "JAGUARÉ" = "Jaguaré",
-                                             "PINHEIROS" = "Pinheiros",
-                                             "PERDIZES" = "Perdizes",
-                                             "ITAIM_BIBI" = "Itaim Bibi")) +
-                 labs(title    = "Taxa de homicídios (100000 hab)",
-                      subtitle = "Distritos MSP - Seccional 3 (OESTE) (2003 e 2013)",
-                      y        = "Taxa de homicídio",
-                      color    = "Ano")
-
-
-barra_4oeste <- ggplot(data = filter(pdados, seccional == "4 OESTE"),
-                  aes(x=distrito, y=homic, fill=ano)) +
-                geom_bar(stat="identity", position="dodge") +
-                theme_classic()
-
-barra_5leste <- ggplot(data = filter(pdados, seccional == "5 LESTE"),
-                  aes(x=distrito, y=homic, fill=ano)) +
-                geom_bar(stat="identity", position="dodge") +
-                theme_classic()
-
-barra_6santoamaro <- ggplot(data = filter(pdados, seccional == "6 SANTO AMARO"),
-                      aes(x=distrito, y=homic, fill=ano)) +
-                     geom_bar(stat="identity", position="dodge") +
-                     theme_classic()
-
-barra_7itaquera <- ggplot(data = filter(pdados, seccional == "7 ITAQUERA"),
-                    aes(x=distrito, y=homic, fill=ano)) +
-                  geom_bar(stat="identity", position="dodge") +
-                  theme_classic()
-
-barra_8saomateus <- ggplot(data = filter(pdados, seccional == "8 SAO MATEUS"),
-                     aes(x=distrito, y=homic, fill=ano)) +
-                   geom_bar(stat="identity", position="dodge") +
-                   theme_classic()
-
+#barra_3oeste <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
+#                         aes(x=distrito, y=homic, fill=ano)) +
+#                geom_bar(stat     = "identity",
+#                         position = "dodge") +
+#                 theme(plot.title            = element_text(hjust=.5),
+#                       plot.subtitle         = element_text(hjust=.5),
+ #                      axis.text             = element_text(colour="black"),
+  #                     axis.text.x           = element_text(size=9,angle=90,hjust=1),
+   #                    axis.ticks            = element_line(),
+    #                   axis.line             = element_line(size=1,colour="black"),
+     #                  legend.position       = c(0.95, 0.85),
+      #                 legend.title.align    = .5,
+       #                panel.background      = element_rect(fill="white")) +
+        #         scale_x_discrete(name   = "Distritos da Seccional 3 (OESTE)",
+         #                         limits = c("CEAGESP",
+          #                                   "PERUS",
+           #                                  "CAMPO_LIMPO",
+            #                                 "JARDIM_ARPOADOR",
+             #                                "PORTAL_DO_MORUMBI",
+              #                               "BUTANTÃ",
+               #                              "LAPA",
+                #                             "VILA_SONIA",
+               #                            "VILA_PEREIRA_BARRETO",
+                #                             "PIRITUBA",
+                 #                            "JAGUARÉ",
+                  #                           "PINHEIROS",
+                   #                          "PERDIZES",
+                    #                         "ITAIM_BIBI"),
+                     #             labels = c("CEAGESP" = "Ceagesp",
+                      #                       "PERUS" = "Perus",
+                       #                      "CAMPO_LIMPO"= "Campo Limpo",
+#                                             "JARDIM_ARPOADOR" = "Jd Arpoador",
+ #                                            "PORTAL_DO_MORUMBI" = "Morumbi",
+  #                                           "BUTANTÃ" = "Butantã",
+   #                                          "LAPA" = "Lapa",
+    #                                         "VILA_SONIA" = "Vl Sônia",
+     #                                        "VILA_PEREIRA_BARRETO" = "Vl P. Barreto",
+      #                                       "PIRITUBA" = "Pirituba",
+       #                                      "JAGUARÉ" = "Jaguaré",
+        #                                     "PINHEIROS" = "Pinheiros",
+         #                                    "PERDIZES" = "Perdizes",
+          #                                   "ITAIM_BIBI" = "Itaim Bibi")) +
+           #      labs(title    = "Taxa de homicídios (100000 hab)",
+            #          subtitle = "Distritos MSP - Seccional 3 (OESTE) (2003 e 2013)",
+             #         y        = "Taxa de homicídio",
+              #        color    = "ano")
+#
+#theme(plot.title            = element_text(hjust=.5),
+ #                      plot.subtitle         = element_text(hjust=.5),
+  #                     axis.text             = element_text(colour="black"),
+   #                    axis.text.x           = element_text(size=9,angle=90,hjust=1),
+    #                   axis.ticks            = element_line(),
+     #                  axis.line             = element_line(size=1,colour="black"),
+      #                 legend.position       = c(0.95, 0.85),
+       ##               panel.background      = element_rect(fill="white")) +
 ```
 
 
@@ -207,29 +239,17 @@ Aqui eu vou falar da metodologia, com fórmulas
 Aqui tem que apresentar os resultados, com gráficos e tabelas
 
 precisa fazer: editar eixos, colocar legenda dentro de área de plot, reduzir a altura, inserir títulos, theme_classic, ordenar barras.
+\newpage   
+\blandscape
 
+```{r output: graf_barra, echo=FALSE, fig.height=14, fig.width=20, message=FALSE, warning=FALSE}
 
-```{r output: graf_barra, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
-
-barra_1centro
-
-barra_2sul
-
-barra_3oeste
-
-barra_4oeste
-
-barra_5leste
-
-barra_6santoamaro
-
-barra_7itaquera
-
-barra_8saomateus
+barra_tudo
 
 ```
-
-
+   
+\elandscape
+\newpage
 
 # Discussão
 
