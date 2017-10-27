@@ -11,6 +11,8 @@ header-includes:
 - \usepackage{pdflscape}
 - \newcommand{\blandscape}{\begin{landscape}}
 - \newcommand{\elandscape}{\end{landscape}}
+- \usepackage{graphicx}
+- \usepackage{float}
 output:
   pdf_document:
     latex_engine: xelatex
@@ -24,7 +26,17 @@ bibliography: minha_biblioteca.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+                 fig.path='figure/graphics-', 
+                 cache.path='cache/graphics-', 
+                 fig.align='center',
+                 external=TRUE,
+                 echo=TRUE,
+                 warning=FALSE,
+                 fig.pos='H'
+                )
+a4width<- 8.3
+  a4height<- 11.7
 ```
 
 ```{r Libraries, message=FALSE, warning=FALSE, include=FALSE}
@@ -376,7 +388,7 @@ ht <- huxreg(jov1524,
         mandato,
         flagrante,
         densidade) 
-
+set_position(ht, "center")
 ```
 
 # Introdução
@@ -393,7 +405,7 @@ Aqui eu vou falar da metodologia, com fórmulas
 
 ### A taxa de homicídio em 2003 e em 2013 em São Paulo
 
-```{r output: graf_boxplot, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_boxplot, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 box_plot
 
@@ -403,7 +415,7 @@ box_plot
 \newpage   
 \blandscape
 
-```{r output: graf_barra03, echo=FALSE, fig.height=14, fig.width=20, message=FALSE, warning=FALSE}
+```{r output: graf_barra03, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
 
 barra03
 
@@ -413,7 +425,7 @@ barra03
 \newpage
 \blandscape
 
-```{r output: graf_barra13, echo=FALSE, fig.height=14, fig.width=20, message=FALSE, warning=FALSE}
+```{r output: graf_barra13, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
 
 barra13
 
@@ -426,7 +438,7 @@ barra13
 
 ### 1 - Seccional Centro
 
-```{r output: graf_barra1, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra1, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra1
 
@@ -435,7 +447,7 @@ barra1
 
 ### 2 - Seccional Sul
 
-```{r output: graf_barra2, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra2, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra2
 
@@ -443,7 +455,7 @@ barra2
 
 ### 3 - Seccional Oeste
 
-```{r output: graf_barra3, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra3, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra3
 
@@ -451,7 +463,7 @@ barra3
 
 ### 4 - Seccional Oeste
 
-```{r output: graf_barra4, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra4, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra4
 
@@ -459,7 +471,7 @@ barra4
 
 ### 5 - Seccional Leste
 
-```{r output: graf_barra5, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra5, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra5
 
@@ -467,7 +479,7 @@ barra5
 
 ### 6 - Seccional Santo Amaro
 
-```{r output: graf_barra6, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra6, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra6
 
@@ -475,7 +487,7 @@ barra6
 
 ### 7 - Seccional Itaquera
 
-```{r output: graf_barra7, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra7, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra7
 
@@ -483,7 +495,7 @@ barra7
 
 ### 8 - Seccional São Mateus
 
-```{r output: graf_barra8, echo=FALSE, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
+```{r output: graf_barra8, echo=FALSE, fig.height=3, fig.width=6, message=FALSE, warning=FALSE}
 
 barra8
 
@@ -495,9 +507,7 @@ barra8
 \blandscape
 
 ```{r output: tabela_1, echo=FALSE, message=FALSE, warning=FALSE}
-
-ht
-
+set_latex_float(ht = ht, "H")
 ```
 
 \elandscape
