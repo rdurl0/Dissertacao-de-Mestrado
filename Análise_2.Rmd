@@ -1,12 +1,12 @@
 ---
 title:  'Análise 2'
-subtitle: '_Homicídios, roubos e furtos de veículos por 100mil habitantes - análise exploratória no município de São paulo (2000 - 2010)_'
+subtitle: '_Homicídios, roubos e furtos de veículos por 100mil habitantes - Análise exploratória no Município de São paulo (2000 - 2010)_'
 author:
 - Raul de Sá Durlo^[Mestre em Economia - Unesp/FCLAr]
 date: "`r format(Sys.time(), '%d %B %Y')`"
-tags: [time serie, homicide, car theft, car robbery]
+tags: [homicide, car theft, car robbery]
 abstract: |
- Nesta sessão, a criminalidade foi analisada para dentro do município de São Paulo. Dados de homicídios, roubos de veículos e furtos de veículo foram coletados para o município de São Paulo nos anos de 2000 e de 2010. Para compatibilização de unidades geográficas, foi utilizado uma metodologia de agregação que tornou possível a comparação de estatísticas de criminalidade com demais dados socioeconômicos e de características ambientais do município de São Paulo. Os resultados demonstram que ............ Completar
+ Nesta sesSão, a criminalidade foi analisada para dentro do Município de São Paulo. Dados de homicídios, roubos de veículos e furtos de veículo foram coletados para o Município de São Paulo nos anos de 2000 e de 2010. Para compatibilização de unidades geográficas, foi utilizado uma metodologia de agrega??o que tornou poss?vel a compara??o de estat?sticas de criminalidade com demais dados socioecon?micos e de caracterásticas ambientais do Município de São Paulo. Os resultados demonstram que ............ Completar
 header-includes:
 - \usepackage{pdflscape}
 - \newcommand{\blandscape}{\begin{landscape}}
@@ -17,37 +17,27 @@ output:
   pdf_document:
     latex_engine: xelatex
     number_sections: true
-    fig_width: 7
-    fig_height: 9
-    fig_caption: false
+    fig_caption: yes
     keep_tex: false
 bibliography: minha_biblioteca.bib
     
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-                 fig.path='figure/graphics-', 
-                 cache.path='cache/graphics-', 
-                 fig.align='center',
-                 external=TRUE,
-                 echo=TRUE,
-                 warning=FALSE,
-                 fig.pos='H'
-                )
-a4width<- 8.3
-  a4height<- 11.7
+knitr::opts_chunk$set(echo=TRUE)
 ```
 
 ```{r Libraries, message=FALSE, warning=FALSE, include=FALSE}
+rm(list=ls())
 library(tidyverse)
 library(readr)
 library(plm)
-library(huxtable)
+library(ggpubr)
 ```
 
 ```{r Leitor de dados, message=FALSE, warning=FALSE, include=FALSE}
-# diretório #########
+
+# diretÓrio #########
 setwd("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
 dir()
 txt <- read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
@@ -71,57 +61,37 @@ dados <- tibble(ano          = as.integer(txt$Q1),
                 flagrante    = as.numeric((txt$Q74/txt$P)*100000),
                 densidade    = as.numeric(txt$P/txt$Km2)
                 )
-pdados <- pdata.frame(dados, c("dpol", "ano"))
-
-for(i in 1:80) {
-  dados$favela[i] <- print(dados$favela[i])+0.000001
-  }
 
 # subsets ################
-limits2003 <- dados %>% filter(ano == 2003) %>%
-  select(distrito, homic) %>% arrange(desc(homic)) %>% select(distrito)
-
-limits2013 <- dados %>% filter(ano == 2013) %>%
-  select(distrito, homic) %>% arrange(desc(homic)) %>% select(distrito)
 
 seccional <- dados %>% select(seccional) %>% distinct(seccional) %>% arrange(seccional)
 
 limits_1 <- dados %>% filter(ano == 2003 & seccional == "1 CENTRO") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_2 <- dados %>% filter(ano == 2003 & seccional == "2 SUL") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_3 <- dados %>% filter(ano == 2003 & seccional == "3 OESTE") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_4 <- dados %>% filter(ano == 2003 & seccional == "4 OESTE") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_5 <- dados %>% filter(ano == 2003 & seccional == "5 LESTE") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_6 <- dados %>% filter(ano == 2003 & seccional == "6 SANTO AMARO") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_7 <- dados %>% filter(ano == 2003 & seccional == "7 ITAQUERA") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
-
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_8 <- dados %>% filter(ano == 2003 & seccional == "8 SÃO MATEUS") %>% 
-  select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
+            select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 
+for(i in 1:160) {
+  dados$homic[i] <- print(dados$homic[i])+0.000001
+}
+
+dados$homicz <- scale(dados$homic, center = TRUE, scale = TRUE)
+dados$homicz <- as.numeric(dados$homicz)
 dados2013 <- filter(dados, ano==2013)
-
-# regresão simples #####
-jov1524      <- lm(dados2013$homic ~ log(dados2013$jov1524))
-baixopadrao  <- lm(dados2013$homic ~ log(dados2013$baixopadrao))
-rendamedia   <- lm(dados2013$homic ~ log(dados2013$rendamedia))
-dprendamdia  <- lm(dados2013$homic ~ log(dados2013$dprendamedia))
-favela       <- lm(dados2013$homic ~ dados2013$favela)
-eformais     <- lm(dados2013$homic ~ log(dados2013$eformais))
-mandato      <- lm(dados2013$homic ~ log(dados2013$mandato))
-flagrante    <- lm(dados2013$homic ~ log(dados2013$flagrante))
-densidade    <- lm(dados2013$homic ~ log(dados2013$densidade))
+dados2003 <- filter(dados, ano==2003)
+pdados <- pdata.frame(dados, c("dpol", "ano"))
 
 ```
 
@@ -129,274 +99,269 @@ densidade    <- lm(dados2013$homic ~ log(dados2013$densidade))
 ```{r Editor de gráficos, message=FALSE, warning=FALSE, include=FALSE}
 
 ##################################################################
-#'@Gráficos                                              =
+#'@Gráficos                                              = 
 ##################################################### objetivo ######
-# Colocar em gráficos os dados
+
+dados$ano <- as.character(dados$ano)
+histograma <- gghistogram(dados, x = "homic", #####
+                          add = "mean", rug = TRUE,
+                          color = "ano", fill = "ano",
+                          palette = c("black", "grey"))
+
+boxplot <- ggboxplot(dados, x = "ano", y = "homic", #####
+                     palette =c("black", "grey"),
+                     add = "jitter", shape = "ano")
+
 #----
 #----
-# [box_plot] 2003\2013 ####
-box_plot <- ggplot(data = pdados,
-                aes(x = ano,
-                    y = homic)) +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black", size=10),
-        axis.line             = element_line(size=1, colour = "black"),
-        panel.background      = element_rect(fill="white")) +
-  geom_boxplot() +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Município de São Paulo",
-       y        = "Taxa de homicídio",
-       color    = "Ano")
-# {barra03} ordem:2003 ##############
-barra03 <- ggplot(data = pdados,
-      aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits2003)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 1 (Centro)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("orange", "black"))
+# [histograma] 2003/2013 #### 
+library(plyr)
+mu <- ddply(dados, "ano", summarise, grp.mean=mean(homic))
 
-# {barra13} ordem:2013 ##########
-barra13 <- ggplot(data = pdados,
-       aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits2013)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 1 (Centro)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("orange", "black"))
-
+histogram <-ggplot(dados, aes(x=homic, fill=ano,
+                               colour = as.character(ano))) +
+                geom_histogram(fill="grey", position="dodge") + 
+                geom_vline(data=mu, aes(xintercept=grp.mean,
+                                        color=as.character(ano)),
+                linetype="dashed") +
+                theme(plot.title    = element_text(hjust=.5),
+                      plot.subtitle     = element_text(hjust=.5),
+                      axis.text         = element_text(colour="black", size=10),
+                      axis.line         = element_line(size=1, colour = "black"),
+                      panel.background  = element_rect(fill="white"),
+                      legend.position   = "top") +
+                scale_color_manual(values=c("orange", "black")) +
+                scale_fill_manual(values=c("orange", "grey")) +
+                coord_flip()
 #----
 #----
 # {barra1} Centro, ordem: 2013 ###########
 barra1 <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
-       aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_1)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 1 (Centro)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
-
-
-
+                  aes(x = distrito, y = homic, fill = ano)) +
+           geom_bar(stat     = "identity",
+                    position = "dodge", color="black") +
+           theme(plot.title         = element_text(hjust=.5),
+                 plot.subtitle      = element_text(hjust=.5),
+                 axis.text          = element_text(colour="black"),
+                 axis.text.x        = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                 axis.text.y        = element_text(size=13),
+                 axis.ticks         = element_line(),
+                 axis.line          = element_line(size=1,colour="black"),
+                 axis.title.x       = element_blank(),
+                 axis.title.y       = element_text(size = 13),
+                 panel.background   = element_rect(fill="white")) +
+           scale_x_discrete(limits=as_vector(limits_1)) +
+           labs(color = "ano", y = "Taxa de Homicídios") + 
+           scale_fill_manual("Ano", values = c("white", "black")) +
+           annotate("text", y = 187.5, x=5.5, label = "Seccional 2:\nSul", color="black") +
+           annotate("rect", ymin=170, ymax=205, xmin=4.6, xmax=6.4, alpha = .1)
+           
 
 # {barra2} Sul, ordem: 2013 ######
 barra2 <- ggplot(data = filter(pdados, seccional == "2 SUL"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_2)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 2 (Sul)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
-
-
-
+           geom_bar(stat     = "identity",
+                    position = "dodge", show.legend = F, color="black") +
+           theme(plot.title            = element_text(hjust=.5),
+                 plot.subtitle         = element_text(hjust=.5),
+                 axis.text             = element_text(colour="black"),
+                 axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                 axis.text.y           = element_text(size=13),
+                 axis.ticks            = element_line(),
+                 axis.line             = element_line(size=1,colour="black"),
+                 axis.title.x          = element_blank(),
+                 axis.title.y          = element_blank(),
+                 panel.background      = element_rect(fill="white")) +
+           scale_x_discrete(limits=as_vector(limits_2)) +
+           labs(color = "ano") + 
+           scale_fill_manual("Ano",values=c("white", "black")) +
+           scale_color_manual("Ano", values = c("black", "black")) +
+           scale_y_continuous(limits = c(0,255),
+                              breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
+           annotate("text", y = 187.5, x=5.5, label = "Seccional 2:\nSul", color="black") +
+           annotate("rect", ymin=170, ymax=205, xmin=4.6, xmax=6.4, alpha = .1)
 
 # {barra3} Oeste, ordem: 2013 ######
 barra3 <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_3)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 3 (Oeste)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
+           geom_bar(stat     = "identity",
+                    position = "dodge", show.legend = F, color="black") +
+           theme(plot.title            = element_text(hjust=.5),
+                plot.subtitle         = element_text(hjust=.5),
+                axis.text             = element_text(colour="black"),
+                axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                axis.text.y           = element_text(size=13),
+                axis.ticks            = element_line(),
+                axis.title.x          = element_blank(),
+                axis.title.y          = element_blank(),
+                axis.line             = element_line(size=1,colour="black"),
+                panel.background      = element_rect(fill="white")) +
+           scale_x_discrete( limits=as_vector(limits_3)) +
+           labs(color    = "ano") + 
+           scale_fill_manual("Ano",values=c("white", "black")) +
+           scale_color_manual("Ano", values = c("black", "black")) +
+           scale_y_continuous(limits = c(0,255),
+                              breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
+           annotate("text", y = 187.5, x=11, label = "Seccional 3:\nOeste", color="black") +
+           annotate("rect", ymin=170, ymax=205, xmin=9.1, xmax=12.8, alpha = .1)
+
 # {barra4} Oeste, ordem: 2013 ######
 barra4 <- ggplot(data = filter(pdados, seccional == "4 OESTE"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_4)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 4 (Oeste)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
+          geom_bar(stat     = "identity",
+                   position = "dodge", show.legend = F, color="black") +
+          theme(plot.title            = element_text(hjust=.5),
+                plot.subtitle         = element_text(hjust=.5),
+                axis.text             = element_text(colour="black"),
+                axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                axis.text.y           = element_text(size=13),
+                axis.ticks            = element_line(),
+                axis.line             = element_line(size=1,colour="black"),
+                axis.title.x          = element_blank(),
+                axis.title.y          = element_blank(),
+                panel.background      = element_rect(fill="white")) +
+          scale_x_discrete( limits=as_vector(limits_4)) +
+          labs(color    = "ano") + 
+          scale_fill_manual("Ano",values=c("white", "black")) +
+          scale_y_continuous(limits = c(0,255),
+                            breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
+          annotate("text", y = 187.5, x=7.7, label = "Seccional 4:\nOeste", color="black") +
+          annotate("rect", ymin=170, ymax=205, xmin=6.5, xmax=8.9, alpha = .1)
+
 # {barra5} Leste, ordem: 2013 ######
 barra5 <- ggplot(data = filter(pdados, seccional == "5 LESTE"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_5)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 5 (Leste)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
+              geom_bar(stat     = "identity",
+                       position = "dodge", show.legend = F, color="black") +
+              theme(plot.title            = element_text(hjust=.5),
+                    plot.subtitle         = element_text(hjust=.5),
+                    axis.text             = element_text(colour="black"),
+                    axis.title.x          = element_blank(),
+                    axis.title.y          = element_text(size = 13),
+                    axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                    axis.text.y           = element_text(size=13),
+                    axis.ticks            = element_line(),
+                    axis.line             = element_line(size=1,colour="black"),
+                    panel.background      = element_rect(fill="white")) +
+              scale_x_discrete(limits=as_vector(limits_5)) +
+              labs(color = "ano", y = "Taxa de Homicídios") + 
+              scale_fill_manual("Ano",values = c("white", "black")) +
+              scale_y_continuous(limits = c(0,255),
+                                 breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
+              annotate("text", y = 187.5, x=8, label = "Seccional 5:\nLeste", color="black") +
+              annotate("rect", ymin=170, ymax=205, xmin=6.7, xmax=9.3, alpha = .1)
+
+
 # {barra6} Santo Amaro, ordem: 2013 ######
 barra6 <- ggplot(data = filter(pdados, seccional == "6 SANTO AMARO"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_6)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 6 (Santo Amaro)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
+           geom_bar(stat     = "identity",
+                    position = "dodge", show.legend = F, color="black") +
+           theme(plot.title            = element_text(hjust=.5),
+                 plot.subtitle         = element_text(hjust=.5),
+                 axis.text             = element_text(colour="black"),
+                 axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                 axis.text.y           = element_text(size=13),
+                 axis.ticks            = element_line(),
+                 axis.line             = element_line(size=1,colour="black"),
+                 axis.title.x          = element_blank(),
+                 axis.title.y          = element_blank(),
+                 panel.background      = element_rect(fill="white")) +
+          scale_x_discrete( limits=as_vector(limits_6)) +
+          labs(color  = "ano") + 
+          scale_fill_manual("Ano",values=c("white", "black"))+ 
+          scale_y_continuous(limits = c(0,255),
+                             breaks=c(0,25,50,75,100,125,150,175,200,225,250)) +
+          annotate("text", y = 187.5, x=8.5, label = "Seccional 5:\nSanto Amaro", color="black") +
+          annotate("rect", ymin=170, ymax=205, xmin=7, xmax=10, alpha = .1)
 
 # {barra7} Itaquera, ordem: 2013 ######
 barra7 <- ggplot(data = filter(pdados, seccional == "7 ITAQUERA"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_7)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 7 (Itaquera)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
+           geom_bar(stat     = "identity",
+                    position = "dodge", show.legend = F, color="black") +
+           theme(plot.title            = element_text(hjust=.5),
+                 plot.subtitle         = element_text(hjust=.5),
+                 axis.text             = element_text(colour="black"),
+                 axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                 axis.text.y           = element_text(size=13),
+                 axis.ticks            = element_line(),
+                 axis.line             = element_line(size=1,colour="black"),
+                 axis.title.x          = element_blank(),
+                 axis.title.y          = element_blank(),
+                 panel.background      = element_rect(fill="white")) +
+           scale_x_discrete( limits=as_vector(limits_7)) +
+           labs(color = "ano") + 
+           scale_fill_manual("Ano",values=c("white", "black")) +
+           scale_y_continuous(limits = c(0,255),
+                              breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
+           annotate("text", y = 187.5, x=8.5, label = "Seccional 7:\nItaquera", color="black") +
+           annotate("rect", ymin=170, ymax=205, xmin=7, xmax=10, alpha = .1)
+
 # {barra8} São Mateus, ordem: 2013 ######
 barra8 <- ggplot(data = filter(pdados, seccional == "8 SÃO MATEUS"),
                  aes(x = distrito, y = homic, fill = ano)) +
-  geom_bar(stat     = "identity",
-           position = "dodge") +
-  theme(plot.title            = element_text(hjust=.5),
-        plot.subtitle         = element_text(hjust=.5),
-        axis.text             = element_text(colour="black"),
-        axis.text.x           = element_text(size=8,angle=90,hjust=1,vjust=.3),
-        axis.ticks            = element_line(),
-        axis.line             = element_line(size=1,colour="black"),
-        legend.position       = c(0.95, 0.85),
-        legend.title.align    = .5,
-        panel.background      = element_rect(fill="white")) +
-  scale_x_discrete(name   = "Distritos", limits=as_vector(limits_8)) +
-  labs(title    = "Taxa de homicídios por 100000 hab (2003 e 2013)",
-       subtitle = "Distritos MSP - Seccional 8 (São Mateus)",
-       y        = "Taxa de homicídio",
-       color    = "ano") + 
-  scale_fill_manual("Ano",values=c("black", "orange"))
+            geom_bar(stat     = "identity",
+                     position = "dodge",
+                     show.legend = F, color="black") +
+           theme(plot.title            = element_text(hjust=.5),
+                 plot.subtitle         = element_text(hjust=.5),
+                 axis.text             = element_text(color="black"),
+                 axis.text.x           = element_text(size=13,angle=90,hjust=1,vjust=.3),
+                 axis.text.y           = element_text(size=13),
+                 axis.ticks            = element_line(),
+                 axis.line             = element_line(size=1,color="black"),
+                 axis.title.x          = element_blank(),
+                 axis.title.y          = element_blank(),
+                 panel.background      = element_rect(fill="white")) +
+           scale_x_discrete( limits=as_vector(limits_8)) +
+           labs(color  = "ano") + 
+           scale_fill_manual("Ano",values=c("white", "black")) +
+           scale_y_continuous(limits = c(0,255),
+                              breaks =c (0,25,50,75,100,125,150,175,200,225,250)) +
+           annotate("text", y = 187.5, x=6.8, label = "Seccional 8:\nSão Mateus", color="black") +
+           annotate("rect", ymin=170, ymax=205, xmin=5.7, xmax=7.9, alpha = .1)
 
-#----
-#----
-# [pontos] (x, y, z) ########
-xyz <- ggplot(data  = filter(dados, ano==2003),
-              aes(x = jov1524,
-                  y = homic)) +
-  geom_smooth(method = "lm") +
-  geom_point(aes(color = as.factor(seccional),
-                 size  = eformais)) +
-  theme_classic()
-#----
-#----
+```
+
+```{r Editor de tabelas, results='asis', message=FALSE, warning=FALSE, include=FALSE}
+# Draw the summary table of Sepal.Length
+#::::::::::::::::::::::::::::::::::::::
+# Compute descriptive statistics by groups
+stable <- desc_statby((dados), measure.var = "homic",
+                      grps = "ano")
+stable1 <- stable[, c("ano", "length","mean", "median")]
+stable2 <- stable[,c("ano", "min","max", "iqr")]
+# Summary table plot, medium orange theme
+stable.p1 <- ggtexttable(stable1, rows = NULL)
+stable.p2 <- ggtexttable(stable2, rows = NULL)
+
+```
+
+```{r Editor de figuras, message=FALSE, warning=FALSE, include=FALSE}
+figure2 <- ggarrange(barra1, barra2, barra3, barra4, #####
+                    barra5, barra6, barra7, barra8,
+                    ncol=4, nrow=2, align="hv",
+                    common.legend = TRUE, legend = "top")
+
+figura2 <- annotate_figure(figure2, ######
+                top     = text_grob("Figura: Taxa de Homicídios (100000 habitantes) - Seccionais do Município de São Paulo (2003 e 2013)", color  = "black",
+                                       face   = "bold",
+                                       size   = 16,
+                                       family = "Times"),
+                bottom  = text_grob("Fonte: SSP/SP",
+                                     color = "black",
+                                     face  = "italic",
+                                     size  = 10),
+                left    = NA,
+                right   = NA,
+                fig.lab = NA, fig.lab.face = NA
+                )
+
+ 
 ```
 
 
-```{r Editor de tabelas, message=FALSE, warning=FALSE, include=FALSE}
-
-ht <- huxreg(jov1524,
-        baixopadrao,
-        rendamedia,
-        dprendamdia,
-        favela,
-        eformais,
-        mandato,
-        flagrante,
-        densidade, coefs=c("log(dados2013$jov1524)"="Jovens1524",
-                           "log(dados2013$rendamedia)"="Renda Média",
-                           "log(dados2013$dprendamedia)"="dp Renda Média",
-                           "log(dados2013$favela)"="Favela",
-                           "log(dados2013$eformais)"="Empregos/pop",
-                           "log(dados2013$mandato)"="Prisões Mandato",
-                           "log(dados2013$flagrante)"="Prisões Flagr.",
-                           "log(dados2013$densidade)"="dens. demogr."),
-                   bold_signif = 0.05)
-```
 
 # Introdução
 
@@ -412,111 +377,21 @@ Aqui eu vou falar da metodologia, com fórmulas
 
 ### A taxa de homicídio em 2003 e em 2013 em São Paulo
 
-```{r output: grafboxplot, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
+```{r output: graf_boxplot, echo=FALSE, fig.height=7, fig.width=7, message=FALSE, warning=FALSE}
 
-box_plot
+p1 <- ggarrange(stable.p1, stable.p2, ncol=1, nrow = 2)
+p2 <- ggarrange(boxplot, p1, ncol=2, nrow=1)
+p3 <- ggarrange(histograma, p2, ncol=1, nrow=2, common.legend = T)
+p3
 
-```
-
-
-\newpage   
-\blandscape
-
-```{r output: grafbarra03, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
-
-barra03
 
 ```
-   
-\elandscape
-\newpage
-\blandscape
-
-```{r output: grafbarra13, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
-
-barra13
-
-```
-   
-\elandscape
-\newpage
 
 ## Município de São Paulo - Seccionais
-
-### 1 - Seccional Centro
-
-```{r output: grafbarra1, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra1
-
-```
-
-
-### 2 - Seccional Sul
-
-```{r output: grafbarra2, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra2
-
-```
-
-### 3 - Seccional Oeste
-
-```{r output: grafbarra3, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra3
-
-```
-
-### 4 - Seccional Oeste
-
-```{r output: grafbarra4, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra4
-
-```
-
-### 5 - Seccional Leste
-
-```{r output: grafbarra5, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra5
-
-```
-
-### 6 - Seccional Santo Amaro
-
-```{r output: grafbarra6, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra6
-
-```
-
-### 7 - Seccional Itaquera
-
-```{r output: grafbarra7, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra7
-
-```
-
-### 8 - Seccional São Mateus
-
-```{r output: grafbarra8, echo=FALSE, fig.height=3, fig.width=4.5, message=FALSE, warning=FALSE}
-
-barra8
-
-```
-
-## Análise bivariada
-
-\newpage
 \blandscape
-
-```{r output: tabela1, echo=FALSE, message=FALSE, results="asis", warning=FALSE}
-print(ht)
+```{r output: grafs_barra, echo=FALSE, fig.height=12, fig.width=17, message=FALSE, warning=FALSE}
+figura2
 ```
-
 \elandscape
 \newpage
 
