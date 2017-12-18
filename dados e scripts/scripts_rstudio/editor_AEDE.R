@@ -1,30 +1,29 @@
 rm(list=ls())
 
-library(maptools)
-library(rgdal)
 library(spdep)
-library(classInt)
-library(RColorBrewer)
 library(tidyverse)
 library(ggrepel)
+library(ggpubr)
+library(wesanderson)
+library(ggrepel)
 
-# diretÓrio
-setwd("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
+# diretÓrio - Dell: rauld; HP: user
+setwd("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
 dir() # carregando a tabela principal
-dados <- read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+dados <- read_rds("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
 
 
 # Tabela (subset dados) :::::::::::::::::::::::::::::::::::::::::::::::::::
 dados <- data_frame(ano          = as.integer(dados$Q1),
-                distrito     = as.character(gsub(
-                  dados$distrito, pattern="_", replacement=" ")),
-                dpol         = as.integer(dados$Q12),
-                seccional    = as.character(dados$Seccional),
-                homic        = as.numeric((dados$Q22/dados$P)*100000),
-                i_moran      = rep(NA, nrow(dados)),
-                local_moran  = rep(NA, nrow(dados)),
-                pval_lcmoran = rep(NA, nrow(dados))
-                )
+                    distrito     = as.character(gsub(
+                           dados$distrito, pattern="_", replacement=" ")),
+                    dpol         = as.integer(dados$Q12),
+                    seccional    = as.character(dados$Seccional),
+                    homic        = as.numeric((dados$Q22/dados$P)*100000),
+                    i_moran      = rep(NA, nrow(dados)),
+                    local_moran  = rep(NA, nrow(dados)),
+                    pval_lcmoran = rep(NA, nrow(dados))
+                    )
 
 
 # um obj tibble para cada ano
@@ -77,11 +76,13 @@ dados <- dados %>% arrange(ano, dpol) %>%
                              dados2013$lag_homic))
 
 # Moran test ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-moran_03 <- moran.mc(dados2003$homic, listw=listw, nsim=999) # simulação MC
+moran_03 <- moran.mc(dados2003$homic, listw=listw, nsim=999)
 moran_13 <- moran.mc(dados2013$homic, listw=listw, nsim=999)
+# simulação MC, veja a distr. dos resíduos
+hist(moran_03$res, breaks = 50)
+hist(moran_13$res, breaks = 50)
 
 # guarda resultados nas tabelas
-
 dados2003$i_moran <- rep(moran_03$statistic, nrow(dados2003))
 dados2013$i_moran <- rep(moran_13$statistic, nrow(dados2013))
 
@@ -90,13 +91,11 @@ dados <- dados %>% arrange(ano) %>%
                          dados2013$i_moran)
          )
 
-hist(moran_03$res, breaks = 50)
-hist(moran_13$res, breaks = 50)
 
 # Moran.plot modo convencional ::::::::::::::::::::::::::::::::::::::::::::::
-# função moran.plot
+# função spdep::moran.plot
 moran.plot(as.vector(dados2003$homic_z),
-           w,
+           listw,
            zero.policy=T,
            spChk = NULL,
            main  = "I de Moran - Taxa de Homicídios 2003",
@@ -107,18 +106,14 @@ moran.plot(as.vector(dados2003$homic_z),
 
 
 moran.plot(as.vector(dados2013$homic_z),
-           w,
+           listw,
            zero.policy=T,
            spChk = NULL,
-           main  = "I de Moran - Taxa de Homicídios 2003",
+           main  = "I de Moran - Taxa de Homicídios 2013",
            xlab  = "Taxa de Homicídios",
            ylab  = "Taxa de homicídios defasada",
            labels = as.character(dados2003$distrito),
            quiet = NULL)
-
-
-
-
 
 # Moran Local :::::::::::::::::::::::::::::::::::::::::::::::::::::
 # tabelas de valores
@@ -141,7 +136,7 @@ dados <- dados %>% arrange(ano, dpol) %>%
                               dados2013$pval_lcmoran))
          )
 
-# identify the Moran plot quadrant for each observation this is some
+# identify the Local Moran plot quadrant for each observation this is some
 # serious slicing and illustrate the power of the bracket
 dados$quad_sig <- NA
 dados[(dados$homic_z >= 0 & dados$lag_homic_z >= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Alto-alto"
@@ -151,12 +146,93 @@ dados[(dados$homic_z <= 0 & dados$lag_homic_z >= 0) & (dados$pval_lcmoran <= 0.0
 dados[(dados$pval_lcmoran > 0.05), "quad_sig"] <- "Não sig."
 
 
-
 # Moran ggplot2 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+#2003 #filter(dados, ano==2003)
+moran2003 <-
 ggplot(filter(dados, ano==2003), aes(x=homic_z, y=lag_homic_z)) + 
-  geom_point(aes(color=as.factor(quad_sig))) +
-  geom_smooth(method=lm, se=FALSE)+ geom_rug(aes(color=as.factor(quad_sig))) +
-  theme_bw(base_size = 12) + theme(legend.position = "bottom") +
-  geom_vline(xintercept = 0) + geom_hline(yintercept = 0) 
+  geom_point(aes(color=as.factor(quad_sig)),
+             shape=21,
+             fill = "white",
+             size = 2,
+             stroke = 1.5) +
+  geom_rug(aes(color=as.factor(quad_sig))) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(hjust = .5),
+        legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()) +
+  labs(title = "2003",
+       x = "Taxa de homicídios",
+       y = "Lag - taxa de homicídio",
+       color = "I de Moran Local (p-valor<0,05)") +
+  scale_y_continuous(limits = c(-2,2), breaks=seq(-2,2, by=.5)) +
+  scale_x_continuous(limits = c(-8,8), breaks=seq(-8,8, by=2)) +
+  scale_color_manual(values=wes_palette(n=3, name="Darjeeling")) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  geom_abline(slope=0.1944380, #coef(lm(dados2003$lag_homic_z~dados2003$homic_z))
+              intercept=.0124981) +
+  geom_text_repel(data=subset(dados, ano == "2003" & quad_sig == "Alto-alto" | ano == "2003" & quad_sig == "Baixo-baixo"),
+                  aes(label=distrito),
+                  size = 3)+
+  geom_label( label = "Alto-alto", x = 7, y = 2, size = 3, colour = "black") +
+  geom_label( label = "Alto-baixo", x = 7, y = -2, size = 3, colour = "black") +
+  geom_label( label = "Baixo-baixo", x = -7, y = -2, size = 3, colour = "black") +
+  geom_label( label = "Baixo-alto", x = -7, y = 2, size = 3, colour = "black")
 
-  
+
+#2013
+moran2013 <-
+ggplot(filter(dados, ano==2013), aes(x=homic_z, y=lag_homic_z)) + 
+  geom_point(aes(color=as.factor(quad_sig)),
+             shape=21,
+             fill = "white",
+             size = 2,
+             stroke = 1.5) +
+  geom_rug(aes(color=as.factor(quad_sig))) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(hjust = .5),
+        axis.title.y = element_blank(),
+        legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()) +
+  labs(title = "2013",
+       x = "Taxa de homicídios",
+       color = "I de Moran Local (p-valor<0,05)") +
+  scale_y_continuous(limits = c(-2,2), breaks=seq(-2,2, by=.5)) +
+  scale_x_continuous(limits = c(-8,8), breaks=seq(-8,8, by=2)) +
+  scale_color_manual(values=wes_palette(n=3, name="Darjeeling")) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  geom_abline(slope=0.15693795, #coef(lm(dados2003$lag_homic_z~dados2003$homic_z))
+              intercept=0.02133708) +
+  geom_text_repel(data=subset(dados, ano == "2013" & quad_sig == "Alto-alto" | ano == "2013" & quad_sig == "Baixo-baixo"),
+                  aes(label=distrito),
+                  size = 3)+
+  geom_label(label = "Alto-alto", x = 7, y = 2, size = 3, colour = "black") +
+  geom_label( label = "Alto-baixo", x = 7, y = -2, size = 3, colour = "black") +
+  geom_label( label = "Baixo-baixo", x = -7, y = -2, size = 3, colour = "black") +
+  geom_label( label = "Baixo-alto", x = -7, y = 2, size = 3, colour = "black")
+
+# enquadrando gráficos
+fig <- ggarrange(moran2003,moran2013,
+                 ncol=2, nrow=1, # align="hv",
+                 common.legend = TRUE, legend = "top")
+
+fig_completa <- annotate_figure(fig, ######
+              top    = text_grob("Figura: Diagramas de dispersão de Moran (2003/2013) \n Índice global e local",
+                          color  = "black",
+                          face   = "bold",
+                          size   = 14),
+              bottom = text_grob("Fonte: Elaboração própria a partir de dados da SSP/SP",
+                          color  = "black",
+                          face  = "italic",
+                          size  = 10),
+                          left    = NA,
+                          right   = NA,
+                          fig.lab = NA, fig.lab.face = NA
+                       )
+fig_completa
+
