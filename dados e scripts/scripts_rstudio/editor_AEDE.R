@@ -8,9 +8,15 @@ library(wesanderson)
 library(ggrepel)
 
 # diretÓrio - Dell: rauld; HP: user
+<<<<<<< HEAD
 setwd("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
 dir() # carregando a tabela principal
 dados <- read_rds("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+=======
+setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
+dir() # carregando a tabela principal
+dados <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+>>>>>>> 881629e66ec876dd5707862b1e0b579bf0e70314
 
 
 # Tabela (subset dados) :::::::::::::::::::::::::::::::::::::::::::::::::::

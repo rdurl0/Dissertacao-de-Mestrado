@@ -33,11 +33,13 @@ library(tidyverse)
 library(readr)
 library(plm)
 library(ggpubr)
+library(ggrepel)
 ```
 
 ```{r Leitor de dados, message=FALSE, warning=FALSE, include=FALSE}
 
 # diretÓrio #########
+
 setwd("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
 dir() #\\user
 txt <- read_rds("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
@@ -63,9 +65,9 @@ dados <- tibble(ano          = as.integer(txt$Q1),
                 )
 
 # subsets ################
-
 seccional <- dados %>% select(seccional) %>% distinct(seccional) %>% arrange(seccional)
 
+# Esses vetores ajudarão a definir a ordem dos gráficos de barras
 limits_1 <- dados %>% filter(ano == 2003 & seccional == "1 CENTRO") %>% 
             select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 limits_2 <- dados %>% filter(ano == 2003 & seccional == "2 SUL") %>% 
@@ -83,6 +85,7 @@ limits_7 <- dados %>% filter(ano == 2003 & seccional == "7 ITAQUERA") %>%
 limits_8 <- dados %>% filter(ano == 2003 & seccional == "8 SÃO MATEUS") %>% 
             select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 
+# ISSO VAI TER Q SAIR! :::::::::::::::::::
 for(i in 1:160) {
   dados$homicmais <- NA
   dados$homicmais[1:i] <- dados$homic[1:i]+0.000001
@@ -93,6 +96,14 @@ dados$homicz <- as.numeric(dados$homicz)
 dados2013 <- filter(dados, ano==2013)
 dados2003 <- filter(dados, ano==2003)
 pdados <- pdata.frame(dados, c("dpol", "ano"))
+#:::::::::::::::::::::::::::::::::::::::::
+
+# Estatísticas descritivas
+# Compute descriptive statistics by groups
+stable <- desc_statby((dados), measure.var = "homic",
+                      grps = "ano")
+stable1 <- stable[, c("ano","mean", "min","median","max", "iqr")]
+stable1[,2:6] <- round(stable1[,2:6],2)
 
 ```
 
@@ -100,42 +111,44 @@ pdados <- pdata.frame(dados, c("dpol", "ano"))
 ```{r Editor de gráficos, message=FALSE, warning=FALSE, include=FALSE}
 
 ##################################################################
-#'@Gráficos                                              = 
+#'@Gráficos                                                      = 
 ##################################################### objetivo ######
 
+#----
+#----
 dados$ano <- as.character(dados$ano)
-histograma <- gghistogram(dados, x = "homic", #####
-                          add = "mean", rug = TRUE,
-                          color = "ano", fill = "ano",
-                          palette = c("black", "grey"))
+# {histograma} ###########
+histograma <-ggplot(dados, aes(x=homic)) +
+  geom_histogram(aes(y=..density.., fill=ano, color=ano), alpha=.3,position = "identity", bins = 80)+
+    theme(plot.title    = element_text(hjust=.5),
+        plot.subtitle     = element_text(hjust=.5),
+        axis.text         = element_text(colour="black", size=8),
+        axis.title        = element_text(colour="black", size=8),
+        axis.line         = element_line(size=.5, colour = "black"),
+        panel.background  = element_rect(fill="white"),
+        legend.position   = "top") +
+  labs(x="Taxa de homicídio (100.000/hab)", y="Densidade") +
+  geom_rug(aes(color=ano)) +
+  scale_color_manual(values = c("#E69F00","black")) +
+  scale_fill_manual(values = c("#E69F00","#999999")) +
+  geom_vline(data = filter(dados,ano=="2003"), aes(xintercept = mean(homic), color = ano), linetype = "dashed") +
+  geom_vline(data = filter(dados,ano=="2013"), aes(xintercept = mean(homic), color = ano), linetype = "dashed")
 
-boxplot <- ggboxplot(dados, x = "ano", y = "homic", #####
-                     palette =c("black", "grey"),
-                     add = "jitter", shape = "ano")
+# {boxplot} ###########
+boxplot <- ggplot(dados, aes(x=ano, y=homic)) +
+  geom_boxplot() +
+  geom_text(check_overlap = T, aes(label=distrito, color=ano), size=2.5)+
+  scale_color_manual(values = c("#E69F00","#999999")) +
+  theme(plot.title    = element_text(hjust=.5),
+        plot.subtitle     = element_text(hjust=.5),
+        axis.text         = element_text(colour="black", size=8),
+        axis.title        = element_text(colour="black", size=8),
+        axis.line         = element_line(size=.5, colour = "black"),
+        panel.background  = element_rect(fill="white"),
+        legend.position   = "none") +
+  labs(x="Ano",
+       y="Taxa de homicídio (100.000/hab)")
 
-#----
-#----
-# [histograma] 2003/2013 #### 
-library(plyr)
-mu <- ddply(dados, "ano", summarise, grp.mean=mean(homic))
-
-histogram <-ggplot(dados, aes(x=homic, fill=ano,
-                               colour = as.character(ano))) +
-                geom_histogram(fill="grey", position="dodge") + 
-                geom_vline(data=mu, aes(xintercept=grp.mean,
-                                        color=as.character(ano)),
-                linetype="dashed") +
-                theme(plot.title    = element_text(hjust=.5),
-                      plot.subtitle     = element_text(hjust=.5),
-                      axis.text         = element_text(colour="black", size=10),
-                      axis.line         = element_line(size=1, colour = "black"),
-                      panel.background  = element_rect(fill="white"),
-                      legend.position   = "top") +
-                scale_color_manual(values=c("orange", "black")) +
-                scale_fill_manual(values=c("orange", "grey")) +
-                coord_flip()
-#----
-#----
 # {barra1} Centro, ordem: 2013 ###########
 barra1 <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
                   aes(x = distrito, y = homic, fill = ano)) +
@@ -320,16 +333,7 @@ barra8 <- ggplot(data = filter(pdados, seccional == "8 SÃO MATEUS"),
 ```
 
 ```{r Editor de tabelas, results='asis', message=FALSE, warning=FALSE, include=FALSE}
-# Draw the summary table of Sepal.Length
-#::::::::::::::::::::::::::::::::::::::
-# Compute descriptive statistics by groups
-stable <- desc_statby((dados), measure.var = "homic",
-                      grps = "ano")
-stable1 <- stable[, c("ano", "length","mean", "median")]
-stable2 <- stable[,c("ano", "min","max", "iqr")]
-# Summary table plot, medium orange theme
 stable.p1 <- ggtexttable(stable1, rows = NULL)
-stable.p2 <- ggtexttable(stable2, rows = NULL)
 
 ```
 
@@ -374,11 +378,24 @@ Aqui eu vou falar da metodologia, com fórmulas
 
 ```{r output: graf_boxplot, echo=FALSE, fig.height=7, fig.width=7, message=FALSE, warning=FALSE}
 
-p1 <- ggarrange(stable.p1, stable.p2, ncol=1, nrow = 2)
+p1 <- ggarrange(stable.p1, ncol=1, nrow = 1)
 p2 <- ggarrange(boxplot, p1, ncol=2, nrow=1)
 p3 <- ggarrange(histograma, p2, ncol=1, nrow=2, common.legend = T)
+p3 <- annotate_figure(p3, ######
+                top     = text_grob("Figura: Taxa de Homicídios (100000 habitantes) \n município de São Paulo",
+                                    color  = "black",
+                                    face   = "bold",
+                                    size   = 12,
+                                    family = "Times"),
+                bottom  = text_grob("Fonte: SSP/SP",
+                                     color = "black",
+                                     face  = "italic",
+                                     size  = 8),
+                left    = NA,
+                right   = NA,
+                fig.lab = NA, fig.lab.face = NA
+                )
 p3
-
 
 ```
 
