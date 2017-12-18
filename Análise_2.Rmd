@@ -33,14 +33,15 @@ library(tidyverse)
 library(readr)
 library(plm)
 library(ggpubr)
+library(ggrepel)
 ```
 
 ```{r Leitor de dados, message=FALSE, warning=FALSE, include=FALSE}
 
 # diretÓrio #########
-setwd("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
-dir()
-txt <- read_rds("C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
+dir() #\\user
+txt <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
 
 # Tabela mãe #########
 dados <- tibble(ano          = as.integer(txt$Q1),
@@ -84,10 +85,11 @@ limits_8 <- dados %>% filter(ano == 2003 & seccional == "8 SÃO MATEUS") %>%
             select(distrito, homic) %>% arrange(desc(homic))  %>% select(distrito)
 
 for(i in 1:160) {
-  dados$homic[i] <- print(dados$homic[i])+0.000001
+  dados$homicmais <- NA
+  dados$homicmais[1:i] <- dados$homic[1:i]+0.000001
 }
 
-dados$homicz <- scale(dados$homic, center = TRUE, scale = TRUE)
+dados$homicz <- scale(dados$homicmais, center = TRUE, scale = TRUE)
 dados$homicz <- as.numeric(dados$homicz)
 dados2013 <- filter(dados, ano==2013)
 dados2003 <- filter(dados, ano==2003)
@@ -103,14 +105,38 @@ pdados <- pdata.frame(dados, c("dpol", "ano"))
 ##################################################### objetivo ######
 
 dados$ano <- as.character(dados$ano)
-histograma <- gghistogram(dados, x = "homic", #####
-                          add = "mean", rug = TRUE,
-                          color = "ano", fill = "ano",
-                          palette = c("black", "grey"))
+histograma <-ggplot(dados, aes(x=homic)) +
+  geom_histogram(aes(y=..density.., fill=ano, color=ano), alpha=.3,position = "identity", bins = 80)+
+    theme(plot.title    = element_text(hjust=.5),
+        plot.subtitle     = element_text(hjust=.5),
+        axis.text         = element_text(colour="black", size=8),
+        axis.title        = element_text(colour="black", size=8),
+        axis.line         = element_line(size=.5, colour = "black"),
+        panel.background  = element_rect(fill="white"),
+        legend.position   = "top") +
+  labs(x="Taxa de homicídio (100.000/hab)", y="Densidade") +
+  geom_rug(aes(color=ano)) +
+  scale_color_manual(values = c("#E69F00","black")) +
+  scale_fill_manual(values = c("#E69F00","#999999")) +
+  geom_vline(data = filter(dados,ano=="2003"), aes(xintercept = mean(homic), color = ano), linetype = "dashed") +
+  geom_vline(data = filter(dados,ano=="2013"), aes(xintercept = mean(homic), color = ano), linetype = "dashed")
 
-boxplot <- ggboxplot(dados, x = "ano", y = "homic", #####
-                     palette =c("black", "grey"),
-                     add = "jitter", shape = "ano")
+
+
+boxplot <- ggplot(dados, aes(x=ano, y=homic)) +
+  geom_boxplot() +
+  geom_text(check_overlap = T, aes(label=distrito, color=ano), size=2.5) +
+  scale_color_manual(values = c("#E69F00","#999999")) +
+  theme(plot.title    = element_text(hjust=.5),
+        plot.subtitle     = element_text(hjust=.5),
+        axis.text         = element_text(colour="black", size=8),
+        axis.title        = element_text(colour="black", size=8),
+        axis.line         = element_line(size=.5, colour = "black"),
+        panel.background  = element_rect(fill="white"),
+        legend.position   = "top") +
+  labs(x="Ano",
+       y="Taxa de homicídio (100.000/hab)")
+#  geom_text_repel(data=dados, aes(label = distrito))
 
 #----
 #----
@@ -151,10 +177,11 @@ barra1 <- ggplot(data = filter(pdados, seccional == "1 CENTRO"),
                  axis.title.y       = element_text(size = 13),
                  panel.background   = element_rect(fill="white")) +
            scale_x_discrete(limits=as_vector(limits_1)) +
+           scale_y_continuous(limits = c(0,255),
+                             breaks=c(0,25,50,75,100,125,150,175,200,225,250)) +
            labs(color = "ano", y = "Taxa de Homicídios") + 
            scale_fill_manual("Ano", values = c("white", "black")) +
-           annotate("text", y = 187.5, x=5.5, label = "Seccional 2:\nSul", color="black") +
-           annotate("rect", ymin=170, ymax=205, xmin=4.6, xmax=6.4, alpha = .1)
+           geom_label(y = 187.5, x=5.5, label = 'atop("Seccional 1:", bold("CENTRO"))', fill="white", colour="black", parse=T)
            
 
 # {barra2} Sul, ordem: 2013 ######
@@ -178,8 +205,7 @@ barra2 <- ggplot(data = filter(pdados, seccional == "2 SUL"),
            scale_color_manual("Ano", values = c("black", "black")) +
            scale_y_continuous(limits = c(0,255),
                               breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
-           annotate("text", y = 187.5, x=5.5, label = "Seccional 2:\nSul", color="black") +
-           annotate("rect", ymin=170, ymax=205, xmin=4.6, xmax=6.4, alpha = .1)
+           geom_label(y = 187.5, x=5.5, label = 'atop("Seccional 2:", bold("SUL"))', fill="white", colour="black", parse=T)
 
 # {barra3} Oeste, ordem: 2013 ######
 barra3 <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
@@ -202,8 +228,7 @@ barra3 <- ggplot(data = filter(pdados, seccional == "3 OESTE"),
            scale_color_manual("Ano", values = c("black", "black")) +
            scale_y_continuous(limits = c(0,255),
                               breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
-           annotate("text", y = 187.5, x=11, label = "Seccional 3:\nOeste", color="black") +
-           annotate("rect", ymin=170, ymax=205, xmin=9.1, xmax=12.8, alpha = .1)
+           geom_label(y = 187.5, x=11,label = 'atop("Seccional 3:", bold("OESTE"))', fill="white", colour="black", parse=T)
 
 # {barra4} Oeste, ordem: 2013 ######
 barra4 <- ggplot(data = filter(pdados, seccional == "4 OESTE"),
@@ -225,8 +250,7 @@ barra4 <- ggplot(data = filter(pdados, seccional == "4 OESTE"),
           scale_fill_manual("Ano",values=c("white", "black")) +
           scale_y_continuous(limits = c(0,255),
                             breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
-          annotate("text", y = 187.5, x=7.7, label = "Seccional 4:\nOeste", color="black") +
-          annotate("rect", ymin=170, ymax=205, xmin=6.5, xmax=8.9, alpha = .1)
+          geom_label(y = 187.5, x=7.7, label = 'atop("Seccional 4:", bold("OESTE"))', fill="white", colour="black", parse=T)
 
 # {barra5} Leste, ordem: 2013 ######
 barra5 <- ggplot(data = filter(pdados, seccional == "5 LESTE"),
@@ -248,9 +272,7 @@ barra5 <- ggplot(data = filter(pdados, seccional == "5 LESTE"),
               scale_fill_manual("Ano",values = c("white", "black")) +
               scale_y_continuous(limits = c(0,255),
                                  breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
-              annotate("text", y = 187.5, x=8, label = "Seccional 5:\nLeste", color="black") +
-              annotate("rect", ymin=170, ymax=205, xmin=6.7, xmax=9.3, alpha = .1)
-
+              geom_label(y = 187.5, x=8,label = 'atop("Seccional 5:", bold("LESTE"))', fill="white", colour="black", parse=T)
 
 # {barra6} Santo Amaro, ordem: 2013 ######
 barra6 <- ggplot(data = filter(pdados, seccional == "6 SANTO AMARO"),
@@ -272,8 +294,8 @@ barra6 <- ggplot(data = filter(pdados, seccional == "6 SANTO AMARO"),
           scale_fill_manual("Ano",values=c("white", "black"))+ 
           scale_y_continuous(limits = c(0,255),
                              breaks=c(0,25,50,75,100,125,150,175,200,225,250)) +
-          annotate("text", y = 187.5, x=8.5, label = "Seccional 5:\nSanto Amaro", color="black") +
-          annotate("rect", ymin=170, ymax=205, xmin=7, xmax=10, alpha = .1)
+          geom_label(y = 187.5, x=8.5,label = 'atop("Seccional 6:", bold("SANTO AMARO"))', fill="white", colour="black", parse=T)
+          
 
 # {barra7} Itaquera, ordem: 2013 ######
 barra7 <- ggplot(data = filter(pdados, seccional == "7 ITAQUERA"),
@@ -295,8 +317,8 @@ barra7 <- ggplot(data = filter(pdados, seccional == "7 ITAQUERA"),
            scale_fill_manual("Ano",values=c("white", "black")) +
            scale_y_continuous(limits = c(0,255),
                               breaks = c(0,25,50,75,100,125,150,175,200,225,250)) +
-           annotate("text", y = 187.5, x=8.5, label = "Seccional 7:\nItaquera", color="black") +
-           annotate("rect", ymin=170, ymax=205, xmin=7, xmax=10, alpha = .1)
+           geom_label(y = 187.5, x=8.5, label = 'atop("Seccional 7:", bold("ITAQUERA"))', fill="white", colour="black", parse=T)
+           
 
 # {barra8} São Mateus, ordem: 2013 ######
 barra8 <- ggplot(data = filter(pdados, seccional == "8 SÃO MATEUS"),
@@ -319,9 +341,7 @@ barra8 <- ggplot(data = filter(pdados, seccional == "8 SÃO MATEUS"),
            scale_fill_manual("Ano",values=c("white", "black")) +
            scale_y_continuous(limits = c(0,255),
                               breaks =c (0,25,50,75,100,125,150,175,200,225,250)) +
-           annotate("text", y = 187.5, x=6.8, label = "Seccional 8:\nSão Mateus", color="black") +
-           annotate("rect", ymin=170, ymax=205, xmin=5.7, xmax=7.9, alpha = .1)
-
+           geom_label(y = 187.5, x=6.8,label = 'atop("Seccional 8:", bold("SÃO MATEUS"))', fill="white", colour="black", parse=T)
 ```
 
 ```{r Editor de tabelas, results='asis', message=FALSE, warning=FALSE, include=FALSE}
@@ -382,8 +402,21 @@ Aqui eu vou falar da metodologia, com fórmulas
 p1 <- ggarrange(stable.p1, stable.p2, ncol=1, nrow = 2)
 p2 <- ggarrange(boxplot, p1, ncol=2, nrow=1)
 p3 <- ggarrange(histograma, p2, ncol=1, nrow=2, common.legend = T)
+p3 <- annotate_figure(p3, ######
+                top     = text_grob("Figura: Taxa de Homicídios (100000 habitantes) \n município de São Paulo",
+                                    color  = "black",
+                                    face   = "bold",
+                                    size   = 12,
+                                    family = "Times"),
+                bottom  = text_grob("Fonte: SSP/SP",
+                                     color = "black",
+                                     face  = "italic",
+                                     size  = 8),
+                left    = NA,
+                right   = NA,
+                fig.lab = NA, fig.lab.face = NA
+                )
 p3
-
 
 ```
 
