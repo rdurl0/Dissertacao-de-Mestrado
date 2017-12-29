@@ -6,7 +6,7 @@ author:
 date: "`r format(Sys.time(), '%d %B %Y')`"
 tags: [homicide, car theft, car robbery]
 abstract: |
- Nesta sesSão, a criminalidade foi analisada nos distritos Município de São Paulo. Foram coletadas as taxas de homicídio para o Município de São Paulo nos anos de 2003 e de 2013, compatibilizando distritos policiais (DP's) e distritos municipais (DM's). 
+ Nesta sessão, a criminalidade foi analisada nos distritos Município de São Paulo. Foram coletadas as taxas de homicídio para o Município de São Paulo nos anos de 2003 e de 2013, compatibilizando distritos policiais (DP's) e distritos municipais (DM's). 
 header-includes:
 - \usepackage{pdflscape}
 - \newcommand{\blandscape}{\begin{landscape}}
