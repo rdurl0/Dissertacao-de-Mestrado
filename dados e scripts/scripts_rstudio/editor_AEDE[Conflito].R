@@ -25,7 +25,6 @@ dados <- data_frame(ano          = as.integer(dados$Q1),
                     pval_lcmoran = rep(NA, nrow(dados))
                     )
 
-
 # um obj tibble para cada ano
 dados2003 <- dados %>% filter(ano=="2003") %>% arrange(dpol)
 dados2013 <- dados %>% filter(ano=="2013") %>% arrange(dpol)
@@ -34,7 +33,7 @@ dados2013 <- dados %>% filter(ano=="2013") %>% arrange(dpol)
 # Matriz W ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # diretório
 queen <- read.table("plan_queen.txt", h=T)
-dim(queen) # 80x80
+glimpse(queen) # 80x80
 
 # matriz esparsa
 queen <- as.matrix(queen) # matriz feita à mão
@@ -55,6 +54,7 @@ isSymmetric(queen) # pergunta se queen é simetrica
 # objeto 'listw', style="W" (padronizada na linha)
 w     <- mat2listw(queen, row.names = NULL, style="M")
 listw <- nb2listw(w$neighbours, glist=NULL, style="W", zero.policy=NULL) 
+summary(listw)
 
 # guardando lag_homic na tabela :::::::::::::::::::::::::::::::::::::::::::::::
 dados2003$lag_homic <- lag.listw(listw, dados2003$homic)
@@ -74,10 +74,12 @@ dados <- dados %>% arrange(ano, dpol) %>%
                              dados2013$lag_homic_z),
          lag_homic=combine(dados2003$lag_homic,
                              dados2013$lag_homic))
+glimpse(dados)
 
 # Moran test ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 moran_03 <- moran.mc(dados2003$homic, listw=listw, nsim=999)
 moran_13 <- moran.mc(dados2013$homic, listw=listw, nsim=999)
+
 # simulação MC, veja a distr. dos resíduos
 hist(moran_03$res, breaks = 50)
 hist(moran_13$res, breaks = 50)
@@ -135,6 +137,7 @@ dados <- dados %>% arrange(ano, dpol) %>%
          pval_lcmoran = as.numeric(combine(dados2003$pval_lcmoran,
                               dados2013$pval_lcmoran))
          )
+glimpse(dados)
 
 # identify the Local Moran plot quadrant for each observation this is some
 # serious slicing and illustrate the power of the bracket
@@ -235,4 +238,5 @@ fig_completa <- annotate_figure(fig, ######
                           fig.lab = NA, fig.lab.face = NA
                        )
 fig_completa
+
 

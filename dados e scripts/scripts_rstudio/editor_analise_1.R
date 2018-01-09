@@ -14,12 +14,13 @@ library(tidyverse)
 library(readxl)
 library(stringr)
 library(xml2)
+
 library(rvest)
 
 
 # Diretório ######################################################
 rm(list=ls())
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\planilhas_input")
+setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\planilhas_input")
 dir()
 
 #----
@@ -62,6 +63,7 @@ ocorr_natureza$`Total de delitos`        <- NULL
 ocorr_natureza$`Contra os constumes (*)` <- NULL
 ocorr_natureza$grupo         <- NULL
 ocorr_natureza$Entorpecentes <- NULL
+glimpse(ocorr_natureza)
 
 # reordena para mesclar com a tabela de descrição
 ocorr_natureza <- ocorr_natureza %>% select("ano", "local", "pessoa", "patrimônio",
@@ -119,7 +121,7 @@ write_rds(ocorr_natureza, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scri
 
 #----
 # Ocorrencias por tipo ####################
-
+rm(list=ls())
 dir()
 
 # leia a planilha e guarde os nomes
@@ -316,7 +318,7 @@ write_rds(pop, "C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabela
 #----
 # Diretório ######################################################
 rm(list=ls())
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\tabelas_output")
+setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_análise_1")
 dir()
 #----
 #----
