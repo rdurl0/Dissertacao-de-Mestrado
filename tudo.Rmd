@@ -28,12 +28,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-```{r label="limpadiretorio", echo=FALSE}
+```{r echo=FALSE}
 
 rm(list=ls())
 
 ```
-
+\newpage
 # códigos: Introdução e pacotes utilizados
 
 O objetivo deste projeto é reescrever minha dissertação de mestrado em ambiente 100% `R`.
@@ -50,8 +50,9 @@ Os seguintes pacotes foram utilizados:
 * `lubridate`: para séries temporais.
 * `ggpubr`: para organizar figuras
 * `ggrepel`: para lidar com `labels` em obj's. `ggplot`
+* `treemapify`: para criar gráficos de área
 
-```{r label="carrega pacotes", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 
 library(readr)
 library(tidyverse)
@@ -59,16 +60,18 @@ library(huxtable)
 library(lubridate)
 library(ggpubr)
 library(ggrepel)
-```
+library(treemapify)
 
+```
+\newpage
 # códigos: Estado de São Paulo
 
-## Carregando arquivo
+## Carregando arquivo:
 ### Para taxas anuais de homicídio por 100mil habitantes
 
 O código abaixo carrega dados anuais de homicídios e população por região no estado de São Paulo:
 
-```{r label="carrega dados1", warning=FALSE}
+```{r warning=FALSE}
 
 # lendo .rds
 estado_sp <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_análise_1\\tab_compara_txcrime_estadoSP.rds")
@@ -82,14 +85,14 @@ estado_sp <- estado_sp                                %>%
                summarise(populacao = sum(populacao),
                          homicidio = sum(homicidio))  %>%
                ungroup()                              %>%
-               mutate(local=rep("Total", 11))         %>%
+               mutate(local = rep("Total", 11))       %>%
                bind_rows(estado_sp)
 
 ```
 
 Um objeto do tipo `tibble`:
 
-```{r label="tibble estado_sp"}
+```{r}
 
 glimpse(estado_sp)
 
@@ -108,14 +111,14 @@ Onde:
 
 #### Adicionando variáveis
 A **taxa de homicídio** é calculada com o código:
-```{r label="calculo de taxa"}
+```{r}
 
 estado_sp$tx_homicidio <- (estado_sp$homicidio/estado_sp$populacao)*100000
 
 ```
 
 O resultado no objeto `tibble`: 
-```{r label="tibble final"}
+```{r}
 
 glimpse(estado_sp)
 
@@ -125,8 +128,8 @@ glimpse(estado_sp)
 
 O código abaixo carrga dados absolutos das Estatíticas Trimestrais da Secretaria de Segurança Pública.
 
-A variável `trimestre` apresenta valores correspondentes aos trimestres do ano de referência (p.e. `trimestre = 1` $\rightarrow$  1° Trimestre) e a periodicidade total é de _3° Trimestre de 1995_ até _1° Trimestre de 2016_:
-```{r abel="carrega dados 2", warning=FALSE}
+A variável `trimestre` apresenta valores correspondentes aos trimestres do ano de referência (p.e. `trimestre = "1"` $\rightarrow$  1° Trimestre) e a periodicidade total é de _3° Trimestre de 1995_ até _1° Trimestre de 2016_:
+```{r warning=FALSE}
 
 # arq .rds
 estado_sp_trim <- read_rds(
@@ -141,7 +144,7 @@ estado_sp_trim <- estado_sp_trim                          %>%
                    group_by(trimestre, ano)               %>%
                    summarise(homicidio = sum(homicidio))  %>%
                    ungroup()                              %>%
-                   mutate(local=rep("Total", 83))         %>%
+                   mutate(local = rep("Total", 83))       %>%
                    bind_rows(estado_sp_trim)              %>%
                    arrange(local, ano, trimestre)
 ```
@@ -150,21 +153,20 @@ Aplicamos `lubridate::quarter()` e `lubridate::ymd()` para lidar com anos e trim
 ```{r}
 
 trim <- quarter(
-        # a partir de uma sequencia de datas
-  seq(ymd("1995/7/1"), ymd("2016/1/30"), by = "quarter"),
+   seq(ymd("1995/7/1"), ymd("2016/1/30"), by = "quarter"),
           with_year    = T,
           fiscal_start = 1
           )
 
-estado_sp_trim <- estado_sp_trim %>%
-  mutate(data=rep(trim, 4)) %>% select(local,trimestre,ano,data,homicidio)
+estado_sp_trim <- estado_sp_trim                          %>%
+          mutate(data = rep(trim, 4))                     %>% 
+          select(local, trimestre, ano, data, homicidio)
 
 ```
 
 O resultado em uma `tibble`
 ```{r}
 
-# tibble
 estado_sp_trim
 
 ```
@@ -175,7 +177,7 @@ estado_sp_trim
 Agrupa-se a taxa de homicídio segundo as localidades:
 ```{r warning=FALSE, results="hide"}
 
-estat_descr     <- estado_sp                       %>%
+estat_descr <- estado_sp                           %>%
   group_by(local)                                  %>%
   # summarize() define as variáveis
   summarise(`Média`        = mean(tx_homicidio),
@@ -185,62 +187,62 @@ estat_descr     <- estado_sp                       %>%
             `Mínimo`       = min(tx_homicidio),
             `Máximo`       = max(tx_homicidio))    %>%
   ungroup()                                        %>%
-  rename("Localidade"=local)
+  rename("Localidade" = local)
 
 ```
 
 ### Figura 1: estatísticas trimestrais
 
 Os gráficos com dados por trimestre são gerados a partir da função `homic_trimestre()`, que aceita como argumentos as variáveis de `estado_sp_trim$local`:
-```{r label="gráfico1", warning=FALSE}
+```{r warning=FALSE}
 
 
-homic_trimestre <- function(x){ # x: c("Capital", "Interior", "Grande SP", "total")
+homic_trimestre <- function(x)  { # x:("Capital", "Interior", "Grande SP", "total")
   
-  ggplot(filter(estado_sp_trim, local==x),
-                          aes(x    = data,
-                              y    = homicidio,
-                              fill = local)) +
+  ggplot(filter(estado_sp_trim, local == x), aes(x = data, y = homicidio, fill = local)) +
             geom_line() +
             theme(axis.text.x = element_text(angle =  90)) +
             labs(title = paste(x),
-                 y        = "Homicídio",
-                 x        = "Ano")
+                 y     = "Homicídio",
+                 x     = "Ano")
            }
+
 ```
 
 Utilizamos o `ggpubr::ggarrange` para enquadrar as localidades.
-```{r label="figura1", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 
-quadro_homic_trimestre <- ggarrange( #os gráficos
+quadro_homic_trimestre <- ggarrange( # os gráficos
                                     homic_trimestre("Capital"),
                                     homic_trimestre("Grande SP"),
                                     homic_trimestre("Interior"),
                                     homic_trimestre("Total"),
-                                    #colunas, linhas, alinhamento e legenda
-                                    ncol  = 2,
-                                    nrow  = 2,
-                                    align = "hv",
-                                    common.legend = TRUE,
-                                    legend= "top")
+                                     # colunas, linhas, alinhamento e legenda
+                                    ncol   = 2,
+                                    nrow   = 2,
+                                    align  = "hv",
+                                    legend = "top",
+                                    common.legend = TRUE)
 
 ```
 
 Com `ggpubr::annotate_figure` edita-se o quadro: 
-```{r label="edfigura1", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 
-quadro_homic_trimestre <- annotate_figure(quadro_homic_trimestre, ######
-                top      = text_grob("Ocorrências de homicídios - 3T-1995 até 1T-2016",
-                                   color  = "black",
-                                   face   = "bold",
-                                   size   = 12,
-                                   family = "Times"),
-                bottom  = NA,
-                left    = NA,
-                right   = NA,
-                fig.lab = NA,
-                fig.lab.face = NA
-                )
+quadro_homic_trimestre <- annotate_figure( # A figura:
+                                          quadro_homic_trimestre,
+                                           # Configurando o quadro:
+                                          top     = text_grob(
+                        "Ocorrências de homicídios - 3T-1995 até 1T-2016",
+                                             color  = "black",
+                                             face   = "bold",
+                                             size   = 12,
+                                             family = "Times"),
+                                          bottom  = NA,
+                                          left    = NA,
+                                          right   = NA,
+                                          fig.lab = NA,
+                                          fig.lab.face = NA)
 
 ```
 
@@ -249,55 +251,51 @@ quadro_homic_trimestre <- annotate_figure(quadro_homic_trimestre, ######
 
 A função `perc(y,z)` aceita argumentos do vetor de interesse (`$homicidio` ou `$populacao`) e sua posição (`2=homicidios` e `3=populacao`):
 
-```{r label="gráfico2" , warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 
 perc <- function(y,z) { # y: .$homicidio; .$populacao;
                         # z: 3=homicidio; 2=populacao;
   
-  ggplot(estado_sp[-seq(11),], aes(x    = ano,
-                                   fill = local)) +
-     #geom 
-     geom_area(position = 'fill',
-            aes(y = as.numeric(eval(y)))) +
-     #tema
+  ggplot(estado_sp[-seq(11),], aes(x = ano, fill = local)) + 
+     geom_area(position = 'fill', aes(y = as.numeric(eval(y)))) +
      theme(legend.position = c(.8, .75),
            axis.text.x     = element_text(angle = 90)) +
-     #labs
      labs(x    = "Ano",
           fill = "Região",
-          y    = eval(paste("% de", colnames(estado_sp)[z]))
-          )
-  }
+          y    = eval(paste("% de", colnames(estado_sp)[z])))
+                       }
+
 ```
 
 Gerando o quadro:
-```{r label="figura2", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 
 quadro_percs <- ggarrange(perc(estado_sp[-seq(11),]$homicidio,3),
-                              perc(estado_sp[-seq(11),]$populacao,2),
-                     ncol  = 2,
-                     nrow  = 1,
-                     align = "hv",
-                     common.legend = TRUE,
-                     legend= "top"
-                     )
+                          perc(estado_sp[-seq(11),]$populacao,2),
+                     ncol   = 2,
+                     nrow   = 1,
+                     align  = "hv",
+                     legend = "top",
+                     common.legend = TRUE)
 
 ```
 
 Editando o quadro:
-```{r label="edfigura2", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
+
 quadro_percs <- annotate_figure(quadro_percs,
-                 top     = text_grob("% de ocorrências de homicídios e população residênte por região (2000 até 2010)",
-                                 color  = "black",
-                                 face   = "bold",
-                                 size   = 12,
-                                 family = "Times"),
-                 bottom  = NA,
-                 left    = NA,
-                 right   = NA,
-                 fig.lab = NA,
-                 fig.lab.face = NA
-                 )
+                                top     = text_grob(
+        "% de ocorrências de homicídios e população residênte por região (2000 até 2010)",
+                                   color  = "black",
+                                   face   = "bold",
+                                   size   = 12,
+                                   family = "Times"),
+                                bottom  = NA,
+                                left    = NA,
+                                right   = NA,
+                                fig.lab = NA,
+                                fig.lab.face = NA)
+
 ```
 
 ### Tabela 1: estatísticas descritivas
@@ -305,9 +303,7 @@ quadro_percs <- annotate_figure(quadro_percs,
 Cria a tabela `huxtable::hux()`:
 ```{r warning=FALSE, results="hide"}
 
-ht <- hux(estat_descr,
-          add_colnames = TRUE
-          )
+ht <- hux(estat_descr, add_colnames = TRUE)
 
 ```
 
@@ -325,44 +321,51 @@ ht <- ht                                      %>%
   set_width(.9)                               %>% # para posicionar no pdf
   set_position('center')                      %>% # para posicionar no pdf
   set_caption(
-    'Estatísticas descritivas - homicídios por 100.000 habitantes no Estado de São Paulo - Capital, RMSP e Interior - no período de 2000 a 2010'
+'Estatísticas descritivas - homicídios por 100.000 habitantes no Estado de São Paulo - Capital, RMSP e Interior - no período de 2000 a 2010'
     )
 
 ```
 
-### figura 3: Taxa de homicídios anuais - de 2000 até 2010
+### Figura 3: Taxa de homicídios anuais - de 2000 até 2010
 
 O Código abaixo faz os gráficos de taxas de homicídio anuais, novamente temos uma função(`homic_tx(x)`). Ela aceita como argumento as localidades `"Capital"`, `"Interior"`, `"Grande SP"` e "`Total`":
 
-```{r label="grafico3", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
+
+
 homic_tx <- function(x){
-  ggplot(filter(estado_sp, local==x)) +
-           geom_line(aes(x=ano,y=tx_homicidio)) +
-           theme(axis.text.x = element_text(angle =  90)) +
+ 
+   # x: nome da Localidade
+        ggplot(filter(estado_sp, local == x)) +
+           geom_line(aes(x = ano,y = tx_homicidio)) +
+           theme(axis.text.x = element_text(angle = 90)) +
            labs(title = paste(x),
                 y     = "Homicídio",
                 x     = "Ano")
-             }
+            
+   }
+
+
 ```
 
 Para gerar o quadro, analogamente às figuras anteriores:
-```{r label="figura3", warning=FALSE, message=FALSE}
-library(ggpubr)
+```{r warning=FALSE, message=FALSE}
+
 quadro_homic_tx <- ggarrange(homic_tx("Capital"),
                              homic_tx("Grande SP"),
                              homic_tx("Interior"),
                              homic_tx("Total"),
-                             ncol  = 2,
-                             nrow  = 2,
-                             align = "hv",
-                             common.legend = TRUE,
-                             legend = "top")
+                             ncol   = 2,
+                             nrow   = 2,
+                             align  = "hv",
+                             legend = "top",
+                             common.legend = TRUE)
 ```
 
 Editando o quadro:
-```{r label="edfigura3", warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
+
 quadro_homic_tx <- annotate_figure(quadro_homic_tx, ######
-                # Título
                 top = text_grob(
                   "Taxa de homicídios anuais - de 2000 até 2010",
                           color  = "black",
@@ -373,296 +376,244 @@ quadro_homic_tx <- annotate_figure(quadro_homic_tx, ######
                 left    = NA,
                 right   = NA,
                 fig.lab = NA,
-                fig.lab.face = NA
-                )
+                fig.lab.face = NA)
 ```
 
-
+\newpage
 
 # códigos: Município de São Paulo
+## carregando arquivo:
+```{r message=FALSE, warning=FALSE}
+# lê os dados
+msp <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL.rds")
 
-```{r Leitor de dados, message=FALSE, warning=FALSE}
-# diretÓrio #########
-setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
-dir() #\\user
-txt <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
+# subset
+msp <- msp %>%
+  select(ano, distrito, dpol = distrito_num, seccional, homicidio, populacao)
 
-# Tabela mãe #########
-dados <- tibble(ano      = as.integer(txt$Q1),
-                distrito = as.character(gsub(txt$distrito, pattern="_", replacement=" ")),
-                dpol     = as.integer(txt$Q12),
-                seccional= as.character(txt$Seccional),
-                homic    = as.numeric((txt$Q22/txt$P)*100000),
-                roubovcl = as.numeric((txt$Q40/txt$P)*100000),
-                furtovcl = as.numeric((txt$Q43/txt$P)*100000)
-                )
-
-# transformações ################
-# subset seccional
-seccional <- dados %>%
-  select(seccional) %>% 
-  distinct(seccional) %>%
-  arrange(seccional)
-
-# Ordena barras em geom_bar()+scale_x_discrete()
-limits <- function(x) {
-  dados %>%
-    filter(ano == 2003 & seccional == x) %>%
-    select(distrito, homic) %>%
-    arrange(desc(homic))  %>%
-    select(distrito)
-  } # my first function!
-
-# subset ano
-dados2013 <- filter(dados, ano==2013)
-dados2003 <- filter(dados, ano==2003)
-
-# Estatísticas descritivas
-# Compute descriptive statistics by groups
-stable  <- desc_statby((dados), measure.var = "homic", grps = "ano")
-stable1 <- stable[, c("ano","mean","min","median","max","iqr")]
-stable1[,2:6] <- round(stable1[,2:6],2)
+# taxa de homicídio
+msp$tx_homicidio <- (msp$homicidio/msp$populacao)*100000 
 
 ```
 
+## Estatísticas descritivas
 
-```{r Editor de gráficos, message=FALSE, warning=FALSE}
+### Figura 1: Histograma da taxa de homicídios por ano de referência:
 
-##################################################################
-#'@Gráficos                                                      = 
-##################################################### objetivo ######
 
-#----
-#----
-dados$ano <- as.character(dados$ano)
-#----
-#----
-# {histograma} ###########
-histograma <- ggplot(dados, aes(x=homic)) +
-  geom_histogram(aes(y=..density.., fill=ano, color=ano), alpha=.3 ,position = "identity", bins = 80)+
-    theme(plot.title    = element_text(hjust=.5),
-        plot.subtitle     = element_text(hjust=.5),
-        axis.text         = element_text(colour="black", size=8),
-        axis.title        = element_text(colour="black", size=8),
-        axis.line         = element_line(size=.5, colour = "black"),
-        panel.background  = element_rect(fill="white"),
-        legend.position   = "top") +
-  labs(x="Taxa de homicídio (100.000/hab)", y="Densidade") +
-  geom_rug(aes(color=ano)) +
-  scale_color_manual(values = c("#E69F00","black")) +
-  scale_fill_manual(values = c("#E69F00","#999999")) +
-  geom_vline(data = filter(dados,ano=="2003"), aes(xintercept = mean(homic), color = ano), linetype = "dashed") +
-  geom_vline(data = filter(dados,ano=="2013"), aes(xintercept = mean(homic), color = ano), linetype = "dashed")
+```{r message=FALSE, warning=FALSE, fig.height=3.5, fig.width=5, fig.align='center'}
+
+msp$ano <- as.character(msp$ano)
+
+histograma <- ggplot(msp, aes(x = tx_homicidio)) +
+    geom_histogram(aes(y = ..density.., fill = ano, color = ano),
+                   alpha = .3, position = "identity", bins = 80) +
+    theme(plot.title       = element_text(hjust = .5, size = 10),
+          axis.text        = element_text(colour = "black", size = 8),
+          axis.title       = element_text(colour = "black", size = 8),
+          axis.line        = element_line(size = .5, colour = "black"),
+          panel.background = element_rect(fill = "white"),
+          legend.position  = "top") +
+    labs(title = "Taxa de homicídios por 100.000 habitantes (2003 e 2013)",
+         x     = "Taxa de homicídio (100.000/hab)",
+         y     = "Densidade") +
+    geom_rug(aes(color = ano)) +
+    scale_color_manual(values = c("#E69F00","black")) +
+    scale_fill_manual(values = c("#E69F00","#999999")) +
+    geom_vline(data = filter(msp,ano == "2003"),
+               aes(xintercept = mean(tx_homicidio), color = ano), linetype = "dashed") +
+    geom_vline(data = filter(msp,ano == "2013"),
+               aes(xintercept = mean(tx_homicidio), color = ano), linetype = "dashed")
+
+```
+
+### Figura 2: Histograma e boxplot da taxa de homicídios por ano de referência:
+
+```{r message=FALSE, warning=FALSE, fig.height=3, fig.width=3, fig.align='center'}
+
+msp$ano <- as.character(msp$ano)
 
 # {boxplot} ###########
-boxplot <- ggplot(dados, aes(x=ano, y=homic)) +
-  geom_boxplot() +
-  geom_text(check_overlap = T, aes(label=distrito, color=ano), size=2.5)+
-  scale_color_manual(values = c("#E69F00","#999999")) +
-  theme(plot.title    = element_text(hjust=.5),
-        plot.subtitle     = element_text(hjust=.5),
-        axis.text         = element_text(colour="black", size=8),
-        axis.title        = element_text(colour="black", size=8),
-        axis.line         = element_line(size=.5, colour = "black"),
-        panel.background  = element_rect(fill="white"),
-        legend.position   = "none") +
-  labs(x="Ano",
-       y="Taxa de homicídio (100.000/hab)")
-
-
-# Gráficos de barra ::::::::::::::::::::::::::::::::::::::::::::::::
-# um layout:
-mylayout <- list( # para colocar no barra2
-  geom_bar(stat       = "identity",
-           position   = "dodge",
-           show.legend= F,
-           alpha      = .5,
-           color      = "black"), # salva lista e troca '+' por ','
-   theme(plot.title      = element_text(hjust=.5),
-         plot.subtitle   = element_text(hjust=.5),
-         axis.text       = element_text(colour="black"),
-         axis.text.x     = element_text(size=13,angle=90,hjust=1,vjust=.3),
-         axis.text.y     = element_text(size=13),
-         axis.ticks      = element_line(),
-         axis.line       = element_line(size=1,colour="black"),
-         axis.title.x    = element_blank(),
-         axis.title.y    = element_blank(),
-         panel.background= element_rect(fill="white")),
-   labs(color = "ano"),
-   scale_fill_manual(values = c("#E69F00","#999999")),
-   scale_color_manual(dados$ano, values = c("#E69F00","black")),
-   scale_y_continuous(limits = c(0,255),
-                      breaks = c(0,25,50,75,100,125,150,175,200,225,250))
-               )
-
-# {barra1} Centro, ordem: 2013 ###########
-barra1 <- ggplot(data = filter(dados, seccional == "1 CENTRO"),
-                  aes(x = distrito, y = homic, fill = ano, color=ano)) +
-           scale_x_discrete(limits=as_vector(limits("1 CENTRO"))) +
-           geom_label(y     = 187.5,
-                      x     = 5.5,
-                      label = 'atop("Seccional 1:", bold("CENTRO"))',
-                      fill  = "white",
-                      colour= "black",
-                      parse = T) +
-          # o primeiro gráfico deve conter legenda
-           geom_bar(stat       = "identity",
-                    position   = "dodge",
-                    color      = "black",
-                    alpha      = .5) +
-           mylayout[-1] #inclui geom_bar() manualmente
-
-# {barra2} Sul, ordem: 2013 ######
-barra2 <- ggplot(data = filter(dados, seccional == "2 SUL"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-           scale_x_discrete(limits=as_vector(limits("2 SUL"))) +
-           geom_label(y      = 187.5,
-                      x      = 5.5,
-                      label  = 'atop("Seccional 2:", bold("SUL"))',
-                      fill   = "white",
-                      colour = "black",
-                      parse  = T) +
-           mylayout
-           
-
-# {barra3} Oeste, ordem: 2013 ######
-barra3 <- ggplot(data = filter(dados, seccional == "3 OESTE"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-           scale_x_discrete(limits = as_vector(limits("3 OESTE"))) +
-           geom_label(y     = 187.5,
-                      x     = 11,
-                      label = 'atop("Seccional 3:", bold("OESTE"))',
-                      fill  = "white",
-                      colour= "black",
-                      parse = T) +
-           mylayout
-
-# {barra4} Oeste, ordem: 2013 ######
-barra4 <- ggplot(data = filter(dados, seccional == "4 OESTE"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-          scale_x_discrete(limits=as_vector(limits("4 OESTE"))) +
-          geom_label(y     = 187.5,
-                     x     = 7.7,
-                     label = 'atop("Seccional 4:", bold("OESTE"))',
-                     fill  = "white",
-                     colour= "black",
-                     parse = T) +
-          mylayout
-
-# {barra5} Leste, ordem: 2013 ######
-barra5 <- ggplot(data = filter(dados, seccional == "5 LESTE"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-              scale_x_discrete(limits=as_vector(limits("5 LESTE"))) +
-              ylab("Taxa de Homicídios") + 
-              geom_label(y     = 187.5,
-                         x     = 8,
-                         label = 'atop("Seccional 5:", bold("LESTE"))',
-                         fill  = "white",
-                         colour="black",
-                         parse =T) +
-              mylayout
-
-# {barra6} Santo Amaro, ordem: 2013 ######
-barra6 <- ggplot(data = filter(dados, seccional == "6 SANTO AMARO"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-            scale_x_discrete( limits=as_vector(limits("6 SANTO AMARO"))) +
-            geom_label(y     = 187.5,
-                       x     = 8.5,
-                       label = 'atop("Seccional 6:", bold("SANTO AMARO"))',
-                       fill  = "white",
-                       colour= "black",
-                       parse = T) +
-            mylayout
-          
-
-# {barra7} Itaquera, ordem: 2013 ######
-barra7 <- ggplot(data = filter(dados, seccional == "7 ITAQUERA"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-           scale_x_discrete( limits=as_vector(limits("7 ITAQUERA"))) +
-           geom_label(y     = 187.5,
-                      x     = 8.5,
-                      label = 'atop("Seccional 7:", bold("ITAQUERA"))',
-                      fill  = "white",
-                      colour= "black",
-                      parse = T) +
-            mylayout
-           
-
-# {barra8} São Mateus, ordem: 2013 ######
-barra8 <- ggplot(data = filter(dados, seccional == "8 SÃO MATEUS"),
-                 aes(x = distrito, y = homic, fill = ano)) +
-           scale_x_discrete(limits=as_vector(limits("8 SÃO MATEUS"))) +
-           geom_label(y     = 187.5,
-                      x     = 6.8,
-                      label = 'atop("Seccional 8:", bold("SÃO MATEUS"))',
-                      fill  = "white",
-                      colour= "black",
-                      parse = T) +
-           mylayout
-```
-
-```{r Editor de tabelas, results='asis', message=FALSE, warning=FALSE}
-stable.p1 <- ggtexttable(stable1, rows = NULL)
+boxplot <- ggplot(msp, aes(x = ano, y = tx_homicidio)) +
+      geom_boxplot() +
+      geom_text(check_overlap = T, aes(label = distrito, color = ano), size = 2.5) +
+      scale_color_manual(values = c("#E69F00","#999999")) +
+      theme(plot.title       = element_text(hjust = .5, size = 8),
+            plot.subtitle    = element_text(hjust = .5, size = 6),
+            axis.text        = element_text(colour = "black", size = 8),
+            axis.title       = element_text(colour = "black", size = 8),
+            axis.line        = element_line(size = .5, colour = "black"),
+            panel.background = element_rect(fill = "white"),
+            legend.position  = "none") +
+      labs(title    = "Taxa de homicídios por 100.000 habitantes",
+           subtitle = "(2003 e 2013)",
+           x     = "Ano",
+           y     = "Taxa de homicídio (100.000/hab)")
 
 ```
 
-```{r Editor de figuras, message=FALSE, warning=FALSE}
-figure2 <- ggarrange(barra1, barra2, barra3, barra4, #####
-                     barra5, barra6, barra7, barra8,
+
+### Figura 3: Taxas de homicídio por seccional (2000 e 2010):
+
+A função abaixo é criada para ordenar as barras dos gráficos da maior para a menor, isso permite uma visualização mais adequada, ressaltando os maiores e menores valores da taxa de homicídios por Seccional:
+```{r message=FALSE, warning=FALSE}
+
+limits <- function(x) {  # x: nome da seccional
+  
+   msp                                   %>%
+    filter(ano == 2003 & seccional == x) %>%
+    select(distrito, tx_homicidio)       %>%
+    arrange(desc(tx_homicidio))          %>%
+    select(distrito)
+    # Ordena barras em geom_bar()+scale_x_discrete()
+  
+  } # first function!
+
+```
+
+Uma função para gerar as 8 seccionais:
+```{r message=FALSE, warning=FALSE}
+
+homic_seccional <- function(x, y, z){
+     
+
+     ggplot(data = filter(msp, seccional == x),
+                      aes(x = distrito, y = tx_homicidio, fill = ano)) +
+       scale_x_discrete(limits = as_vector(limits(x))) +
+       geom_bar(stat        = "identity",
+                position    = "dodge",
+                show.legend = y,
+                alpha       = .5,
+                color       = "black") +
+       theme(plot.title       = element_text(hjust = .5),
+             plot.subtitle    = element_text(hjust = .5, margin = margin(b = -10)),
+             axis.text        = element_text(colour = "black"),
+             axis.text.x      = element_text(size = 10,angle = 90,hjust = 1,vjust = .3),
+             axis.text.y      = element_text(size = 10),
+             axis.ticks       = element_line(),
+             axis.line        = element_line(size = 1,colour = "black"),
+             axis.title.x     = element_blank(),
+             axis.title.y     = element_text(size = 10),
+             panel.background = element_rect(fill = "white")) +
+       labs(color    = "Ano",
+            subtitle = paste("Seccional: ", x),
+            y        = z) +
+       scale_fill_manual(values = c("#E69F00","#999999")) +
+       scale_color_manual(msp$ano, values = c("#E69F00","black")) +
+       scale_y_continuous(limits = c(0,255),
+                          breaks = c(0,25,50,75,100,125,150,175,200,225,250))
+         
+      }
+
+
+```
+
+E a figura
+```{r message=FALSE, warning=FALSE}
+
+quadro_msp_secc <- ggarrange(homic_seccional("1 CENTRO", T, "Taxa de Homicídio"),
+                     homic_seccional("2 SUL", F, ""),
+                     homic_seccional("3 OESTE", F, ""),
+                     homic_seccional("4 OESTE", F, ""),
+                     homic_seccional("5 LESTE", F, "Taxa de Homicídio"),
+                     homic_seccional("6 SANTO AMARO", F, ""),
+                     homic_seccional("7 ITAQUERA", F, ""),
+                     homic_seccional("8 SÃO MATEUS", F, ""),
                      ncol  = 4,
                      nrow  = 2,
                      align = "hv",
                      common.legend = TRUE,
                      legend= "top")
 
-figura2 <- annotate_figure(figure2, ######
-                top = text_grob("Figura: Taxa de Homicídios (100000 habitantes) - Seccionais do Município de São Paulo (2003 e 2013)", color  = "black",
-                                       face   = "bold",
-                                       size   = 16,
-                                       family = "Times"),
+```
+
+Editando a figura
+```{r  message=FALSE, warning=FALSE}
+
+quadro_msp_secc <- annotate_figure(quadro_msp_secc,
+                top = text_grob(
+"Taxa de Homicídios (100000 habitantes) - Seccionais do Município de São Paulo (2003 e 2013)",
+                                color  = "black",
+                                face   = "bold",
+                                size   = 16,
+                                family = "Times"),
                 bottom  = text_grob("Fonte: SSP/SP",
-                                     color = "black",
-                                     face  = "italic",
-                                     size  = 10),
+                                    color = "black",
+                                    face  = "italic",
+                                    size  = 10),
                 left    = NA,
                 right   = NA,
-                fig.lab = NA, fig.lab.face = NA
+                fig.lab = NA,
+                fig.lab.face = NA
                 )
 
 ```
 
-```{r output: graf_boxplot, fig.height=7, fig.width=7, message=FALSE, warning=FALSE}
 
-p1 <- ggarrange(stable.p1, ncol=1, nrow = 1)
-p2 <- ggarrange(boxplot, p1, ncol=2, nrow=1)
-p3 <- ggarrange(histograma, p2, ncol=1, nrow=2, common.legend = T)
-p3 <- annotate_figure(p3, ######
-                top     = text_grob("Figura: Taxa de Homicídios (100000 habitantes) \n município de São Paulo",
-                                    color  = "black",
-                                    face   = "bold",
-                                    size   = 12,
-                                    family = "Times"),
+### Figura 4: Município de São Paulo - Seccionais
+
+O gráfico de área é gerado com:
+```{r echo=FALSE, fig.height=11, fig.width=17, message=FALSE, warning=FALSE, fig.align='center'}
+graf_area <- function(x) {
+                             #x: "2003" ou "2013"
+                          ggplot(filter(msp, ano == x),
+                                  aes(area     = homicidio,
+                                  fill     = seccional,
+                                  label    = distrito,
+                                  subgroup = seccional)) +
+                             geom_treemap() +
+                             geom_treemap_subgroup_border() +
+                             geom_treemap_text(fontface = "italic",
+                                               colour   = "white",
+                                               place    = "centre", 
+                                               grow     = TRUE) +
+                             labs(title=(paste("Proporção das ocorrências de Homicídios em ",x)))
+                    }
+
+
+```
+
+E a figura
+```{r message=FALSE, warning=FALSE}
+
+quadro_msp_area <- ggarrange(graf_area("2003"),
+                             graf_area("2013"),
+                     ncol  = 1,
+                     nrow  = 2,
+                     align = "hv",
+                     common.legend = TRUE,
+                     legend= "top")
+
+```
+
+Editando a figura
+```{r  message=FALSE, warning=FALSE}
+
+quadro_msp_area <- annotate_figure(quadro_msp_area,
+                top = text_grob(
+"Número de homicídios - Seccionais do Município de São Paulo (2003 e 2013)",
+                                color  = "black",
+                                face   = "bold",
+                                size   = 22,
+                                family = "Times"),
                 bottom  = text_grob("Fonte: SSP/SP",
-                                     color = "black",
-                                     face  = "italic",
-                                     size  = 8),
+                                    color = "black",
+                                    face  = "italic",
+                                    size  = 12),
                 left    = NA,
                 right   = NA,
-                fig.lab = NA, fig.lab.face = NA
+                fig.lab = NA,
+                fig.lab.face = NA
                 )
-p3
 
 ```
 
-## Município de São Paulo - Seccionais
-\blandscape
-```{r output: grafs_barra, echo=FALSE, fig.height=12, fig.width=17, message=FALSE, warning=FALSE}
-figura2
-```
-\elandscape
+
 \newpage
 
+
 # Estado de São Paulo
+
 
 ## Dados
 
@@ -689,7 +640,7 @@ Principais pontos:
 
 O quadro abaixo apresenta a evolução da taxa de homicídio nas localidades:
 
-```{r label="figura1.1", echo=FALSE, fig.height=5, fig.width=7, warning=FALSE, message=FALSE}
+```{r echo=FALSE, fig.height=5, fig.width=7, warning=FALSE, message=FALSE}
 
 quadro_homic_trimestre
 
@@ -699,7 +650,7 @@ quadro_homic_trimestre
 
 A evolução da população e das ocorrências de homicídios, em termos proporcionais, por localidade no período 2000-2010.
 
-```{r label="gráfico2.1", echo=FALSE, fig.height=3, fig.width=7, warning=FALSE, message=FALSE}
+```{r echo=FALSE, fig.height=3, fig.width=7, warning=FALSE, message=FALSE}
 
 quadro_percs
 
@@ -714,7 +665,288 @@ ht
 
 
 O quadro abaixo mostra a evolução da taxa de homicídios no período 2000-2010 por localidade:
-```{r label="grafico3.1", echo=FALSE, fig.height=5, fig.width=7, warning=FALSE, message=FALSE}
+```{r echo=FALSE, fig.height=5, fig.width=7, warning=FALSE, message=FALSE}
+
 quadro_homic_tx
+
+```
+\newpage
+
+# Município de São paulo
+
+
+## Análise Exploratória
+
+### Figura 1: Distribuição da taxa de homicídio no Município de São Paulo (2003 - 2013)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=3.5, fig.width=5, fig.align='center'}
+
+histograma
+
+```
+
+### figura 2; Taxas de homicídio no município de São Paulo
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=3, fig.width=3, fig.align='center'}
+
+boxplot
+
+```
+
+
+
+\newpage
+\blandscape
+
+### Figura 3: Taxas de homicídio por seccional (2003 e 2013):
+
+```{r echo=FALSE, fig.height=11, fig.width=17, message=FALSE, warning=FALSE, fig.align='center'}
+
+quadro_msp_secc
+
+```
+\elandscape
+\newpage
+
+### Figura 4: Homicídios no Município de São Paulo - Seccionais
+
+```{r echo=FALSE, fig.height=19, fig.width=17, message=FALSE, warning=FALSE, fig.align='center'}
+
+quadro_msp_area
+
+```
+
+\newpage
+### Figura 5: Diagrama de dispersão de Moran e Estatística I de Moran
+
+Carrega os dados:
+```{r, warning=FALSE, message=FALSE}
+
+# os dados
+rm(list=ls())
+
+# pacotes (news: spdep, wesanderson - warning=FALSE, message=FALSE)
+
+library(spdep)
+library(tidyverse)
+library(ggrepel)
+library(ggpubr)
+library(wesanderson)
+library(ggrepel)
+
+# lê os dados
+msp <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL.rds")
+
+# subset
+msp <- msp %>%
+  select(ano, distrito, dpol = distrito_num, seccional, homicidio, populacao)
+
+# taxa de homicídio
+msp$tx_homicidio <- (msp$homicidio / msp$populacao) * 100000
+
+# variáveis com características espaciais
+msp <- msp %>%
+  mutate(tx_homicidio_z     = rep(NA, nrow(msp)),
+         lag_tx_homicidio   = rep(NA, nrow(msp)),
+         lag_tx_homicidio_z = rep(NA, nrow(msp)),
+         i_moran            = rep(NA, nrow(msp)))
+
+glimpse(msp)
+
+```
+Carrega a matriz:
+```{r}
+# a matriz queen
+
+# diretório
+queen <- read.table("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\plan_queen.txt", h=T)
+dim(queen) # 80x80
+
+# Vamos criar uma matriz de contiguidade através de uma matriz esparsa
+queen <- as.matrix(queen) # matriz feita à mão
+is.matrix(queen)
+
+# Nomeando colunas e linhas com o num. do istrito_pol correspondente
+distrito_pol <- c("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15",
+                  "16","17","21","22","23","24","25","27","28","29","31","33","34",
+                  "36","37","38","40","41","42","44","46","47","48","50","51","53",
+                  "54","55","56","58","59","62","63","65","66","67","68","70","74",
+                  "75","77","78","81","87","89","91","92","93","96","98","99","100",
+                  "102","103","1857","2073","3052","3264","3597","4380","4572","4969",
+                  "85101","193990","268395")
+
+colnames(queen) <- distrito_pol
+rownames(queen) <- distrito_pol
+
+isSymmetric(queen) # pergunta se queen é simetrica
+
+# objeto 'listw', style="W" (padronizada na linha)
+w     <- mat2listw(queen, row.names = NULL, style="M")
+listw <- nb2listw(w$neighbours, glist=NULL, style="W", zero.policy=NULL) 
+summary(listw)
+
+```
+
+insere variáveis defasadas
+```{r warning=FALSE, message=FALSE}
+
+defasando <- function(x) { #"2003" e "2013"
+  msp                                                                                 %>%
+   filter(ano == x)                                                                   %>%
+   arrange(dpol)                                                                      %>%
+   mutate(tx_homicidio_z     = (tx_homicidio - mean(tx_homicidio)) / sd(tx_homicidio),
+          lag_tx_homicidio   = lag.listw(listw, tx_homicidio),
+          lag_tx_homicidio_z = lag.listw(listw, tx_homicidio_z),
+          i_moran            = rep( moran(tx_homicidio,
+                                         listw=listw, 80, Szero(listw))[[1]],80)) %>%     
+   bind_cols(., as_data_frame(localmoran(msp%>%
+                                           filter(ano==x)%>%
+                                           select(tx_homicidio)%>%
+                                           as_vector(),
+                                        listw = listw)) )                              %>%
+   select(-E.Ii, -Var.Ii, -Z.Ii)                                                      %>%
+   rename(local_moran        = Ii,
+          local_moran_pvalor = `Pr(z > 0)`)
+}
+msp <- bind_rows(defasando("2003"), defasando("2013"))
+
+
+
+```
+
+Veja os resíduos de Moran:
+```{r fig.height=3, fig.width=7, fig.align="center"}
+
+# simulação MC, veja a distr. dos resíduos
+par(mfrow = c(1, 2))
+hist(moran.mc(msp$tx_homicidio[msp$ano == "2003"], listw=listw, nsim=999)[[7]],
+                   breaks = 50,
+                   main   = list("moran_10$res", cex = 1),
+                   xlab   = list("resíduos", cex = .8),
+                   ylab   = list("Frequência", cex=.8))
+hist(moran.mc(msp$tx_homicidio[msp$ano == "2013"], listw=listw, nsim=999)[[7]],
+                   breaks = 50,
+                   main   = list("moran_13$res",cex = 1),
+                   xlab   = list("resíduos", cex = .8),
+                   ylab = "")
+
+```
+
+```{r fig.height=5, fig.width=7, fig.align="center"}
+# Moran.plot modo convencional ::::::::::::::::::::::::::::::::::::::::::::::
+# função spdep::moran.plot
+
+par(mfrow = c(1, 2))
+
+moran.plot(as.vector(msp$tx_homicidio_z[msp$ano == "2003"]),
+           listw,
+           zero.policy = T,
+           spChk  = NULL,
+           xlab   = list("Taxa de homicidios", cex = .8),
+           ylab   = list("Taxa de homicidios defasada", cex = .8),
+           labels = as.character(msp$distrito[msp$ano == "2003"]),
+           quiet  = NULL)
+title(main = list("2003", cex = .8))
+
+moran.plot(as.vector(msp$tx_homicidio_z[msp$ano == "2013"]),
+           listw,
+           zero.policy = T,
+           spChk  = NULL,
+           xlab   = list("Taxa de homicidios", cex = .8),
+           ylab   = list(""),
+           labels = paste(msp$distrito[msp$ano == "2013"]),
+           quiet  = NULL)
+title(main=list("2013", cex = .8))
+```
+
+
+```{r}
+
+
+# identify the Local Moran plot quadrant for each observation this is some
+# serious slicing and illustrate the power of the bracket
+msp$quad_sig <- NA
+msp[(msp$tx_homicidio_z >= 0 & msp$lag_tx_homicidio_z >= 0) & (msp$local_moran_pvalor <= 0.05), "quad_sig"] <- "Alto-alto"
+msp[(msp$tx_homicidio_z <= 0 & msp$lag_tx_homicidio_z <= 0) & (msp$local_moran_pvalor <= 0.05), "quad_sig"] <- "Baixo-baixo"
+msp[(msp$tx_homicidio_z >= 0 & msp$lag_tx_homicidio_z <= 0) & (msp$local_moran_pvalor <= 0.05), "quad_sig"] <- "Alto-baixo"
+msp[(msp$tx_homicidio_z <= 0 & msp$lag_tx_homicidio_z >= 0) & (msp$local_moran_pvalor <= 0.05), "quad_sig"] <- "Baixo-alto"
+msp[(msp$local_moran_pvalor > 0.05), "quad_sig"] <- "Não sig."
+glimpse(msp)
+
+library(huxtable)
+huxreg(
+lm(msp$lag_tx_homicidio_z[msp$ano=="2003"]~msp$tx_homicidio_z[msp$ano=="2003"]),
+lm(msp$lag_tx_homicidio_z[msp$ano=="2013"]~msp$tx_homicidio_z[msp$ano=="2013"])
+) %>%
+  set_bold(1, everywhere, TRUE)               %>% # negrito
+  set_top_border(1, everywhere, 1)            %>% # borda superior
+  set_right_padding(3)                        %>% # para posicionar
+  set_left_padding(3)                         %>% # para posicionar
+  set_width(1)                               %>% # para posicionar no pdf
+  set_position('center')                      %>% # para posicionar no pdf
+  set_caption(
+'Indicador I de Moran'
+    )
+```
+
+```{r}
+# Moran ggplot2 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+#2003 #filter(msp, ano==2003)
+moran_ggplot <- function(x){
+ggplot(filter(msp, ano==x), aes(x=tx_homicidio_z, y=lag_tx_homicidio_z,color=as.factor(quad_sig))) + 
+  geom_point(shape= 21,
+             fill = "white",
+             size = 1.5,
+             stroke = 1.5) +
+  geom_rug(aes(color=as.factor(quad_sig))) +
+  theme_bw(base_size = 8) +
+  theme(plot.title = element_text(hjust = .5),
+        legend.position = "bottom",
+        legend.text = element_text(size = 8),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank()) +
+  labs(title = paste(x),
+       x = "Taxa de homicidios",
+       y="",
+       color = "I de Moran Local (p-valor<0,05)") +
+  scale_y_continuous(limits = c(-2,2), breaks=seq(-2,2, by=.5)) +
+  scale_x_continuous(limits = c(-8,8), breaks=seq(-8,8, by=2)) +
+  scale_color_manual(values=c('Alto-alto'='red', 'Baixo-baixo'='blue', 'Não sig.'='gray')) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  geom_abline(slope=coef(lm(msp$lag_tx_homicidio_z[msp$ano==x]~msp$tx_homicidio_z[msp$ano==x])),
+              intercept=coef(lm(msp$lag_tx_homicidio_z[msp$ano==x]~msp$tx_homicidio_z[msp$ano==x]))[["(Intercept)"]]) +
+  geom_text_repel(data=subset(msp, ano == x & quad_sig == "Alto-alto" | ano == x & quad_sig == "Baixo-baixo"),
+                  aes(label = distrito),
+                  size = 3)+
+  geom_label( label = "Alto-alto", x = 7, y = 2, size = 2, colour = "black") +
+  geom_label( label = "Alto-baixo", x = 7, y = -2, size = 2, colour = "black") +
+  geom_label( label = "Baixo-baixo", x = -7, y = -2, size = 2, colour = "black") +
+  geom_label( label = "Baixo-alto", x = -7, y = 2, size = 2, colour = "black")
+     }
+
+moran_ggplot("2013")
+
+# enquadrando gráficos
+fig <- ggarrange(moran_ggplot("2003") + ylab("Lag - taxa de homicidios") ,moran_ggplot("2013"),
+                 ncol=2, nrow=1, # align="hv",
+                 common.legend = TRUE, legend = "top")
+
+fig_completa <- annotate_figure(fig, ######
+              top    = text_grob("Figura: Diagramas de dispersão de Moran (2003/2013) \n Índice global e local",
+                          color  = "black",
+                          face   = "bold",
+                          size   = 10),
+              bottom = text_grob("Fonte: Elaboração própria a partir de dados da SSP/SP",
+                          color  = "black",
+                          face  = "italic",
+                          size  = 8),
+                          left    = NA,
+                          right   = NA,
+                          fig.lab = NA, fig.lab.face = NA
+                       )
+fig_completa
+
 
 ```

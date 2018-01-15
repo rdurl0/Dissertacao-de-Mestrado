@@ -10,20 +10,24 @@ library(ggrepel)
 # diretÓrio - Dell: rauld; HP: user
 setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output")
 dir() # carregando a tabela principal
-dados <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
-
+dados <- read_rds("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL.rds")
+glimpse(dados)
 
 # Tabela (subset dados) :::::::::::::::::::::::::::::::::::::::::::::::::::
-dados <- data_frame(ano          = as.integer(dados$Q1),
-                    distrito     = as.character(gsub(
-                           dados$distrito, pattern="_", replacement=" ")),
-                    dpol         = as.integer(dados$Q12),
-                    seccional    = as.character(dados$Seccional),
-                    homic        = as.numeric((dados$Q22/dados$P)*100000),
-                    i_moran      = rep(NA, nrow(dados)),
-                    local_moran  = rep(NA, nrow(dados)),
-                    pval_lcmoran = rep(NA, nrow(dados))
-                    )
+dados <- dados %>%
+  transmute(ano          = ano,
+            distrito     = distrito,
+            dpol         = distrito_num,
+            seccional    = seccional,
+            homicidio    = homicidio,
+            populacao    = populacao,
+            i_moran      = rep(NA, nrow(dados)),
+            local_moran  = rep(NA, nrow(dados)),
+            pval_lcmoran = rep(NA, nrow(dados))
+            )
+
+# taxa de homicídio
+dados$tx_homicidio <- (dados$homicidio/dados$populacao)*100000
 
 # um obj tibble para cada ano
 dados2003 <- dados %>% filter(ano=="2003") %>% arrange(dpol)
@@ -56,29 +60,29 @@ w     <- mat2listw(queen, row.names = NULL, style="M")
 listw <- nb2listw(w$neighbours, glist=NULL, style="W", zero.policy=NULL) 
 summary(listw)
 
-# guardando lag_homic na tabela :::::::::::::::::::::::::::::::::::::::::::::::
-dados2003$lag_homic <- lag.listw(listw, dados2003$homic)
-dados2013$lag_homic <- lag.listw(listw, dados2013$homic)
+# guardando lag_tx_homicidio na tabela :::::::::::::::::::::::::::::::::::::::::::::::
+dados2003$lag_tx_homicidio <- lag.listw(listw, dados2003$tx_homicidio)
+dados2013$lag_tx_homicidio <- lag.listw(listw, dados2013$tx_homicidio)
 
 # valores padronizados
-dados2003$homic_z <- scale(dados2003$homic, center = TRUE, scale = TRUE)
-dados2013$homic_z <- scale(dados2013$homic, center = TRUE, scale = TRUE)
+dados2003$tx_homicidio_z <- scale(dados2003$tx_homicidio, center = TRUE, scale = TRUE)
+dados2013$tx_homicidio_z <- scale(dados2013$tx_homicidio, center = TRUE, scale = TRUE)
 
-dados2003$lag_homic_z <- lag.listw(listw, dados2003$homic_z)
-dados2013$lag_homic_z <- lag.listw(listw, dados2013$homic_z)
+dados2003$lag_tx_homicidio_z <- lag.listw(listw, dados2003$tx_homicidio_z)
+dados2013$lag_tx_homicidio_z <- lag.listw(listw, dados2013$tx_homicidio_z)
 
 dados <- dados %>% arrange(ano, dpol) %>% 
-  mutate(homic_z=combine(dados2003$homic_z,
-                         dados2013$homic_z),
-         lag_homic_z=combine(dados2003$lag_homic_z,
-                             dados2013$lag_homic_z),
-         lag_homic=combine(dados2003$lag_homic,
-                             dados2013$lag_homic))
+  mutate(tx_homicidio_z=combine(dados2003$tx_homicidio_z,
+                         dados2013$tx_homicidio_z),
+         lag_tx_homicidio_z=combine(dados2003$lag_tx_homicidio_z,
+                             dados2013$lag_tx_homicidio_z),
+         lag_tx_homicidio=combine(dados2003$lag_tx_homicidio,
+                             dados2013$lag_tx_homicidio))
 glimpse(dados)
 
 # Moran test ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-moran_03 <- moran.mc(dados2003$homic, listw=listw, nsim=999)
-moran_13 <- moran.mc(dados2013$homic, listw=listw, nsim=999)
+moran_03 <- moran.mc(dados2003$tx_homicidio, listw=listw, nsim=999)
+moran_13 <- moran.mc(dados2013$tx_homicidio, listw=listw, nsim=999)
 
 # simulação MC, veja a distr. dos resíduos
 hist(moran_03$res, breaks = 50)
@@ -96,40 +100,42 @@ dados <- dados %>% arrange(ano) %>%
 
 # Moran.plot modo convencional ::::::::::::::::::::::::::::::::::::::::::::::
 # função spdep::moran.plot
-moran.plot(as.vector(dados2003$homic_z),
+moran.plot(as.vector(dados2003$tx_homicidio_z),
            listw,
            zero.policy=T,
            spChk = NULL,
-           main  = "I de Moran - Taxa de Homicídios 2003",
-           xlab  = "Taxa de Homicídios",
-           ylab  = "Taxa de homicídios defasada",
+           main  = "I de Moran - Taxa de tx_homicidioídios 2003",
+           xlab  = "Taxa de tx_homicidioídios",
+           ylab  = "Taxa de tx_homicidioídios defasada",
            labels = as.character(dados2003$distrito),
            quiet = NULL)
 
 
-moran.plot(as.vector(dados2013$homic_z),
+moran.plot(as.vector(dados2013$tx_homicidio_z),
            listw,
            zero.policy=T,
            spChk = NULL,
-           main  = "I de Moran - Taxa de Homicídios 2013",
-           xlab  = "Taxa de Homicídios",
-           ylab  = "Taxa de homicídios defasada",
+           main  = "I de Moran - Taxa de tx_homicidioídios 2013",
+           xlab  = "Taxa de tx_homicidioídios",
+           ylab  = "Taxa de tx_homicidioídios defasada",
            labels = as.character(dados2003$distrito),
            quiet = NULL)
 
 # Moran Local :::::::::::::::::::::::::::::::::::::::::::::::::::::
 # tabelas de valores
-lcm <- localmoran(dados2003$homic, listw = listw)
-lcm <- as_data_frame(lcm)
+lcm03 <- localmoran(dados2003$tx_homicidio, listw = listw)
+lcm03 <- as_data_frame(lcm03)
+lcm13 <- localmoran(dados2013$tx_homicidio, listw = listw)
+lcm13 <- as_data_frame(lcm13)
 
 # guardando na tabela
 dados2003 <- dados2003 %>% arrange(dpol) %>% 
-  mutate(local_moran=round(lcm$Ii,3),
-         pval_lcmoran=round(lcm$`Pr(z > 0)`,3))
+  mutate(local_moran=round(lcm03$Ii,3),
+         pval_lcmoran=round(lcm03$`Pr(z > 0)`,3))
 
 dados2013 <- dados2013 %>% arrange(dpol) %>% 
-  mutate(local_moran=round(lcm$Ii,3),
-         pval_lcmoran=round(lcm$`Pr(z > 0)`,3))
+  mutate(local_moran=round(lcm13$Ii,3),
+         pval_lcmoran=round(lcm13$`Pr(z > 0)`,3))
 
 dados <- dados %>% arrange(ano, dpol) %>%
   mutate(local_moran  = as.numeric(combine(dados2003$local_moran,
@@ -142,17 +148,17 @@ glimpse(dados)
 # identify the Local Moran plot quadrant for each observation this is some
 # serious slicing and illustrate the power of the bracket
 dados$quad_sig <- NA
-dados[(dados$homic_z >= 0 & dados$lag_homic_z >= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Alto-alto"
-dados[(dados$homic_z <= 0 & dados$lag_homic_z <= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Baixo-baixo"
-dados[(dados$homic_z >= 0 & dados$lag_homic_z <= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Alto-baixo"
-dados[(dados$homic_z <= 0 & dados$lag_homic_z >= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Baixo-alto"
+dados[(dados$tx_homicidio_z >= 0 & dados$lag_tx_homicidio_z >= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Alto-alto"
+dados[(dados$tx_homicidio_z <= 0 & dados$lag_tx_homicidio_z <= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Baixo-baixo"
+dados[(dados$tx_homicidio_z >= 0 & dados$lag_tx_homicidio_z <= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Alto-baixo"
+dados[(dados$tx_homicidio_z <= 0 & dados$lag_tx_homicidio_z >= 0) & (dados$pval_lcmoran <= 0.05), "quad_sig"] <- "Baixo-alto"
 dados[(dados$pval_lcmoran > 0.05), "quad_sig"] <- "Não sig."
 
 
 # Moran ggplot2 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #2003 #filter(dados, ano==2003)
 moran2003 <-
-ggplot(filter(dados, ano==2003), aes(x=homic_z, y=lag_homic_z)) + 
+ggplot(filter(dados, ano==2003), aes(x=tx_homicidio_z, y=lag_tx_homicidio_z)) + 
   geom_point(aes(color=as.factor(quad_sig)),
              shape=21,
              fill = "white",
@@ -166,15 +172,15 @@ ggplot(filter(dados, ano==2003), aes(x=homic_z, y=lag_homic_z)) +
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank()) +
   labs(title = "2003",
-       x = "Taxa de homicídios",
-       y = "Lag - taxa de homicídio",
+       x = "Taxa de tx_homicidioídios",
+       y = "Lag - taxa de tx_homicidioídio",
        color = "I de Moran Local (p-valor<0,05)") +
   scale_y_continuous(limits = c(-2,2), breaks=seq(-2,2, by=.5)) +
   scale_x_continuous(limits = c(-8,8), breaks=seq(-8,8, by=2)) +
   scale_color_manual(values=wes_palette(n=3, name="Darjeeling")) +
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  geom_abline(slope=0.1944380, #coef(lm(dados2003$lag_homic_z~dados2003$homic_z))
+  geom_abline(slope=0.1944380, #coef(lm(dados2003$lag_tx_homicidio_z~dados2003$tx_homicidio_z))
               intercept=.0124981) +
   geom_text_repel(data=subset(dados, ano == "2003" & quad_sig == "Alto-alto" | ano == "2003" & quad_sig == "Baixo-baixo"),
                   aes(label=distrito),
@@ -187,7 +193,7 @@ ggplot(filter(dados, ano==2003), aes(x=homic_z, y=lag_homic_z)) +
 
 #2013
 moran2013 <-
-ggplot(filter(dados, ano==2013), aes(x=homic_z, y=lag_homic_z)) + 
+ggplot(filter(dados, ano==2013), aes(x=tx_homicidio_z, y=lag_tx_homicidio_z)) + 
   geom_point(aes(color=as.factor(quad_sig)),
              shape=21,
              fill = "white",
@@ -202,22 +208,22 @@ ggplot(filter(dados, ano==2013), aes(x=homic_z, y=lag_homic_z)) +
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank()) +
   labs(title = "2013",
-       x = "Taxa de homicídios",
+       x = "Taxa de tx_homicidioídios",
        color = "I de Moran Local (p-valor<0,05)") +
   scale_y_continuous(limits = c(-2,2), breaks=seq(-2,2, by=.5)) +
   scale_x_continuous(limits = c(-8,8), breaks=seq(-8,8, by=2)) +
-  scale_color_manual(values=wes_palette(n=3, name="Darjeeling")) +
+  scale_color_manual(values=wes_palette(n=2, name="Darjeeling")) +
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
-  geom_abline(slope=0.15693795, #coef(lm(dados2003$lag_homic_z~dados2003$homic_z))
+  geom_abline(slope=0.15693795, #coef(lm(dados2003$lag_tx_homicidio_z~dados2003$tx_homicidio_z))
               intercept=0.02133708) +
-  geom_text_repel(data=subset(dados, ano == "2013" & quad_sig == "Alto-alto" | ano == "2013" & quad_sig == "Baixo-baixo"),
+  geom_text_repel(data=subset(dados, ano == "2013" & quad_sig == "Alto-alto"),
                   aes(label=distrito),
                   size = 3)+
   geom_label(label = "Alto-alto", x = 7, y = 2, size = 3, colour = "black") +
-  geom_label( label = "Alto-baixo", x = 7, y = -2, size = 3, colour = "black") +
-  geom_label( label = "Baixo-baixo", x = -7, y = -2, size = 3, colour = "black") +
-  geom_label( label = "Baixo-alto", x = -7, y = 2, size = 3, colour = "black")
+  geom_label(label = "Alto-baixo", x = 7, y = -2, size = 3, colour = "black") +
+  geom_label(label = "Baixo-baixo", x = -7, y = -2, size = 3, colour = "black") +
+  geom_label(label = "Baixo-alto", x = -7, y = 2, size = 3, colour = "black")
 
 # enquadrando gráficos
 fig <- ggarrange(moran2003,moran2013,

@@ -13,106 +13,107 @@ library(readr)
 #----
 #----
 # Diretório ######################################################
-setwd("C:\\Users\\user\\Google Drive\\meu_projeto\\dados e scripts\\planilhas_input")
+setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\planilhas_input")
 dir()
-#----
-#----
-# tibble #########################################################
+
 # leitura
-txt           <- read.table("plan_FINAL.txt", h=T, stringsAsFactors = F)
+txt <- read.table("plan_FINAL.txt", h=T, stringsAsFactors = F)
+
 # Encoding
 txt$Q13       <- iconv(txt$Q13,from="UTF-8", to="latin2//TRANSLIT")
+txt$Q13       <- as.character(gsub(txt$Q13, pattern="_", replacement=" "))
 txt$Seccional <- iconv(txt$Seccional,from="UTF-8", to="latin2//TRANSLIT")
+
 # tibble
 txt           <- as_tibble(txt)
-# output
-write_rds(txt, "C:\\Users\\User\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL")
-#----
-#----
-##################################################################
-#'@ÍNDICE_DE_VARIÁVEIS                                           =
-###############################################################
+glimpse(txt)
 
- #
-Q1 		# Ano (2013) (SSP)
-Q12		# Num Distrito Policial (SSP)
-Q13		# Nome Distrito Policial (SSP)
- #
-Q22		# Homicídio doloso (SSP)
-Q24		# Tentativa de homicídio (SSP)
-Q27		# Lesão corporal dolosa (SSP)
-Q30		# Latrocínio (SSP)
-Q32		# Estupro (SSP)
-Q34		# Ocorrências de tráfico de entorpecentes (SSP)
-Q37		# Ocorrências de porte ilegal de arma (SSP)
-Q40		# Roubo de veículo (SSP)
-Q41		# Roubo - outros (SSP)
-Q43		# Furto - outros (SSP)
-Q44		# Furto de veículos (SSP)
- #
-V1		# óitos por causas externas (por local de resid?ncia/DATASUS)
- #
-P		    # População total (2013/IBGE-SEADE)
-PJ_ONU	# População jovem ONU(15 a 24 anos)(2013/IBGE-SEADE)
-PJ_CNJ	# População jovem CNJ(15 a 29 anos)(2013/IBGE-SEADE)
-PM	   	# População masculina(2013/IBGE-SEADE)
-PMJ_ONU	# População jovem mascul ONU(2013/IBGE-SEADE)
-PMJ_CNJ	# População jovem mascul CNJ(2013/IBGE-SEADE)
- #
-fvl		# Estimativa de domicílios em favelas (2010) (SEHAB/HABISP)
- #
-Tot_DR	  # Total de domicílios particulares permanentes com rendimento (2010)(CENSO/IBGE) 
-até_5		  # Domicílios part perm com rendimento at? 5 s.m.
-x5_a_10	  # Domicílios part perm com rendimento >5 at? 10 s.m
-X10_a_20	# Domicílios part perm com rendimento >10 at? 20 s.m
-X20_	  	# Domicílios part perm com rendimento >20 s.m
+# seleciona, renomeia, muda para <dbl> e mostra
+txt <- txt %>%
+  select(
+        # Indexes
+         ano          = Q1, 		  # Ano (2013) (SSP)
+         distrito_num = Q12,		  # Num Distrito Policial (SSP)
+         distrito     = Q13,		  # Nome Distrito Policial (SSP)
+         seccional    = Seccional, # Nome da seccional
+        # Crimes
+         homicidio        = Q22,		# Homicídio doloso (SSP)
+         homicidio_tentat = Q24,		# Tentativa de homicídio (SSP)
+         lesao_corp       = Q27,		# Lesão corporal dolosa (SSP)
+         latrocinio       = Q30,		# Latrocínio (SSP)
+         estupro          = Q32,		# Estupro (SSP)
+         trafico          = Q34,		# Ocorrências de tráfico de entorpecentes (SSP)
+         porte_arma       = Q37,		# Ocorrências de porte ilegal de arma (SSP)
+         roubo_veiculo    = Q40,		# Roubo de veículo (SSP)
+         roubo_outros     = Q41,		# Roubo - outros (SSP)
+         furto_outros     = Q43,		# Furto - outros (SSP)
+         furto_veiculo    = Q44,		# Furto de veículos (SSP)
+        # Vítimas
+         homicidio_obito = V1,		# óitos por causas externas (por local de resid?ncia/DATASUS)
+        # demografia
+         populacao     = P,		    # População total (2013/IBGE-SEADE)
+         pop_jovem_onu = PJ_ONU,	# População jovem ONU(15 a 24 anos)(2013/IBGE-SEADE)
+         pop_jovem_cnj = PJ_CNJ,	# População jovem CNJ(15 a 29 anos)(2013/IBGE-SEADE)
+         pop_masc      = PM,	   	# População masculina(2013/IBGE-SEADE)
+        # Característica urbana
+         favela = fvl,		# Estimativa de domicílios em favelas (2010) (SEHAB/HABISP)
+        # Rendimento domiciliar
+         renda_domicilio    = Tot_DR,	  # Total de domicílios particulares permanentes com rendimento (2010)(CENSO/IBGE) 
+         renda_domic_ate5   = `atÃ._5`,	  # Domicílios part perm com rendimento at? 5 s.m.
+         renda_domic_5a10   = X5_a_10,  # Domicílios part perm com rendimento >5 at? 10 s.m
+         renda_domic_10a20  = X10_a_20,	# Domicílios part perm com rendimento >10 at? 20 s.m
+         renda_domic_20mais = X20_,	  	# Domicílios part perm com rendimento >20 s.m
+        # 
+         renda_domic_media = RM_DOM,  # Renda domiciliar média pnderada, em s.m. 
+         renda_domic_dp    = S_RM_DOM, 	# Desvio padrão RM_DOM
+        # empregos
+         emprego_formal = Total_EF,	# Número de empregos formais (RAIS/CAGED)
+         populacao_2000 = P2000,		  # População total, ano 2010
+        # produtividade policial
+         inqueritos            = Q70,		# Total de in= Quéritos instaurados (SSP)		
+         flagrantes            = Q71,		# Número de flagrantes lavrados (SSP)
+         veiculo_recuperado    = Q73,		# Número de veículos recuperados (SSP)
+         prisoes_efetuadas     = Q74,		# Número de prisães efetuadas (SSP)
+         prisoes_flagrantes    = Q75,		# Número de pessoas presas em flagrante (SSP)
+         prisoes_mandato       = Q76,		# Número de pessoas presas por mandato (SSP)
+         infratores_flagrantes = Q77,		# Número de infratores apreendidos em flagrante (SSP)
+         infratores_mandato    = Q78,		# Número de infratores apreendidos por mandato (SSP)
+         armas_apreendidas     = Q79,		# Número de armas de fogo apreendidas (SSP)
+        # area
+         area_km2 = Km2,		# área da localidade em Km2
+        # area construída em m2
+         area_constr_1 = AC_1,		 # área construída 1 - uso resid?ncial horizontal de baixo padrão (TCPL/SEMPLA/SMDU)
+         area_constr_2 = AC_2,  	 # área construída 2 - uso resid?ncial horizontal de médio padrão (TCPL/SEMPLA/SMDU)
+         area_constr_3 = AC_3,		 # área construída 3 - uso resid?ncial horizontal de alto padrão (TCPL/SEMPLA/SMDU)
+         area_constr_4 = AC_4,		 # área construída 4 - uso resid?ncial vertical de médio padrão (TCPL/SEMPLA/SMDU)
+         area_constr_5 = AC_5,		 # área construída 5 - uso resid?ncial vertical de alto padrão (TCPL/SEMPLA/SMDU)
+         area_constr_6 = AC_6,		 # área Construída 6 - Uso Comércio e Serviço Horizontal
+         area_constr_7 = AC_7,		 # área Construída 7 - Uso Comércio e Serviço Vertical
+         area_constr_8 = AC_8,		 # área Construída 8 - Uso Industrial
+         area_constr_9 = AC_9,		 # área Construída 9 - Uso Armazéns e Depósitos
+         area_constr_10 = AC_10,	 # área Construída 10 - Uso Especial ( Hotel, Hospital, Cartário, Etc. )
+         area_constr_11 = AC_11,	 # área Construída 11 - Uso Escola
+         area_constr_12 = AC_12,	 # área Construída 12 - Uso Coletivo ( Cinema, Teatro, Clube, Templo, Etc. )
+         area_constr_14 = AC_14,	 # área construída 14 - uso resid?ncial vertical de baixo padrão (TCPL/SEMPLA/SMDU)
+         area_constr_15 = AC_15,	 # área Construída 15 - Uso Garagens não-residenciais
+         area_constr_99 = AC_99,	 # área construída 99 - outros usos (uso e padrão não previsto) (TCPL/SEMPLA/SMDU)
+         area_constr_resid_baixop = AC_ResBP,# área construída - total residencial baixo padrão (=soma(AC_1;AC_14;AC_99))
+         area_constr_nao_resid    = AC_nRes	 # área construída - total não residencial ((=soma(AC_6,AC_7,AC_8,AC_9,AC_10,AC_11,AC_12,AC_15)))
+        ) %>%
+  # use mutate_at para mudar as variáveis desejadas para <dbl>
+  mutate_at(vars(-seq(4)), funs(as.numeric)) %>%
+  glimpse()
 
-RM_DOM	  # Renda domiciliar média pnderada, em s.m. 
-S_RM_DOM 	# Desvio padrão RM_DOM
+write_rds(txt, "C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\tabelas_output\\tab_FINAL.rds")
 
-perc_5	    #
-perc5_a_10	#
-perc10_a_20	#
-perc20_	    #
- #
-Total_EF	# Número de empregos formais (RAIS/CAGED)
-P2000		  # População total, ano 2010
-EF_P		  # razão (emprego_formal/população2000)
- #
-Q70		# Total de inquéritos instaurados (SSP)		
-Q71		# Número de flagrantes lavrados (SSP)
-Q73		# Número de veículos recuperados (SSP)
-Q74		# Número de prisães efetuadas (SSP)
-Q75		# Número de pessoas presas em flagrante (SSP)
-Q76		# Número de pessoas presas por mandato (SSP)
-Q77		# Número de infratores apreendidos em flagrante (SSP)
-Q78		# Número de infratores apreendidos por mandato (SSP)
-Q79		# Número de armas de fogo apreendidas (SSP)
- #
-Km2		# área da localidade em Km2
- #
-AC_1		 # área construída 1 - uso resid?ncial horizontal de baixo padrão (TCPL/SEMPLA/SMDU)
-AC_2		 # área construída 2 - uso resid?ncial horizontal de médio padrão (TCPL/SEMPLA/SMDU)
-AC_3		 # área construída 3 - uso resid?ncial horizontal de alto padrão (TCPL/SEMPLA/SMDU)
-AC_4		 # área construída 4 - uso resid?ncial vertical de médio padrão (TCPL/SEMPLA/SMDU)
-AC_5		 # área construída 5 - uso resid?ncial vertical de alto padrão (TCPL/SEMPLA/SMDU)
-AC_6		 # área Construída 6 - Uso Comércio e Serviço Horizontal
-AC_7		 # área Construída 7 - Uso Comércio e Serviço Vertical
-AC_8		 # área Construída 8 - Uso Industrial
-AC_9		 # área Construída 9 - Uso Armazéns e Depósitos
-AC_10		 # área Construída 10 - Uso Especial ( Hotel, Hospital, Cartário, Etc. )
-AC_11		 # área Construída 11 - Uso Escola
-AC_12		 # área Construída 12 - Uso Coletivo ( Cinema, Teatro, Clube, Templo, Etc. )
-AC_14		 # área construída 14 - uso resid?ncial vertical de baixo padrão (TCPL/SEMPLA/SMDU)
-AC_15		 # área Construída 15 - Uso Garagens não-residenciais
-AC_99		 # área construída 99 - outros usos (uso e padrão não previsto) (TCPL/SEMPLA/SMDU)
-AC_ResBP # área construída - total residencial baixo padrão (=soma(AC_1;AC_14;AC_99))
-AC_nRes	 # área construída - total não residencial ((=soma(AC_6,AC_7,AC_8,AC_9,AC_10,AC_11,AC_12,AC_15))
-#tx_Qx   # Taxa de crime (Qx) por 100000 habitantes
-#
-####txt2013
+
+
+
+
+
+
+
 # 
-is.numeric(AC_15) # verifique se as variáveis são do tipo 'numeric'
 #----
 #----
 ##################################################################
