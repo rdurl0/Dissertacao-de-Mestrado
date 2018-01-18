@@ -46,3 +46,63 @@ mylayout <- list( # para colocar no barra2
   scale_y_continuous(limits = c(0,255),
                      breaks = c(0,25,50,75,100,125,150,175,200,225,250))
 )
+
+
+# um gráfico de área
+### Figura 3: Município de São Paulo - Seccionais
+
+O gráfico de área é gerado com:
+  ```{r  fig.height=11, fig.width=17, message=FALSE, warning=FALSE, fig.align='center'}
+graf_area <- function(x) {
+  #x: "2003" ou "2013"
+  ggplot(filter(msp, ano == x),
+         aes(area     = homicidio,
+             fill     = seccional,
+             label    = distrito,
+             subgroup = seccional)) +
+    geom_treemap(alpha = .7, color = 'black') +
+    geom_treemap_subgroup_border(color = 'black', size = .5) +
+    geom_treemap_text(fontface = "italic",
+                      colour   = "black",
+                      place    = "centre", 
+                      grow     = TRUE
+    ) +
+    labs(title=(paste("Proporção das ocorrências de Homicídios -",x))) +
+    theme(legend.key.size  = unit(.3,"cm")) +
+    scale_fill_brewer(palette ='YlOrRd')
+}
+
+
+```
+
+E a figura
+```{r  message=FALSE, warning=FALSE}
+
+quadro_msp_area <- ggarrange(graf_area("2003"),
+                             graf_area("2013"),
+                             ncol  = 1,
+                             nrow  = 2,
+                             align = "hv",
+                             common.legend = TRUE,
+                             legend= "top")
+
+```
+
+Editando a figura
+```{r   message=FALSE, warning=FALSE}
+
+quadro_msp_area <- annotate_figure(quadro_msp_area,
+                                   top = text_grob(
+                                     "Número de homicídios - Seccionais do Município de São Paulo (2003 e 2013)",
+                                     color  = "black",
+                                     vjust = .5,
+                                     size   = 10,
+                                     family = "Times",  just = "center"),
+                                   bottom  =NA,
+                                   left    = NA,
+                                   right   = NA,
+                                   fig.lab = NA,
+                                   fig.lab.face = NA
+)
+
+```
