@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/362773/f2fb633725df4656a7f714277edc8d2e
+bundleId: https://api.rpubs.com/api/v1/document/362773/f2fb633725df4656a7f714277edc8d2e
+url: http://rpubs.com/RaulDurlo/362773
+when: 1519392140.45633

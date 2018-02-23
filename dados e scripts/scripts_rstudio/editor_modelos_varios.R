@@ -1,24 +1,30 @@
 rm(list=ls())
 
 # diretório
-setwd("C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts")
+setwd("C:\\Users\\rauld\\Google Drive\\meu_projeto\\dados e scripts\\planilhas_input")
 dir()
 
 # tabela
 dados <- read.table("plan_dados.txt", h=T)
 is.data.frame(dados) # TRUE
+
+
 #
 #install.packages("readr")
 # Pacotes necess?rios--------------------
 
 libs <- c("readr",
   "spdep", "systemfit", "plyr", 
-          "spse", "splm", "MASS", "ggplot2", "stargazer")
+          "spse", "splm",
+  "MASS", "ggplot2", "stargazer", "plm")
+
 
 for (x in libs){
       print (paste0(x, " is already installed "))
       library(x, character.only = TRUE)
     }
+
+library(plm)
 
 # subsets---------------------
 
@@ -45,6 +51,7 @@ system2 <- list(tp1 = e1, tp2 = e2)
 # Estat?sticas descritivas -----------
 # preparando tabela com estat?sticas descritivas
 # summary
+library(stargazer)
 stargazer(dados2003, dados2013,
           title="Estat?sticas descritivas",
           out="C:\\Users\\Raul\\Documents\\meu_projeto\\dados e scripts\\output.htm",
