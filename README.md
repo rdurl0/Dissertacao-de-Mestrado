@@ -12,5 +12,7 @@ Sumário:
 2. [Dissertação](https://github.com/rdurl0/meu_projeto/blob/master/tudo.pdf): retrabalhada no ambiente `R`
 
 Autor: Raul de Sá Durlo
+
 Orientador: Prof. Dr. André Luiz Correa
+
 Co-orientador: Prod. Dr. Alexandre Sartoris Neto
